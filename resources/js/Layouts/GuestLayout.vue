@@ -84,7 +84,7 @@ import { Link } from '@inertiajs/vue3';
         <div class="brand-side">
             <div class="brand-content">
                 <Link href="/" class="logo-box">
-                    <img src="/logo-x-seller.png" alt="Xseller Logo">
+                    <img src="/logo-x-seller.avif" alt="Xseller Logo">
                 </Link>
 
                 <div class="brand-badge">
