@@ -1,34 +1,125 @@
 <script setup>
 import { Link } from '@inertiajs/vue3';
-import { Layers } from '@lucide/vue';
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#0d131d] text-slate-100 font-sans antialiased relative overflow-hidden flex flex-col items-center justify-center p-6 selection:bg-indigo-500 selection:text-white">
-    <!-- Background Ambient Radial Glows -->
-    <div class="absolute -top-40 -left-40 w-[600px] h-[600px] rounded-full bg-gradient-to-br from-indigo-600/15 via-cyan-500/10 to-transparent blur-[120px] pointer-events-none"></div>
-    <div class="absolute -bottom-40 -right-40 w-[600px] h-[600px] rounded-full bg-gradient-to-tl from-emerald-600/15 via-blue-600/10 to-transparent blur-[120px] pointer-events-none"></div>
+  <main class="auth-page">
 
-    <!-- Card Container -->
-    <div class="w-full sm:max-w-md bg-[#111927] border border-slate-800 backdrop-blur-xl shadow-2xl rounded-3xl p-8 relative z-10 space-y-6">
-      <!-- Branding -->
-      <div class="flex flex-col items-center gap-3">
-        <Link href="/" class="group relative p-3.5 bg-gradient-to-tr from-indigo-600 to-cyan-500 rounded-2xl shadow-xl shadow-indigo-500/20 hover:scale-105 transition-all">
-          <Layers class="w-7 h-7 text-white transition-transform group-hover:rotate-12" />
-        </Link>
-        <div class="text-center space-y-1">
-          <div class="flex items-center justify-center gap-2">
-            <h1 class="text-2xl font-extrabold text-white tracking-tight uppercase">XSELLER</h1>
-            <span class="px-2 py-0.5 text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 rounded-md">v2.4</span>
-          </div>
-          <p class="text-xs text-slate-400 font-medium tracking-wide">Sistem MLM Binary 2 Kaki & E-Commerce Trade Promotion</p>
-        </div>
-      </div>
-
-      <!-- Form Content Slot -->
-      <div class="space-y-4">
-        <slot />
-      </div>
+    <!-- ORNAMEN GELOMBANG KANAN ATAS -->
+    <div class="wave-decoration wave-top" aria-hidden="true">
+        <svg viewBox="0 0 500 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="waveGradientTop" x1="0" y1="0" x2="500" y2="350">
+                    <stop offset="0%" stop-color="#174F9D"/>
+                    <stop offset="55%" stop-color="#087BB7"/>
+                    <stop offset="100%" stop-color="#04C1B5"/>
+                </linearGradient>
+            </defs>
+            <g stroke="url(#waveGradientTop)" stroke-width="2" fill="none">
+                <path d="M25 60 C120 -5 185 25 245 85 C305 145 390 65 490 125"/>
+                <path d="M22 69 C116 4 181 34 241 94 C301 154 386 74 487 134"/>
+                <path d="M19 78 C112 13 177 43 237 103 C297 163 382 83 484 143"/>
+                <path d="M16 87 C108 22 173 52 233 112 C293 172 378 92 481 152"/>
+                <path d="M13 96 C104 31 169 61 229 121 C289 181 374 101 478 161"/>
+                <path d="M10 105 C100 40 165 70 225 130 C285 190 370 110 475 170"/>
+                <path d="M7 114 C96 49 161 79 221 139 C281 199 366 119 472 179"/>
+                <path d="M4 123 C92 58 157 88 217 148 C277 208 362 128 469 188"/>
+                <path d="M1 132 C88 67 153 97 213 157 C273 217 358 137 466 197"/>
+                <path d="M0 141 C84 76 149 106 209 166 C269 226 354 146 463 206"/>
+                <path d="M0 150 C80 85 145 115 205 175 C265 235 350 155 460 215"/>
+                <path d="M0 159 C76 94 141 124 201 184 C261 244 346 164 457 224"/>
+                <path d="M0 168 C72 103 137 133 197 193 C257 253 342 173 454 233"/>
+                <path d="M0 177 C68 112 133 142 193 202 C253 262 338 182 451 242"/>
+                <path d="M0 186 C64 121 129 151 189 211 C249 271 334 191 448 251"/>
+                <path d="M0 195 C60 130 125 160 185 220 C245 280 330 200 445 260"/>
+                <path d="M0 204 C56 139 121 169 181 229 C241 289 326 209 442 269"/>
+                <path d="M0 213 C52 148 117 178 177 238 C237 298 322 218 439 278"/>
+            </g>
+        </svg>
     </div>
-  </div>
+
+    <!-- ORNAMEN GELOMBANG KIRI BAWAH -->
+    <div class="wave-decoration wave-bottom" aria-hidden="true">
+        <svg viewBox="0 0 520 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="waveGradientBottom" x1="20" y1="400" x2="500" y2="0">
+                    <stop offset="0%" stop-color="#06C2B5"/>
+                    <stop offset="50%" stop-color="#078BB9"/>
+                    <stop offset="100%" stop-color="#17519E"/>
+                </linearGradient>
+            </defs>
+            <g stroke="url(#waveGradientBottom)" stroke-width="2" fill="none">
+                <path d="M-20 150 C70 70 135 230 215 130 C295 30 370 80 540 200"/>
+                <path d="M-20 159 C70 79 135 239 215 139 C295 39 370 89 540 209"/>
+                <path d="M-20 168 C70 88 135 248 215 148 C295 48 370 98 540 218"/>
+                <path d="M-20 177 C70 97 135 257 215 157 C295 57 370 107 540 227"/>
+                <path d="M-20 186 C70 106 135 266 215 166 C295 66 370 116 540 236"/>
+                <path d="M-20 195 C70 115 135 275 215 175 C295 75 370 125 540 245"/>
+                <path d="M-20 204 C70 124 135 284 215 184 C295 84 370 134 540 254"/>
+                <path d="M-20 213 C70 133 135 293 215 193 C295 93 370 143 540 263"/>
+                <path d="M-20 222 C70 142 135 302 215 202 C295 102 370 152 540 272"/>
+                <path d="M-20 231 C70 151 135 311 215 211 C295 111 370 161 540 281"/>
+                <path d="M-20 240 C70 160 135 320 215 220 C295 120 370 170 540 290"/>
+                <path d="M-20 249 C70 169 135 329 215 229 C295 129 370 179 540 299"/>
+                <path d="M-20 258 C70 178 135 338 215 238 C295 138 370 188 540 308"/>
+                <path d="M-20 267 C70 187 135 347 215 247 C295 147 370 197 540 317"/>
+                <path d="M-20 276 C70 196 135 356 215 256 C295 156 370 206 540 326"/>
+                <path d="M-20 285 C70 205 135 365 215 265 C295 165 370 215 540 335"/>
+                <path d="M-20 294 C70 214 135 374 215 274 C295 174 370 224 540 344"/>
+            </g>
+        </svg>
+    </div>
+
+    <!-- DOT GRID -->
+    <div class="dot-grid" aria-hidden="true">
+        <i></i><i></i>
+        <i></i><i></i>
+        <i></i><i></i>
+        <i></i><i></i>
+    </div>
+
+    <!-- MAIN SHELL CARD -->
+    <section class="auth-shell">
+        <!-- BRAND SIDE LEFT -->
+        <div class="brand-side">
+            <div class="brand-content">
+                <Link href="/" class="logo-box">
+                    <img src="/logo-x-seller.png" alt="Xseller Logo">
+                </Link>
+
+                <div class="brand-badge">
+                    <span></span>
+                    XSELLER MEMBER AREA
+                </div>
+
+                <h1>
+                    Welcome to
+                    <span>Xseller</span>
+                </h1>
+
+                <p>
+                    Masuk ke akun Anda untuk mengakses fitur, aktivitas,
+                    dan layanan Xseller dalam satu tempat.
+                </p>
+
+                <div class="brand-divider">
+                    <span></span>
+                    <i></i><i></i><i></i>
+                    <span></span>
+                </div>
+
+                <p class="brand-note">
+                    Simple. Secure. Connected.
+                </p>
+            </div>
+        </div>
+
+        <!-- FORM SIDE RIGHT -->
+        <div class="form-side">
+            <div class="form-card">
+                <slot />
+            </div>
+        </div>
+    </section>
+  </main>
 </template>

@@ -1,10 +1,9 @@
 <script setup>
-import Checkbox from '@/Components/Checkbox.vue';
+import { ref } from 'vue';
 import GuestLayout from '@/Layouts/GuestLayout.vue';
 import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
-import { Lock, Mail, ArrowRight } from '@lucide/vue';
+import { Mail, Lock, Eye, EyeOff, ArrowRight } from '@lucide/vue';
 
 defineProps({
     canResetPassword: {
@@ -14,6 +13,8 @@ defineProps({
         type: String,
     },
 });
+
+const showPassword = ref(false);
 
 const form = useForm({
     email: '',
@@ -30,80 +31,105 @@ const submit = () => {
 
 <template>
     <GuestLayout>
-        <Head title="Masuk Sistem - XSELLER" />
+        <Head title="Login | Xseller" />
 
-        <div v-if="status" class="mb-4 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs font-semibold text-emerald-400">
+        <div class="panel-heading">
+            <span class="eyebrow">MEMBER LOGIN</span>
+            <h2>Masuk ke Akun</h2>
+            <p>Silakan masukkan email dan password Anda.</p>
+        </div>
+
+        <div v-if="status" class="mb-4 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs font-semibold text-emerald-600">
             {{ status }}
         </div>
 
         <form @submit.prevent="submit" class="space-y-4">
             <!-- Email Field -->
-            <div>
-                <InputLabel for="email" value="Alamat Email" class="text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5" />
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
-                        <Mail class="w-4 h-4" />
-                    </div>
+            <div class="form-group">
+                <label for="email" class="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wider">Email</label>
+                <div class="auth-input-wrap">
+                    <span class="auth-input-icon">
+                        <Mail class="w-4.5 h-4.5" />
+                    </span>
                     <input
                         id="email"
                         type="email"
                         v-model="form.email"
                         required
                         autofocus
-                        autocomplete="username"
-                        placeholder="Masukkan alamat email Anda"
-                        class="w-full bg-slate-900/80 border border-slate-800 rounded-xl pl-10 pr-4 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors"
+                        autocomplete="email"
+                        placeholder="nama@email.com"
+                        class="w-full"
                     />
                 </div>
                 <InputError class="mt-1.5" :message="form.errors.email" />
             </div>
 
             <!-- Password Field -->
-            <div>
-                <div class="flex items-center justify-between mb-1.5">
-                    <InputLabel for="password" value="Kata Sandi" class="text-xs font-bold text-slate-300 uppercase tracking-wider" />
-                    <Link
-                        v-if="canResetPassword"
-                        :href="route('password.request')"
-                        class="text-[11px] font-semibold text-slate-400 hover:text-indigo-400 transition-colors"
-                    >
-                        Lupa kata sandi?
-                    </Link>
-                </div>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
-                        <Lock class="w-4 h-4" />
-                    </div>
+            <div class="form-group">
+                <label for="password" class="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wider">Password</label>
+                <div class="auth-input-wrap">
+                    <span class="auth-input-icon">
+                        <Lock class="w-4.5 h-4.5" />
+                    </span>
                     <input
                         id="password"
-                        type="password"
+                        :type="showPassword ? 'text' : 'password'"
                         v-model="form.password"
                         required
                         autocomplete="current-password"
-                        placeholder="••••••••"
-                        class="w-full bg-slate-900/80 border border-slate-800 rounded-xl pl-10 pr-4 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors"
+                        placeholder="Masukkan password"
+                        class="w-full"
                     />
+                    <button
+                        type="button"
+                        @click="showPassword = !showPassword"
+                        class="auth-password-toggle flex items-center justify-center"
+                        title="Tampilkan password"
+                    >
+                        <Eye v-if="!showPassword" class="w-4.5 h-4.5" />
+                        <EyeOff v-else class="w-4.5 h-4.5" />
+                    </button>
                 </div>
                 <InputError class="mt-1.5" :message="form.errors.password" />
             </div>
 
-            <!-- Remember me -->
+            <!-- Form Options -->
             <div class="flex items-center justify-between pt-1">
-                <label class="flex items-center cursor-pointer">
-                    <Checkbox name="remember" v-model:checked="form.remember" class="rounded border-slate-700 bg-slate-900 text-indigo-600 focus:ring-indigo-500" />
-                    <span class="ms-2 text-xs font-medium text-slate-400">Ingat Sesi Saya</span>
+                <label class="remember-me flex items-center cursor-pointer text-xs text-slate-600">
+                    <input
+                        type="checkbox"
+                        v-model="form.remember"
+                        class="rounded border-slate-300 text-[#04bdb2] focus:ring-[#04bdb2] accent-[#04bdb2]"
+                    />
+                    <span class="ms-2 font-medium">Ingat saya</span>
                 </label>
+
+                <Link
+                    v-if="canResetPassword"
+                    :href="route('password.request')"
+                    class="text-xs font-bold text-[#009c94] hover:text-[#1653a1] transition-colors"
+                >
+                    Lupa password?
+                </Link>
             </div>
 
             <!-- Submit Button -->
             <button
                 type="submit"
                 :disabled="form.processing"
-                class="w-full py-3 px-4 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white text-xs font-bold rounded-xl shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-50"
+                class="auth-primary-btn w-full mt-3 flex items-center justify-center gap-2 text-xs font-extrabold uppercase tracking-wider text-white disabled:opacity-50"
             >
-                <span>Masuk ke Dashboard</span>
+                <span>Masuk Sekarang</span>
                 <ArrowRight class="w-4 h-4" />
             </button>
         </form>
+
+        <div class="mt-6 text-center text-xs text-slate-500 font-medium">
+            Belum punya akun?
+            <Link :href="route('register')" class="ms-1 font-bold text-[#009c94] hover:text-[#1653a1] transition-colors">
+                Daftar sekarang
+            </Link>
+        </div>
     </GuestLayout>
 </template>
