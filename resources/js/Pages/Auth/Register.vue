@@ -6,6 +6,7 @@ import { Head, Link, useForm } from '@inertiajs/vue3';
 import { User, Mail, Lock, Eye, EyeOff, KeyRound, ArrowRight } from '@lucide/vue';
 
 const showPassword = ref(false);
+const showPasswordConfirm = ref(false);
 
 const form = useForm({
     name: '',
@@ -88,7 +89,7 @@ const submit = () => {
                         v-model="form.password"
                         required
                         autocomplete="new-password"
-                        placeholder="Minimal 6 karakter"
+                        placeholder="Minimal 8 karakter"
                         class="w-full"
                     />
                     <button
@@ -101,6 +102,34 @@ const submit = () => {
                     </button>
                 </div>
                 <InputError class="mt-1" :message="form.errors.password" />
+            </div>
+
+            <!-- Konfirmasi Password -->
+            <div class="form-group">
+                <label for="password_confirmation" class="block text-xs font-bold text-slate-700 mb-1 uppercase tracking-wider">Konfirmasi Password</label>
+                <div class="auth-input-wrap">
+                    <span class="auth-input-icon">
+                        <Lock class="w-4.5 h-4.5" />
+                    </span>
+                    <input
+                        id="password_confirmation"
+                        :type="showPasswordConfirm ? 'text' : 'password'"
+                        v-model="form.password_confirmation"
+                        required
+                        autocomplete="new-password"
+                        placeholder="Ulangi password Anda"
+                        class="w-full"
+                    />
+                    <button
+                        type="button"
+                        @click="showPasswordConfirm = !showPasswordConfirm"
+                        class="auth-password-toggle flex items-center justify-center"
+                    >
+                        <Eye v-if="!showPasswordConfirm" class="w-4.5 h-4.5" />
+                        <EyeOff v-else class="w-4.5 h-4.5" />
+                    </button>
+                </div>
+                <InputError class="mt-1" :message="form.errors.password_confirmation" />
             </div>
 
             <!-- Referral Code -->
