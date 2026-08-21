@@ -60,4 +60,19 @@ class User extends Authenticatable
     {
         return $this->hasMany(Withdrawal::class, 'user_id');
     }
+
+    /**
+     * Send custom reset password notification email.
+     *
+     * @param string $token
+     * @return void
+     */
+    public function sendPasswordResetNotification($token)
+    {
+        try {
+            $this->notify(new \App\Notifications\CustomResetPasswordNotification($token));
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Gagal mengirim email reset password: ' . $e->getMessage());
+        }
+    }
 }

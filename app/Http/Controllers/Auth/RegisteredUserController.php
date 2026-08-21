@@ -45,6 +45,12 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
+        try {
+            $user->notify(new \App\Notifications\WelcomeRegisterNotification($user));
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Gagal mengirim email pendaftaran: ' . $e->getMessage());
+        }
+
         Auth::login($user);
 
         return redirect(route('dashboard', absolute: false));

@@ -111,6 +111,12 @@ class MemberActivationController extends Controller
         ]);
         $newUser->assignRole('client');
 
+        try {
+            $newUser->notify(new \App\Notifications\WelcomeRegisterNotification($newUser, 'password'));
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Gagal mengirim email aktivasi member: ' . $e->getMessage());
+        }
+
         // Mark voucher as used
         $voucher->update([
             'status' => 'used',
