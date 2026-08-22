@@ -8,15 +8,17 @@ import {
   RotateCcw, 
   UserPlus, 
   ChevronRight,
-  GitFork,
+  Users,
   Sparkles,
   ShieldCheck,
-  CheckCircle2
+  Layers,
+  ArrowRight
 } from '@lucide/vue';
 
 const props = defineProps({
   focus_user: Object,
-  tree: Object,
+  direct_downlines: Array,
+  generations: Array,
   all_users: Array
 });
 
@@ -31,10 +33,19 @@ const resetFocus = () => {
   selectedUserSearch.value = '';
   router.get(route('admin.pohon-jaringan'));
 };
+
+const getBadgeColor = (pkg) => {
+  const p = (pkg || '').toLowerCase();
+  if (p.includes('ultimate') || p.includes('10.500')) return 'bg-amber-100 text-amber-800 border-amber-300';
+  if (p.includes('pro') || p.includes('4.300')) return 'bg-purple-100 text-purple-800 border-purple-300';
+  if (p.includes('medium') || p.includes('2.100')) return 'bg-indigo-100 text-indigo-800 border-indigo-300';
+  if (p.includes('basic') || p.includes('550')) return 'bg-blue-100 text-blue-800 border-blue-300';
+  return 'bg-slate-100 text-slate-700 border-slate-300';
+};
 </script>
 
 <template>
-  <Head title="Pohon Jaringan Binary - XSELLER" />
+  <Head title="Struktur Jaringan Matahari - XSELLER" />
 
   <AdminLayout>
     <div class="space-y-6">
@@ -72,276 +83,137 @@ const resetFocus = () => {
         </button>
       </div>
 
-      <!-- Main Tree Container Card -->
-      <div class="bg-white border border-slate-200/80 rounded-3xl p-6 md:p-8 shadow-sm space-y-6">
-        
-        <!-- Header Info -->
-        <div class="border-b border-slate-100 pb-4 space-y-1">
+      <!-- Member Focus Header Summary Card -->
+      <div class="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div class="space-y-1">
           <div class="flex items-center gap-2">
-            <span class="text-xl">🏛️</span>
-            <h2 class="text-base font-extrabold text-slate-900 tracking-tight">Silsilah Pohon Jaringan (Genealogy Binary)</h2>
+            <h2 class="text-2xl font-black text-slate-900 tracking-tight">
+              {{ focus_user?.name }}
+            </h2>
+            <span class="text-xs font-bold text-slate-400 font-mono">{{ focus_user?.username }}</span>
+            <span :class="['px-2.5 py-0.5 text-[10px] font-extrabold rounded-md border uppercase tracking-wider', getBadgeColor(focus_user?.package_name)]">
+              Paket {{ focus_user?.package_name }}
+            </span>
           </div>
-          <p class="text-xs text-slate-500">Visualisasi struktur 2 kaki (Binary). Klik member untuk memfokuskan pohon jaringan, melihat detail, atau mendaftarkan member baru.</p>
-          
-          <div class="pt-2 flex items-center gap-1.5 text-xs text-slate-600 font-medium">
-            <span class="text-slate-400">Navigasi:</span>
-            <button @click="focusUser(tree?.id)" class="text-emerald-600 font-bold hover:underline">
-              {{ tree?.name }} ({{ tree?.username }})
-            </button>
+          <p class="text-xs text-slate-500 font-medium pt-0.5">
+            Struktur Jaringan Matahari (Direct Referral Level System)
+          </p>
+        </div>
+
+        <!-- Stat Badges -->
+        <div class="flex items-center gap-3 shrink-0 flex-wrap">
+          <div class="px-5 py-3 bg-emerald-50 border border-emerald-200 rounded-2xl flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+              <Users class="w-5 h-5" />
+            </div>
+            <div>
+              <span class="text-[9px] font-extrabold text-emerald-800 uppercase tracking-wider block">SPONSOR LANGSUNG</span>
+              <span class="text-sm font-black text-emerald-700 font-mono">{{ focus_user?.total_direct || 0 }} Member</span>
+            </div>
+          </div>
+
+          <div class="px-5 py-3 bg-indigo-50 border border-indigo-200 rounded-2xl flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+              <Layers class="w-5 h-5" />
+            </div>
+            <div>
+              <span class="text-[9px] font-extrabold text-indigo-800 uppercase tracking-wider block">TOTAL ANGGOTA TIM</span>
+              <span class="text-sm font-black text-indigo-700 font-mono">{{ focus_user?.total_team || 0 }} Member</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Layout Grid (Left: Direct Downline Table, Right: Generation Tier Summary) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        
+        <!-- LEFT: Direct Downlines List (8 Cols) -->
+        <div class="lg:col-span-8 space-y-4">
+          <div class="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+              <div class="flex items-center gap-2">
+                <Users class="w-5 h-5 text-emerald-600" />
+                <h3 class="text-xs font-black text-slate-900 uppercase tracking-tight">
+                  DAFTAR MITRA SPONSOR LANGSUNG (GENERASI 1)
+                </h3>
+              </div>
+              <span class="px-2.5 py-1 text-[10px] font-extrabold bg-slate-100 text-slate-600 rounded-full">
+                {{ direct_downlines.length }} Mitra
+              </span>
+            </div>
+
+            <!-- Table / Empty State -->
+            <div v-if="direct_downlines.length === 0" class="p-12 text-center border-2 border-dashed border-slate-100 rounded-3xl bg-slate-50/50">
+              <p class="text-xs text-slate-400 italic font-medium">
+                Belum ada mitra sponsor langsung (Generasi 1) terdaftar di bawah akun ini.
+              </p>
+            </div>
+
+            <div v-else class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead>
+                  <tr class="border-b border-slate-100 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
+                    <th class="pb-3 pl-2">Nama Member</th>
+                    <th class="pb-3">Paket Join</th>
+                    <th class="pb-3 text-center">Tim G2</th>
+                    <th class="pb-3">Tanggal Bergabung</th>
+                    <th class="pb-3 text-right pr-2">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                  <tr v-for="item in direct_downlines" :key="item.id" class="hover:bg-slate-50/80 transition-colors">
+                    <td class="py-3.5 pl-2 font-bold text-slate-800">
+                      <div>{{ item.name }}</div>
+                      <div class="text-[10px] text-slate-400 font-normal">{{ item.username }}</div>
+                    </td>
+                    <td class="py-3.5">
+                      <span :class="['px-2 py-0.5 text-[9px] font-extrabold rounded border uppercase tracking-wider', getBadgeColor(item.package_name)]">
+                        {{ item.package_name }}
+                      </span>
+                    </td>
+                    <td class="py-3.5 text-center font-bold font-mono text-slate-700">
+                      {{ item.direct_count }} Mitra
+                    </td>
+                    <td class="py-3.5 text-slate-500 font-medium text-[11px]">
+                      {{ item.joined_at }}
+                    </td>
+                    <td class="py-3.5 text-right pr-2">
+                      <button 
+                        @click="focusUser(item.id)"
+                        class="px-2.5 py-1 bg-slate-100 hover:bg-emerald-600 hover:text-white text-slate-700 text-[10px] font-bold rounded-lg transition-colors inline-flex items-center gap-1 cursor-pointer"
+                      >
+                        <span>Lihat Tim</span>
+                        <ArrowRight class="w-3 h-3" />
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
           </div>
         </div>
 
-        <!-- Binary Tree Visualization Board -->
-        <div class="p-6 md:p-10 bg-slate-50/50 rounded-2xl border border-slate-100 overflow-x-auto min-w-[700px]">
-          <div class="flex flex-col items-center space-y-8">
-            
-            <!-- LEVEL 1: Root Node (Focused Member) -->
-            <div class="flex flex-col items-center relative">
-              <div 
-                @click="focusUser(tree?.id)"
-                class="w-48 bg-white border-2 border-emerald-500 rounded-2xl p-3.5 shadow-md relative hover:scale-105 transition-all cursor-pointer space-y-2 text-center"
-              >
-                <!-- Status Dot -->
-                <span class="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-emerald-500"></span>
-
-                <!-- Avatar Circle -->
-                <div class="w-9 h-9 rounded-full bg-slate-100 text-slate-600 border border-slate-200 mx-auto flex items-center justify-center">
-                  <User class="w-5 h-5" />
-                </div>
-
-                <!-- Info -->
-                <div>
-                  <h4 class="text-xs font-black text-slate-800 truncate">{{ tree?.name }}</h4>
-                  <p class="text-[10px] text-slate-400 font-medium truncate">{{ tree?.username }}</p>
-                </div>
-
-                <!-- Leg Counters Pill -->
-                <div class="pt-1.5 border-t border-slate-100 flex items-center justify-center gap-3 text-[10px] font-bold text-slate-600">
-                  <span>L : {{ tree?.left_count || 0 }}</span>
-                  <span class="text-slate-300">|</span>
-                  <span>R : {{ tree?.right_count || 0 }}</span>
-                </div>
+        <!-- RIGHT: Generation Depth Breakdown (4 Cols) -->
+        <div class="lg:col-span-4 space-y-4">
+          <div class="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div class="flex items-center gap-2">
+                <Layers class="w-4 h-4 text-indigo-600" />
+                <h3 class="text-xs font-black text-slate-900 uppercase tracking-tight">KEDALAMAN GENERASI (1 - 15)</h3>
               </div>
-
-              <!-- Connecting Line Down from Level 1 -->
-              <div class="w-0.5 h-8 bg-slate-300"></div>
             </div>
 
-            <!-- LEVEL 2 & 3 CONTAINER -->
-            <div class="w-full relative">
-              <!-- Horizontal Connecting Bar between Left and Right Children -->
-              <div class="absolute top-0 left-1/4 right-1/4 h-0.5 bg-slate-300"></div>
-
-              <div class="grid grid-cols-2 gap-8 relative pt-4">
-                
-                <!-- ================= LEFT BRANCH ================= -->
-                <div class="flex flex-col items-center relative">
-                  <!-- Vertical Connector down to Left Child -->
-                  <div class="absolute -top-4 w-0.5 h-4 bg-slate-300"></div>
-
-                  <!-- Level 2 Left Node (e.g. Budi Santoso) -->
-                  <div v-if="tree?.left" class="flex flex-col items-center">
-                    <div 
-                      @click="focusUser(tree.left.id)"
-                      class="w-44 bg-white border border-slate-200 rounded-2xl p-3 shadow-sm hover:border-indigo-400 hover:shadow-md transition-all cursor-pointer space-y-2 text-center relative"
-                    >
-                      <span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-emerald-500"></span>
-                      <div class="w-8 h-8 rounded-full bg-slate-100 text-slate-600 border border-slate-200 mx-auto flex items-center justify-center">
-                        <User class="w-4 h-4" />
-                      </div>
-                      <div>
-                        <h4 class="text-xs font-bold text-slate-800 truncate">{{ tree.left.name }}</h4>
-                        <p class="text-[10px] text-slate-400 font-medium truncate">{{ tree.left.username }}</p>
-                      </div>
-                      <div class="pt-1.5 border-t border-slate-100 flex items-center justify-center gap-2 text-[10px] font-bold text-slate-500">
-                        <span>L : {{ tree.left.left_count || 0 }}</span>
-                        <span class="text-slate-300">|</span>
-                        <span>R : {{ tree.left.right_count || 0 }}</span>
-                      </div>
-                    </div>
-
-                    <!-- Vertical Line down to Level 3 -->
-                    <div class="w-0.5 h-8 bg-slate-300"></div>
-
-                    <!-- Level 3 Left Children (Dewi & Eko) -->
-                    <div class="relative w-full">
-                      <div class="absolute top-0 left-1/4 right-1/4 h-0.5 bg-slate-300"></div>
-                      <div class="grid grid-cols-2 gap-3 pt-4">
-                        
-                        <!-- Left-Left (Dewi Lestari) -->
-                        <div class="flex flex-col items-center relative">
-                          <div class="absolute -top-4 w-0.5 h-4 bg-slate-300"></div>
-                          <div 
-                            v-if="tree.left.left"
-                            @click="focusUser(tree.left.left.id)"
-                            class="w-36 bg-white border border-slate-200 rounded-2xl p-2.5 shadow-sm hover:border-indigo-400 transition-all cursor-pointer space-y-1.5 text-center relative"
-                          >
-                            <span class="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                            <div class="w-7 h-7 rounded-full bg-slate-100 text-slate-600 mx-auto flex items-center justify-center">
-                              <User class="w-3.5 h-3.5" />
-                            </div>
-                            <h5 class="text-[11px] font-bold text-slate-800 truncate">{{ tree.left.left.name }}</h5>
-                            <p class="text-[9px] text-slate-400 truncate">{{ tree.left.left.username }}</p>
-                            <div class="pt-1 border-t border-slate-100 flex items-center justify-center gap-1.5 text-[9px] font-bold text-slate-500">
-                              <span>L : {{ tree.left.left.left_count || 0 }}</span>
-                              <span>R : {{ tree.left.left.right_count || 0 }}</span>
-                            </div>
-                          </div>
-                          <!-- Empty Left Slot -->
-                          <div 
-                            v-else
-                            class="w-36 border-2 border-dashed border-slate-200 rounded-2xl p-3 text-center text-slate-400 hover:border-indigo-400 hover:text-indigo-600 transition-colors cursor-pointer space-y-1"
-                          >
-                            <UserPlus class="w-4 h-4 mx-auto text-slate-400" />
-                            <span class="text-[9px] font-bold uppercase block">KIRI KOSONG</span>
-                          </div>
-                        </div>
-
-                        <!-- Left-Right (Eko Prasetyo) -->
-                        <div class="flex flex-col items-center relative">
-                          <div class="absolute -top-4 w-0.5 h-4 bg-slate-300"></div>
-                          <div 
-                            v-if="tree.left.right"
-                            @click="focusUser(tree.left.right.id)"
-                            class="w-36 bg-white border border-slate-200 rounded-2xl p-2.5 shadow-sm hover:border-indigo-400 transition-all cursor-pointer space-y-1.5 text-center relative"
-                          >
-                            <span class="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                            <div class="w-7 h-7 rounded-full bg-slate-100 text-slate-600 mx-auto flex items-center justify-center">
-                              <User class="w-3.5 h-3.5" />
-                            </div>
-                            <h5 class="text-[11px] font-bold text-slate-800 truncate">{{ tree.left.right.name }}</h5>
-                            <p class="text-[9px] text-slate-400 truncate">{{ tree.left.right.username }}</p>
-                            <div class="pt-1 border-t border-slate-100 flex items-center justify-center gap-1.5 text-[9px] font-bold text-slate-500">
-                              <span>L : {{ tree.left.right.left_count || 0 }}</span>
-                              <span>R : {{ tree.left.right.right_count || 0 }}</span>
-                            </div>
-                          </div>
-                          <!-- Empty Slot -->
-                          <div 
-                            v-else
-                            class="w-36 border-2 border-dashed border-slate-200 rounded-2xl p-3 text-center text-slate-400 hover:border-indigo-400 hover:text-indigo-600 transition-colors cursor-pointer space-y-1"
-                          >
-                            <UserPlus class="w-4 h-4 mx-auto text-slate-400" />
-                            <span class="text-[9px] font-bold uppercase block">KANAN KOSONG</span>
-                          </div>
-                        </div>
-
-                      </div>
-                    </div>
-
-                  </div>
-
-                  <!-- Empty Left Branch Node -->
-                  <div v-else class="w-44 border-2 border-dashed border-slate-200 rounded-2xl p-4 text-center text-slate-400 hover:border-indigo-400 hover:text-indigo-600 transition-colors cursor-pointer space-y-1">
-                    <UserPlus class="w-5 h-5 mx-auto text-slate-400" />
-                    <span class="text-xs font-bold uppercase block">KIRI KOSONG</span>
-                  </div>
-                </div>
-
-                <!-- ================= RIGHT BRANCH ================= -->
-                <div class="flex flex-col items-center relative">
-                  <!-- Vertical Connector down to Right Child -->
-                  <div class="absolute -top-4 w-0.5 h-4 bg-slate-300"></div>
-
-                  <!-- Level 2 Right Node (e.g. Siti Rahma) -->
-                  <div v-if="tree?.right" class="flex flex-col items-center">
-                    <div 
-                      @click="focusUser(tree.right.id)"
-                      class="w-44 bg-white border border-slate-200 rounded-2xl p-3 shadow-sm hover:border-indigo-400 hover:shadow-md transition-all cursor-pointer space-y-2 text-center relative"
-                    >
-                      <span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-emerald-500"></span>
-                      <div class="w-8 h-8 rounded-full bg-slate-100 text-slate-600 border border-slate-200 mx-auto flex items-center justify-center">
-                        <User class="w-4 h-4" />
-                      </div>
-                      <div>
-                        <h4 class="text-xs font-bold text-slate-800 truncate">{{ tree.right.name }}</h4>
-                        <p class="text-[10px] text-slate-400 font-medium truncate">{{ tree.right.username }}</p>
-                      </div>
-                      <div class="pt-1.5 border-t border-slate-100 flex items-center justify-center gap-2 text-[10px] font-bold text-slate-500">
-                        <span>L : {{ tree.right.left_count || 0 }}</span>
-                        <span class="text-slate-300">|</span>
-                        <span>R : {{ tree.right.right_count || 0 }}</span>
-                      </div>
-                    </div>
-
-                    <!-- Vertical Line down to Level 3 -->
-                    <div class="w-0.5 h-8 bg-slate-300"></div>
-
-                    <!-- Level 3 Right Children (Fajar & Empty Kanan Kosong Slot) -->
-                    <div class="relative w-full">
-                      <div class="absolute top-0 left-1/4 right-1/4 h-0.5 bg-slate-300"></div>
-                      <div class="grid grid-cols-2 gap-3 pt-4">
-                        
-                        <!-- Right-Left (Fajar Hidayat) -->
-                        <div class="flex flex-col items-center relative">
-                          <div class="absolute -top-4 w-0.5 h-4 bg-slate-300"></div>
-                          <div 
-                            v-if="tree.right.left"
-                            @click="focusUser(tree.right.left.id)"
-                            class="w-36 bg-white border border-slate-200 rounded-2xl p-2.5 shadow-sm hover:border-indigo-400 transition-all cursor-pointer space-y-1.5 text-center relative"
-                          >
-                            <span class="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                            <div class="w-7 h-7 rounded-full bg-slate-100 text-slate-600 mx-auto flex items-center justify-center">
-                              <User class="w-3.5 h-3.5" />
-                            </div>
-                            <h5 class="text-[11px] font-bold text-slate-800 truncate">{{ tree.right.left.name }}</h5>
-                            <p class="text-[9px] text-slate-400 truncate">{{ tree.right.left.username }}</p>
-                            <div class="pt-1 border-t border-slate-100 flex items-center justify-center gap-1.5 text-[9px] font-bold text-slate-500">
-                              <span>L : {{ tree.right.left.left_count || 0 }}</span>
-                              <span>R : {{ tree.right.left.right_count || 0 }}</span>
-                            </div>
-                          </div>
-                          <!-- Empty Slot -->
-                          <div 
-                            v-else
-                            class="w-36 border-2 border-dashed border-slate-200 rounded-2xl p-3 text-center text-slate-400 hover:border-indigo-400 hover:text-indigo-600 transition-colors cursor-pointer space-y-1"
-                          >
-                            <UserPlus class="w-4 h-4 mx-auto text-slate-400" />
-                            <span class="text-[9px] font-bold uppercase block">KIRI KOSONG</span>
-                          </div>
-                        </div>
-
-                        <!-- Right-Right (KANAN KOSONG - Dashed Box matching Screenshot) -->
-                        <div class="flex flex-col items-center relative">
-                          <div class="absolute -top-4 w-0.5 h-4 bg-slate-300"></div>
-                          <div 
-                            v-if="tree.right.right"
-                            @click="focusUser(tree.right.right.id)"
-                            class="w-36 bg-white border border-slate-200 rounded-2xl p-2.5 shadow-sm hover:border-indigo-400 transition-all cursor-pointer space-y-1.5 text-center relative"
-                          >
-                            <span class="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                            <div class="w-7 h-7 rounded-full bg-slate-100 text-slate-600 mx-auto flex items-center justify-center">
-                              <User class="w-3.5 h-3.5" />
-                            </div>
-                            <h5 class="text-[11px] font-bold text-slate-800 truncate">{{ tree.right.right.name }}</h5>
-                            <p class="text-[9px] text-slate-400 truncate">{{ tree.right.right.username }}</p>
-                            <div class="pt-1 border-t border-slate-100 flex items-center justify-center gap-1.5 text-[9px] font-bold text-slate-500">
-                              <span>L : {{ tree.right.right.left_count || 0 }}</span>
-                              <span>R : {{ tree.right.right.right_count || 0 }}</span>
-                            </div>
-                          </div>
-                          <!-- Dashed Slot: KANAN KOSONG -->
-                          <div 
-                            v-else
-                            class="w-36 border-2 border-dashed border-slate-300 bg-white/60 rounded-2xl p-3 text-center text-slate-400 hover:border-emerald-500 hover:text-emerald-600 transition-all cursor-pointer space-y-1 shadow-sm"
-                          >
-                            <UserPlus class="w-4 h-4 mx-auto text-slate-400" />
-                            <span class="text-[9px] font-bold uppercase block tracking-wider">KANAN KOSONG</span>
-                          </div>
-                        </div>
-
-                      </div>
-                    </div>
-
-                  </div>
-
-                  <!-- Empty Right Branch Node -->
-                  <div v-else class="w-44 border-2 border-dashed border-slate-300 bg-white/60 rounded-2xl p-4 text-center text-slate-400 hover:border-emerald-500 hover:text-emerald-600 transition-all cursor-pointer space-y-1 shadow-sm">
-                    <UserPlus class="w-5 h-5 mx-auto text-slate-400" />
-                    <span class="text-xs font-bold uppercase block tracking-wider">KANAN KOSONG</span>
-                  </div>
-                </div>
-
+            <div class="space-y-2 max-h-[480px] overflow-y-auto pr-1">
+              <div 
+                v-for="gen in generations" 
+                :key="gen.generation"
+                class="p-3 bg-slate-50/70 border border-slate-100 rounded-xl flex items-center justify-between"
+              >
+                <span class="text-xs font-bold text-slate-700">{{ gen.label }}</span>
+                <span :class="[gen.count > 0 ? 'bg-indigo-100 text-indigo-800' : 'bg-slate-100 text-slate-400', 'px-2.5 py-0.5 text-xs font-extrabold rounded-full font-mono']">
+                  {{ gen.count }} Member
+                </span>
               </div>
             </div>
 

@@ -17,6 +17,7 @@ class Withdrawal extends Model
         'amount',
         'fee',
         'status',
+        'proof_of_transfer',
         'admin_notes',
         'processed_at',
     ];

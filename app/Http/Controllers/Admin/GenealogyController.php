@@ -10,28 +10,42 @@ use Inertia\Inertia;
 class GenealogyController extends Controller
 {
     /**
-     * Display the binary genealogy network tree.
+     * Display the Matahari / Level genealogy network directory.
      */
     public function index(Request $request)
     {
         $currentUser = auth()->user() ?: User::first();
         
         $focusId = $request->query('focus_id', $currentUser->id);
-        $focusedUser = User::with(['leftSon', 'rightSon'])->find($focusId);
+        $focusedUser = User::find($focusId) ?: $currentUser;
 
-        if (!$focusedUser) {
-            $focusedUser = $currentUser;
-        }
+        // Fetch Direct Downlines (Generasi 1)
+        $directDownlines = User::where('parent_id', $focusedUser->id)
+            ->latest()
+            ->get()
+            ->map(function ($u) {
+                // Count direct downlines of this child (Generasi 2)
+                $g2Count = User::where('parent_id', $u->id)->count();
+                return [
+                    'id' => $u->id,
+                    'name' => $u->name,
+                    'username' => $u->username ? '@' . $u->username : '@' . strtolower(explode(' ', $u->name)[0]),
+                    'email' => $u->email,
+                    'package_name' => $u->package_name ?? 'Basic',
+                    'direct_count' => $g2Count,
+                    'joined_at' => $u->created_at->format('d M Y, H:i'),
+                ];
+            });
 
-        // Build 3-level tree node array
-        $treeData = $this->buildBinaryNode($focusedUser);
+        // Calculate team breakdown by generation depth (Generasi 1 s/d Generasi 15)
+        $generations = $this->calculateGenerations($focusedUser->id);
 
-        // All users for quick focus search dropdown
+        // Search options for quick focus selector
         $allUsers = User::select('id', 'name', 'username', 'email')->get()->map(function ($u) {
             return [
                 'id' => $u->id,
                 'name' => $u->name,
-                'username' => $u->username ?: ('@' . strtolower(explode(' ', $u->name)[0])),
+                'username' => $u->username ? '@' . $u->username : ('@' . strtolower(explode(' ', $u->name)[0])),
                 'label' => $u->name . ' (' . ($u->username ? '@' . $u->username : $u->email) . ')',
             ];
         });
@@ -41,78 +55,44 @@ class GenealogyController extends Controller
                 'id' => $focusedUser->id,
                 'name' => $focusedUser->name,
                 'username' => $focusedUser->username ? '@' . $focusedUser->username : '@admin',
+                'package_name' => $focusedUser->package_name ?? 'Ultimate',
+                'total_direct' => count($directDownlines),
+                'total_team' => array_sum(array_column($generations, 'count')),
             ],
-            'tree' => $treeData,
+            'direct_downlines' => $directDownlines,
+            'generations' => $generations,
             'all_users' => $allUsers,
         ]);
     }
 
-    private function buildBinaryNode($user)
+    /**
+     * Recursively calculate team members count up to 15 generations depth.
+     */
+    private function calculateGenerations($rootUserId): array
     {
-        if (!$user) {
-            return null;
+        $result = [];
+        $currentIds = [$rootUserId];
+
+        for ($gen = 1; $gen <= 15; $gen++) {
+            if (empty($currentIds)) {
+                $result[] = [
+                    'generation' => $gen,
+                    'label' => 'Generasi ' . $gen,
+                    'count' => 0,
+                ];
+                continue;
+            }
+
+            $downlineIds = User::whereIn('parent_id', $currentIds)->pluck('id')->toArray();
+            $result[] = [
+                'generation' => $gen,
+                'label' => 'Generasi ' . $gen,
+                'count' => count($downlineIds),
+            ];
+
+            $currentIds = $downlineIds;
         }
 
-        $leftSon = User::where('parent_id', $user->id)->where('position', 'left')->first();
-        $rightSon = User::where('parent_id', $user->id)->where('position', 'right')->first();
-
-        $leftLeft = $leftSon ? User::where('parent_id', $leftSon->id)->where('position', 'left')->first() : null;
-        $leftRight = $leftSon ? User::where('parent_id', $leftSon->id)->where('position', 'right')->first() : null;
-
-        $rightLeft = $rightSon ? User::where('parent_id', $rightSon->id)->where('position', 'left')->first() : null;
-        $rightRight = $rightSon ? User::where('parent_id', $rightSon->id)->where('position', 'right')->first() : null;
-
-        return [
-            'id' => $user->id,
-            'name' => $user->name,
-            'username' => $user->username ? '@' . $user->username : '@admin',
-            'left_count' => $user->left_count ?? 0,
-            'right_count' => $user->right_count ?? 0,
-            'package_name' => $user->package_name ?? 'Basic',
-            'left' => $leftSon ? [
-                'id' => $leftSon->id,
-                'name' => $leftSon->name,
-                'username' => $leftSon->username ? '@' . $leftSon->username : '@budi',
-                'left_count' => $leftSon->left_count ?? 0,
-                'right_count' => $leftSon->right_count ?? 0,
-                'package_name' => $leftSon->package_name ?? 'Basic',
-                'left' => $leftLeft ? [
-                    'id' => $leftLeft->id,
-                    'name' => $leftLeft->name,
-                    'username' => $leftLeft->username ? '@' . $leftLeft->username : '@dewi',
-                    'left_count' => $leftLeft->left_count ?? 0,
-                    'right_count' => $leftLeft->right_count ?? 0,
-                ] : null,
-                'right' => $leftRight ? [
-                    'id' => $leftRight->id,
-                    'name' => $leftRight->name,
-                    'username' => $leftRight->username ? '@' . $leftRight->username : '@eko',
-                    'left_count' => $leftRight->left_count ?? 0,
-                    'right_count' => $leftRight->right_count ?? 0,
-                ] : null,
-            ] : null,
-            'right' => $rightSon ? [
-                'id' => $rightSon->id,
-                'name' => $rightSon->name,
-                'username' => $rightSon->username ? '@' . $rightSon->username : '@siti',
-                'left_count' => $rightSon->left_count ?? 0,
-                'right_count' => $rightSon->right_count ?? 0,
-                'package_name' => $rightSon->package_name ?? 'Basic',
-                'left' => $rightLeft ? [
-                    'id' => $rightLeft->id,
-                    'name' => $rightLeft->name,
-                    'username' => $rightLeft->username ? '@' . $rightLeft->username : '@fajar',
-                    'left_count' => $rightLeft->left_count ?? 0,
-                    'right_count' => $rightLeft->right_count ?? 0,
-                ] : null,
-                'right' => $rightRight ? [
-                    'id' => $rightRight->id,
-                    'name' => $rightRight->name,
-                    'username' => $rightRight->username ? '@' . $rightRight->username : '',
-                    'left_count' => $rightRight->left_count ?? 0,
-                    'right_count' => $rightRight->right_count ?? 0,
-                ] : null,
-            ] : null,
-        ];
+        return $result;
     }
 }

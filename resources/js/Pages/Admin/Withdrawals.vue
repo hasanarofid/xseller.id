@@ -1,5 +1,6 @@
 <script setup>
 import AdminLayout from '@/Layouts/AdminLayout.vue';
+import Modal from '@/Components/Modal.vue';
 import { Head, useForm, usePage } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
 import { 
@@ -55,17 +56,43 @@ const submitWithdrawal = () => {
 };
 
 // Admin Action Forms
-const approveForm = useForm({});
+const approveForm = useForm({
+  proof_of_transfer: null,
+});
 const rejectForm = useForm({
   notes: '',
 });
 
-const approveWithdrawal = (id) => {
-  if (confirm('Apakah Anda yakin ingin MENYETUJUI permohonan penarikan saldo ini?')) {
-    approveForm.post(route('admin.withdrawals.approve', id), {
-      preserveScroll: true,
-    });
+const selectedApproveId = ref(null);
+const showApproveModal = ref(false);
+
+const openApproveModal = (id) => {
+  selectedApproveId.value = id;
+  approveForm.proof_of_transfer = null;
+  showApproveModal.value = true;
+};
+
+const closeApproveModal = () => {
+  showApproveModal.value = false;
+  selectedApproveId.value = null;
+  approveForm.reset();
+};
+
+const handleProofFile = (e) => {
+  if (e.target.files && e.target.files[0]) {
+    approveForm.proof_of_transfer = e.target.files[0];
   }
+};
+
+const submitApproveWithdrawal = () => {
+  if (!selectedApproveId.value) return;
+  approveForm.post(route('admin.withdrawals.approve', selectedApproveId.value), {
+    preserveScroll: true,
+    forceFormData: true,
+    onSuccess: () => {
+      closeApproveModal();
+    },
+  });
 };
 
 const rejectWithdrawal = (id) => {
@@ -317,6 +344,14 @@ const bankList = [
                   <p class="text-[10px] text-slate-400">
                     Diajukan pada: {{ item.created_at }}
                     <span v-if="item.admin_notes" class="text-rose-500 font-semibold block mt-0.5">Catatan: {{ item.admin_notes }}</span>
+                    <a 
+                      v-if="item.proof_of_transfer" 
+                      :href="item.proof_of_transfer" 
+                      target="_blank" 
+                      class="text-emerald-600 font-bold hover:underline block mt-1"
+                    >
+                      📄 Lihat Bukti Transfer
+                    </a>
                   </p>
                 </div>
 
@@ -325,15 +360,18 @@ const bankList = [
                   <span class="text-sm font-black text-slate-900 font-mono tracking-tight">
                     {{ formatRupiah(item.amount) }}
                   </span>
+                  <span class="text-[10px] text-slate-400 font-medium">
+                    (Potongan Admin: {{ formatRupiah(item.fee || 10000) }})
+                  </span>
 
                   <!-- Admin Action Buttons (Approve / Reject) -->
                   <div v-if="is_admin && item.status === 'pending'" class="flex items-center gap-1.5 pt-1">
                     <button 
-                      @click="approveWithdrawal(item.id)"
+                      @click="openApproveModal(item.id)"
                       class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold rounded-lg shadow-sm transition-colors flex items-center gap-1 cursor-pointer"
                     >
                       <Check class="w-3 h-3" />
-                      <span>Setujui</span>
+                      <span>Setujui (Upload Bukti)</span>
                     </button>
 
                     <button 
@@ -352,6 +390,51 @@ const bankList = [
         </div>
 
       </div>
+
+      <!-- Approve Withdrawal Modal with Proof Upload -->
+      <Modal :show="showApproveModal" @close="closeApproveModal">
+        <div class="p-6 space-y-4">
+          <div class="flex items-center justify-between border-b pb-3">
+            <h3 class="text-sm font-black text-slate-900 uppercase">Setujui Penarikan Saldo (Upload Bukti Transfer)</h3>
+            <button @click="closeApproveModal" class="text-slate-400 hover:text-slate-600">
+              <X class="w-5 h-5" />
+            </button>
+          </div>
+
+          <form @submit.prevent="submitApproveWithdrawal" class="space-y-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">
+                Upload Bukti Transfer Bank (Opsional / Dianjurkan)
+              </label>
+              <input 
+                type="file" 
+                @change="handleProofFile" 
+                accept="image/*,.pdf" 
+                class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer"
+              />
+              <p class="text-[10px] text-slate-400 mt-1">Format yang didukung: JPG, PNG, WEBP, PDF (Maks. 5MB)</p>
+            </div>
+
+            <div class="flex items-center justify-end gap-2 pt-2">
+              <button 
+                type="button" 
+                @click="closeApproveModal"
+                class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl"
+              >
+                Batal
+              </button>
+              <button 
+                type="submit" 
+                :disabled="approveForm.processing"
+                class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-sm flex items-center gap-1.5 disabled:opacity-50"
+              >
+                <Check class="w-4 h-4" />
+                <span>Konfirmasi Approve</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </Modal>
 
     </div>
   </AdminLayout>

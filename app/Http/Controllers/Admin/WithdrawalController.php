@@ -44,8 +44,9 @@ class WithdrawalController extends Controller
                 'bank_account_number' => $w->bank_account_number,
                 'bank_account_name' => $w->bank_account_name,
                 'amount' => (float) $w->amount,
-                'fee' => (float) $w->fee,
+                'fee' => (float) ($w->fee ?? 10000),
                 'status' => $w->status, // 'pending', 'approved', 'rejected'
+                'proof_of_transfer' => $w->proof_of_transfer ? (str_starts_with($w->proof_of_transfer, 'http') ? $w->proof_of_transfer : asset('storage/' . $w->proof_of_transfer)) : null,
                 'admin_notes' => $w->admin_notes,
                 'created_at' => $w->created_at->format('j/n/Y, H:i.s'),
             ];
@@ -53,9 +54,9 @@ class WithdrawalController extends Controller
 
         return Inertia::render('Admin/Withdrawals', [
             'wallet' => [
-                'saldo' => (float) ($user->saldo ?? 2500000),
+                'saldo' => (float) ($user->saldo ?? 0),
                 'min_withdrawal' => 50000,
-                'admin_fee' => 0,
+                'admin_fee' => 10000,
                 'total_cair' => (float) $totalCair,
                 'total_proses' => (float) $totalProses,
             ],
@@ -83,6 +84,7 @@ class WithdrawalController extends Controller
 
         $user = auth()->user();
         $minWithdrawal = 50000;
+        $fee = 10000;
 
         if ($request->amount < $minWithdrawal) {
             return back()->with('error', 'Nominal penarikan minimum adalah Rp ' . number_format($minWithdrawal, 0, ',', '.') . '!');
@@ -92,7 +94,7 @@ class WithdrawalController extends Controller
             return back()->with('error', 'Saldo E-Wallet Anda tidak mencukupi untuk penarikan sebesar Rp ' . number_format($request->amount, 0, ',', '.') . '!');
         }
 
-        DB::transaction(function () use ($user, $request) {
+        DB::transaction(function () use ($user, $request, $fee) {
             // Reserve money from user saldo
             $user->decrement('saldo', $request->amount);
 
@@ -110,7 +112,7 @@ class WithdrawalController extends Controller
                 'bank_account_number' => $request->bank_account_number,
                 'bank_account_name' => $request->bank_account_name,
                 'amount' => $request->amount,
-                'fee' => 0,
+                'fee' => $fee,
                 'status' => 'pending',
             ]);
 
@@ -120,17 +122,17 @@ class WithdrawalController extends Controller
                 'type' => 'out',
                 'category' => 'withdrawal',
                 'amount' => $request->amount,
-                'description' => 'Permohonan Penarikan Saldo (WD #' . $withdrawal->id . ') ke ' . $request->bank_name . ' (' . $request->bank_account_number . ')',
+                'description' => 'Permohonan Penarikan Saldo (WD #' . $withdrawal->id . ') ke ' . $request->bank_name . ' (' . $request->bank_account_number . ') - Biaya Potongan: Rp ' . number_format($fee, 0, ',', '.'),
             ]);
         });
 
-        return back()->with('success', 'Permohonan penarikan saldo (WD) sebesar Rp ' . number_format($request->amount, 0, ',', '.') . ' berhasil dikirim!');
+        return back()->with('success', 'Permohonan penarikan saldo (WD) sebesar Rp ' . number_format($request->amount, 0, ',', '.') . ' berhasil dikirim! Potongan biaya admin Rp 10.000.');
     }
 
     /**
      * Admin approves a withdrawal request.
      */
-    public function approve(Withdrawal $withdrawal)
+    public function approve(Request $request, Withdrawal $withdrawal)
     {
         $admin = auth()->user();
 
@@ -142,8 +144,18 @@ class WithdrawalController extends Controller
             return back()->with('error', 'Permohonan penarikan ini sudah diproses sebelumnya.');
         }
 
+        $request->validate([
+            'proof_of_transfer' => 'nullable|file|mimes:jpg,jpeg,png,webp,pdf|max:5120',
+        ]);
+
+        $proofPath = $withdrawal->proof_of_transfer;
+        if ($request->hasFile('proof_of_transfer')) {
+            $proofPath = $request->file('proof_of_transfer')->store('proofs', 'public');
+        }
+
         $withdrawal->update([
             'status' => 'approved',
+            'proof_of_transfer' => $proofPath,
             'processed_at' => now(),
         ]);
 

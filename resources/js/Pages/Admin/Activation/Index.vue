@@ -1,7 +1,6 @@
 <script setup>
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
-import { ref } from 'vue';
 import { 
   UserPlus, 
   Wand2, 
@@ -18,7 +17,6 @@ const props = defineProps({
   vouchers: Array,
   users: Array,
   default_sponsor: String,
-  default_parent: String
 });
 
 const form = useForm({
@@ -26,8 +24,6 @@ const form = useForm({
   name: '',
   email: '',
   sponsor_username: props.default_sponsor || 'admin',
-  parent_username: props.default_parent || 'admin',
-  position: 'left',
   voucher_code: props.vouchers.length > 0 ? props.vouchers[0].code : '',
 });
 
@@ -37,8 +33,6 @@ const fillDemoData = () => {
   form.name = `Hendra Setiawan ${randomId}`;
   form.email = `hendra${randomId}@gmail.com`;
   form.sponsor_username = props.default_sponsor || 'admin';
-  form.parent_username = 'siti';
-  form.position = 'right';
   if (props.vouchers.length > 0) {
     form.voucher_code = props.vouchers[0].code;
   }
@@ -65,9 +59,9 @@ const submitForm = () => {
           <div class="space-y-1">
             <div class="flex items-center gap-2">
               <UserPlus class="w-5 h-5 text-indigo-600" />
-              <h2 class="text-base font-extrabold text-slate-900 tracking-tight">Registrasi & Aktivasi Member Baru</h2>
+              <h2 class="text-base font-extrabold text-slate-900 tracking-tight">Registrasi & Aktivasi Member Baru (Matahari System)</h2>
             </div>
-            <p class="text-xs text-slate-500">Daftarkan mitra baru ke dalam jaringan binary Anda menggunakan VOUCHER Aktivasi.</p>
+            <p class="text-xs text-slate-500">Daftarkan mitra baru ke dalam jaringan Anda menggunakan VOUCHER Activation (PIN Registrasi).</p>
           </div>
 
           <!-- Auto Fill Demo Data Button -->
@@ -136,7 +130,7 @@ const submitForm = () => {
             <div class="space-y-1.5">
               <div class="flex items-center gap-1">
                 <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-700">
-                  USERNAME SPONSOR
+                  USERNAME SPONSOR LANGSUNG
                 </label>
                 <HelpCircle class="w-3.5 h-3.5 text-slate-400 cursor-help" />
               </div>
@@ -149,72 +143,17 @@ const submitForm = () => {
                   class="w-full bg-slate-50/70 border border-slate-200 rounded-xl pl-8 pr-4 py-2.5 text-xs font-semibold text-slate-800 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors"
                 />
               </div>
-              <p class="text-[10px] text-slate-400">Sponsor berhak atas bonus referral langsung Rp 100.000.</p>
+              <p class="text-[10px] text-slate-400">Sponsor berhak mendapatkan bonus Direct Referral 20% sesuai Paket Join.</p>
               <p v-if="form.errors.sponsor_username" class="text-xs text-rose-500 font-medium">{{ form.errors.sponsor_username }}</p>
-            </div>
-
-            <!-- 5. Username Parent Placement -->
-            <div class="space-y-1.5">
-              <div class="flex items-center gap-1">
-                <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-700">
-                  USERNAME PARENT PLACEMENT
-                </label>
-                <HelpCircle class="w-3.5 h-3.5 text-slate-400 cursor-help" />
-              </div>
-              <div class="relative">
-                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400 font-bold text-xs">@</span>
-                <input 
-                  v-model="form.parent_username"
-                  type="text"
-                  placeholder="admin"
-                  class="w-full bg-slate-50/70 border border-slate-200 rounded-xl pl-8 pr-4 py-2.5 text-xs font-semibold text-slate-800 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors"
-                />
-              </div>
-              <p class="text-[10px] text-slate-400">Titik pohon jaringan binary tempat member baru bersandar.</p>
-              <p v-if="form.errors.parent_username" class="text-xs text-rose-500 font-medium">{{ form.errors.parent_username }}</p>
-            </div>
-
-            <!-- 6. Posisi Kaki Binary -->
-            <div class="space-y-1.5">
-              <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-700">
-                POSISI KAKI BINARY
-              </label>
-              <div class="grid grid-cols-2 gap-3">
-                <button
-                  type="button"
-                  @click="form.position = 'left'"
-                  :class="[
-                    form.position === 'left' 
-                      ? 'bg-[#0d131d] text-white shadow-md' 
-                      : 'bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700',
-                    'py-2.5 px-4 rounded-xl text-xs font-bold transition-all text-center cursor-pointer'
-                  ]"
-                >
-                  Kaki Kiri (Left)
-                </button>
-                <button
-                  type="button"
-                  @click="form.position = 'right'"
-                  :class="[
-                    form.position === 'right' 
-                      ? 'bg-[#0d131d] text-white shadow-md' 
-                      : 'bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700',
-                    'py-2.5 px-4 rounded-xl text-xs font-bold transition-all text-center cursor-pointer'
-                  ]"
-                >
-                  Kaki Kanan (Right)
-                </button>
-              </div>
-              <p v-if="form.errors.position" class="text-xs text-rose-500 font-medium">{{ form.errors.position }}</p>
             </div>
 
           </div>
 
-          <!-- 7. Pilih VOUCHER Aktivasi (Full Width) -->
+          <!-- 5. Pilih VOUCHER Aktivasi (Full Width) -->
           <div class="bg-slate-50/70 border border-slate-200/80 rounded-2xl p-4 space-y-2">
             <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
               <span class="text-sm">🗝️</span>
-              <span>PILIH VOUCHER AKTIVASI</span>
+              <span>PILIH VOUCHER ACTIVATION (PIN REGISTRASI)</span>
             </label>
             
             <div class="relative">
@@ -234,7 +173,7 @@ const submitForm = () => {
             <p v-if="form.errors.voucher_code" class="text-xs text-rose-500 font-medium">{{ form.errors.voucher_code }}</p>
           </div>
 
-          <!-- 8. Submit Button -->
+          <!-- 6. Submit Button -->
           <div class="pt-2">
             <button
               type="submit"
@@ -242,7 +181,7 @@ const submitForm = () => {
               class="w-full py-3.5 bg-[#0d131d] hover:bg-slate-800 text-white font-extrabold rounded-2xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-slate-900/10 transition-all cursor-pointer disabled:opacity-50"
             >
               <UserPlus class="w-4 h-4 text-emerald-400" />
-              <span>Daftarkan & Aktifkan Downline Baru</span>
+              <span>Daftarkan & Aktifkan Member Baru</span>
             </button>
           </div>
 
