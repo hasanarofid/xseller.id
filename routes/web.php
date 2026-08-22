@@ -59,6 +59,12 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::post('/data-jaringan/impersonate/{user}', [\App\Http\Controllers\Admin\NetworkDataController::class, 'impersonate'])->name('network-data.impersonate');
     Route::post('/data-jaringan/stop-impersonating', [\App\Http\Controllers\Admin\NetworkDataController::class, 'stopImpersonating'])->name('network-data.stop-impersonating');
 
+    // Fitur TPR (Trade Promotion Program)
+    Route::get('/fitur-tpr', [\App\Http\Controllers\Admin\TprController::class, 'index'])->name('tpr.index');
+    Route::post('/fitur-tpr', [\App\Http\Controllers\Admin\TprController::class, 'store'])->name('tpr.store');
+    Route::post('/fitur-tpr/{tprRequest}/approve', [\App\Http\Controllers\Admin\TprController::class, 'approve'])->name('tpr.approve');
+    Route::post('/fitur-tpr/{tprRequest}/reject', [\App\Http\Controllers\Admin\TprController::class, 'reject'])->name('tpr.reject');
+
     // Aktivitas (Activity & Bonus Breakdown)
     Route::get('/aktivitas', [\App\Http\Controllers\Admin\ActivityController::class, 'index'])->name('activities.index');
 

@@ -84,9 +84,11 @@ class MemberActivationController extends Controller
         }
 
         $packageName = $voucher->package_name ?: 'Basic';
-        $sponsorBonus = $this->calculateSponsorBonus($packageName);
+        $alloc = $this->calculatePackageAllocation($packageName);
+        $sponsorBonus = $alloc['gen_1'];
+        $teamPoints = $alloc['team_points'];
 
-        DB::transaction(function () use ($request, $voucher, $sponsorUser, $packageName, $sponsorBonus) {
+        DB::transaction(function () use ($request, $voucher, $sponsorUser, $packageName, $alloc, $sponsorBonus, $teamPoints) {
             // Create new member in Matahari system (parent_id = sponsor_id)
             $newUser = User::create([
                 'name' => $request->name,
@@ -111,7 +113,7 @@ class MemberActivationController extends Controller
                 'used_at' => now(),
             ]);
 
-            // Add Direct Referral Bonus to Sponsor Langsung
+            // 1. Direct Sponsor Bonus (Generasi 1) & Team Points for Sponsor
             if ($sponsorBonus > 0) {
                 $sponsorUser->increment('saldo', $sponsorBonus);
                 $sponsorUser->increment('total_bonus', $sponsorBonus);
@@ -132,43 +134,107 @@ class MemberActivationController extends Controller
                     'amount' => $sponsorBonus,
                     'description' => "Bonus Direct Referral dari pendaftaran member baru @{$newUser->username} (Paket {$packageName})",
                 ]);
+            }
 
-                try {
-                    $sponsorUser->notify(new \App\Notifications\BonusReceivedNotification($sponsorBonus, 'Direct Referral', "Pendaftaran member @{$newUser->username}"));
-                } catch (\Throwable $e) {
-                    \Illuminate\Support\Facades\Log::error('Gagal mengirim notifikasi bonus sponsor: ' . $e->getMessage());
+            if ($teamPoints > 0) {
+                $sponsorUser->increment('team_points', $teamPoints);
+            }
+
+            // 2. Multi-tier Allocation for Generasi 2 up to Generasi 15 Uplines
+            $currentUpline = $sponsorUser;
+            for ($gen = 2; $gen <= 15; $gen++) {
+                if (!$currentUpline->parent_id) {
+                    break;
                 }
+
+                $upline = User::find($currentUpline->parent_id);
+                if (!$upline) {
+                    break;
+                }
+
+                $genAmount = $alloc['gen_2_15'];
+                if ($genAmount > 0) {
+                    $upline->increment('saldo', $genAmount);
+                    $upline->increment('total_bonus', $genAmount);
+
+                    BonusLog::create([
+                        'transaction_code' => 'T' . sprintf('%03d', BonusLog::count() + 1),
+                        'user_id' => $upline->id,
+                        'category' => 'tier',
+                        'source_user_id' => $newUser->id,
+                        'description' => "Bonus Tier Generasi {$gen}: Pendaftaran @{$newUser->username} (Paket {$packageName})",
+                        'amount' => $genAmount,
+                    ]);
+
+                    WalletTransaction::create([
+                        'user_id' => $upline->id,
+                        'type' => 'in',
+                        'category' => 'bonus_tier',
+                        'amount' => $genAmount,
+                        'description' => "Bonus Tier Generasi {$gen} dari pendaftaran member baru @{$newUser->username} (Paket {$packageName})",
+                    ]);
+                }
+
+                if ($teamPoints > 0) {
+                    $upline->increment('team_points', $teamPoints);
+                }
+
+                $currentUpline = $upline;
             }
         });
 
         return redirect()->route('admin.pohon-jaringan', ['focus_id' => $sponsorUser->id])
-            ->with('success', "Member baru @{$request->username} ({$request->name}) berhasil diautentikasi & diaktifkan di bawah Sponsor @{$sponsorUser->username}!");
+            ->with('success', "Member baru @{$request->username} ({$request->name}) berhasil diautentikasi & diaktifkan di bawah Sponsor @{$sponsorUser->username}! Tier bonus & Team Poin berhasil didistribusikan.");
     }
 
     /**
-     * Calculate Direct Referral bonus by package name/price.
+     * Calculate Tier Allocation & Team Points by package name.
      */
-    private function calculateSponsorBonus(string $packageName): float
+    private function calculatePackageAllocation(string $packageName): array
     {
         $pkg = strtolower($packageName);
 
         if (str_contains($pkg, '125') || str_contains($pkg, 'starter')) {
-            return 25000;
+            return [
+                'gen_1' => 25000,
+                'gen_2_15' => 0,
+                'team_points' => 0,
+            ];
         }
         if (str_contains($pkg, '550') || str_contains($pkg, 'basic')) {
-            return 100000;
+            return [
+                'gen_1' => 100000,
+                'gen_2_15' => 5000,
+                'team_points' => 1,
+            ];
         }
         if (str_contains($pkg, '2.100') || str_contains($pkg, '2100') || str_contains($pkg, 'medium')) {
-            return 300000;
+            return [
+                'gen_1' => 300000,
+                'gen_2_15' => 15000,
+                'team_points' => 4,
+            ];
         }
         if (str_contains($pkg, '4.300') || str_contains($pkg, '4300') || str_contains($pkg, 'pro')) {
-            return 600000;
+            return [
+                'gen_1' => 600000,
+                'gen_2_15' => 30000,
+                'team_points' => 8,
+            ];
         }
         if (str_contains($pkg, '10.500') || str_contains($pkg, '10500') || str_contains($pkg, 'ultimate')) {
-            return 1500000;
+            return [
+                'gen_1' => 1500000,
+                'gen_2_15' => 100000,
+                'team_points' => 12,
+            ];
         }
 
-        // Default 20% fallback for custom package names
-        return 100000;
+        // Default fallback
+        return [
+            'gen_1' => 100000,
+            'gen_2_15' => 5000,
+            'team_points' => 1,
+        ];
     }
 }
