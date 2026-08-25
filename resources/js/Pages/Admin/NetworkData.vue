@@ -16,6 +16,7 @@ import {
 const props = defineProps({
   members: Array,
   filters: Object,
+  is_admin: Boolean,
   is_impersonating: Boolean,
 });
 
@@ -124,7 +125,7 @@ const formatRupiah = (val) => {
                 <th class="py-3 px-4">SPONSOR LANGSUNG</th>
                 <th class="py-3 px-4">POIN (KIRI / KANAN)</th>
                 <th class="py-3 px-4">SALDO DOMPET</th>
-                <th class="py-3 px-4 text-right">OPSI PENGUJIAN</th>
+                <th v-if="is_admin" class="py-3 px-4 text-right">OPSI PENGUJIAN</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-slate-100">
@@ -173,7 +174,7 @@ const formatRupiah = (val) => {
                 </td>
 
                 <!-- Opsi Pengujian (Login Ke Sini) -->
-                <td class="py-3.5 px-4 text-right">
+                <td v-if="is_admin" class="py-3.5 px-4 text-right">
                   <span 
                     v-if="m.is_self"
                     class="px-3 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-extrabold rounded-full uppercase tracking-wider inline-block"
@@ -192,7 +193,7 @@ const formatRupiah = (val) => {
               </tr>
 
               <tr v-if="members.length === 0">
-                <td colspan="6" class="py-12 text-center text-slate-400 text-xs italic">
+                <td :colspan="is_admin ? 6 : 5" class="py-12 text-center text-slate-400 text-xs italic">
                   Tidak ada member jaringan yang ditemukan.
                 </td>
               </tr>

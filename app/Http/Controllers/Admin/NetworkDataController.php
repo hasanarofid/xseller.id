@@ -53,6 +53,7 @@ class NetworkDataController extends Controller
             'filters' => [
                 'search' => $search ?? '',
             ],
+            'is_admin' => $currentUser->hasRole('admin'),
             'is_impersonating' => session()->has('impersonator_id'),
         ]);
     }
