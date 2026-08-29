@@ -45,7 +45,7 @@ const getBadgeColor = (pkg) => {
 </script>
 
 <template>
-  <Head title="Struktur Jaringan Matahari - XSELLER" />
+  <Head title="Team Mitra - XSELLER" />
 
   <AdminLayout>
     <div class="space-y-6">
@@ -96,7 +96,7 @@ const getBadgeColor = (pkg) => {
             </span>
           </div>
           <p class="text-xs text-slate-500 font-medium pt-0.5">
-            Struktur Jaringan Matahari (Direct Referral Level System)
+            Struktur Team Mitra (Direct Referral Level System)
           </p>
         </div>
 

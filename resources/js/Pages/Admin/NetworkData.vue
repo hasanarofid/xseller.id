@@ -98,7 +98,7 @@ const formatRupiah = (val) => {
                 Direktori Semua Member Jaringan
               </h2>
               <p class="text-xs text-slate-500 font-medium mt-0.5">
-                Cari, tinjau, dan ganti perspektif login untuk melihat bonus dan pohon jaringan member lain.
+                Cari, tinjau, dan ganti perspektif login untuk melihat bonus dan team mitra member lain.
               </p>
             </div>
           </div>
