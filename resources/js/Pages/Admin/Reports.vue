@@ -110,7 +110,6 @@ const reportTabs = [
               <tr class="border-b border-slate-100 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
                 <th class="py-3.5 px-4">MEMBER</th>
                 <th class="py-3.5 px-4">SPONSOR</th>
-                <th class="py-3.5 px-4">TITIK JARINGAN</th>
                 <th class="py-3.5 px-4">SALDO WALLET</th>
                 <th class="py-3.5 px-4 text-right">TGL DAFTAR</th>
               </tr>
@@ -128,14 +127,6 @@ const reportTabs = [
                   {{ row.sponsor }}
                 </td>
 
-                <!-- Titik Jaringan -->
-                <td class="py-3.5 px-4">
-                  <div class="flex items-center gap-1 text-[10px] font-extrabold font-mono">
-                    <span class="px-1.5 py-0.5 bg-indigo-50 text-indigo-600 rounded">L: {{ row.left_count }}</span>
-                    <span class="px-1.5 py-0.5 bg-emerald-50 text-emerald-600 rounded">R: {{ row.right_count }}</span>
-                  </div>
-                </td>
-
                 <!-- Saldo Wallet -->
                 <td class="py-3.5 px-4 font-black text-slate-900 font-mono text-xs">
                   {{ formatRupiah(row.saldo) }}
@@ -148,7 +139,7 @@ const reportTabs = [
               </tr>
 
               <tr v-if="report_data.length === 0">
-                <td colspan="5" class="py-12 text-center text-slate-400 text-xs italic">
+                <td colspan="4" class="py-12 text-center text-slate-400 text-xs italic">
                   Belum ada data member terdaftar.
                 </td>
               </tr>

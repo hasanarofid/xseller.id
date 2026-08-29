@@ -134,7 +134,7 @@ class ReportController extends Controller
         $html .= '<table>';
 
         if ($type === 'member') {
-            $html .= '<thead><tr><th>ID</th><th>NAMA LENGKAP</th><th>USERNAME</th><th>EMAIL</th><th>SPONSOR</th><th>TITIK KIRI</th><th>TITIK KANAN</th><th>SALDO WALLET (RP)</th><th>TGL DAFTAR</th></tr></thead><tbody>';
+            $html .= '<thead><tr><th>ID</th><th>NAMA LENGKAP</th><th>USERNAME</th><th>EMAIL</th><th>SPONSOR</th><th>SALDO WALLET (RP)</th><th>TGL DAFTAR</th></tr></thead><tbody>';
             foreach ($data as $row) {
                 $html .= '<tr>';
                 $html .= '<td>USR' . str_pad($row['id'], 3, '0', STR_PAD_LEFT) . '</td>';
@@ -142,8 +142,6 @@ class ReportController extends Controller
                 $html .= '<td>@' . htmlspecialchars($row['username']) . '</td>';
                 $html .= '<td>' . htmlspecialchars($row['email'] ?? '-') . '</td>';
                 $html .= '<td>' . htmlspecialchars($row['sponsor']) . '</td>';
-                $html .= '<td>' . $row['left_count'] . '</td>';
-                $html .= '<td>' . $row['right_count'] . '</td>';
                 $html .= '<td class="number">Rp ' . number_format($row['saldo'], 0, ',', '.') . '</td>';
                 $html .= '<td>' . $row['created_at'] . '</td>';
                 $html .= '</tr>';

@@ -42,7 +42,7 @@ const formatRupiah = (val) => {
 </script>
 
 <template>
-  <Head title="Dashboard System Binary - XSELLER" />
+  <Head title="Dashboard Member Area - XSELLER" />
 
   <AdminLayout>
     <div class="space-y-6">
@@ -60,33 +60,26 @@ const formatRupiah = (val) => {
           </div>
           <div>
             <div class="flex items-center gap-2">
-              <h3 class="text-sm font-extrabold text-[#1653a1] tracking-tight">Link Referral Anda (Otomatis Kiri/Kanan)</h3>
-              <span class="px-2 py-0.5 text-[9px] font-bold bg-[#04bdb2]/20 text-[#009c94] rounded-md">Otomatis Placement</span>
+              <h3 class="text-sm font-extrabold text-[#1653a1] tracking-tight">Link Referral Anda</h3>
+              <span class="px-2 py-0.5 text-[9px] font-bold bg-[#04bdb2]/20 text-[#009c94] rounded-md">Referral Kemitraan</span>
             </div>
-            <p class="text-xs text-slate-600 mt-1 font-medium">Bagikan link ini. Member baru otomatis akan diletakkan di kaki paling bawah sesuai pilihan Anda.</p>
+            <p class="text-xs text-slate-600 mt-1 font-medium">Bagikan link ini untuk mendaftarkan mitra baru secara langsung ke jaringan Anda.</p>
           </div>
         </div>
 
         <div class="flex items-center gap-2 shrink-0">
           <button 
-            @click="copyToClipboard(referral_links?.left, 'Kiri')"
-            class="px-4 py-2 bg-white hover:bg-slate-50 border border-[#1653a1]/30 text-[#1653a1] text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
-          >
-            <Copy class="w-3.5 h-3.5" />
-            <span>Copy Kiri</span>
-          </button>
-          <button 
-            @click="copyToClipboard(referral_links?.right, 'Kanan')"
+            @click="copyToClipboard(referral_links?.default || referral_links?.left, 'Referral')"
             class="px-4 py-2 bg-gradient-to-r from-[#1653a1] to-[#04bdb2] hover:opacity-95 text-white text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shadow-md"
           >
             <Copy class="w-3.5 h-3.5" />
-            <span>Copy Kanan</span>
+            <span>Copy Link Referral</span>
           </button>
         </div>
       </div>
 
-      <!-- 2. Main Metrics Grid (Saldo Wallet, Total Bonus Cair, Perkembangan Kaki Binary) -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- 2. Main Metrics Grid (Saldo Wallet & Total Bonus Cair) -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
         <!-- Saldo Wallet Card -->
         <div class="bg-gradient-to-br from-[#0b1f3a] via-[#103f80] to-[#1653a1] text-white rounded-3xl p-6 relative overflow-hidden shadow-lg space-y-4 border border-[#04bdb2]/30">
@@ -136,49 +129,16 @@ const formatRupiah = (val) => {
               <p class="font-bold text-[#1653a1] mt-0.5">{{ formatRupiah(wallet?.bonus_sponsor || 300000) }}</p>
             </div>
             <div class="p-2 bg-[#f4f8fb] rounded-xl">
-              <p class="text-[10px] text-slate-400 font-bold uppercase">Pasangan/Tier</p>
-              <p class="font-bold text-[#009c94] mt-0.5">{{ formatRupiah(wallet?.bonus_pasangan || 100000) }}</p>
+              <p class="text-[10px] text-slate-400 font-bold uppercase">Generasi (Tier)</p>
+              <p class="font-bold text-[#009c94] mt-0.5">{{ formatRupiah(wallet?.bonus_generasi || 100000) }}</p>
             </div>
             <div class="p-2 bg-[#f4f8fb] rounded-xl">
-              <p class="text-[10px] text-slate-400 font-bold uppercase">Titik RO</p>
-              <p class="font-bold text-amber-600 mt-0.5">{{ formatRupiah(wallet?.bonus_titik || 0) }}</p>
+              <p class="text-[10px] text-slate-400 font-bold uppercase">Bonus RO</p>
+              <p class="font-bold text-amber-600 mt-0.5">{{ formatRupiah(wallet?.bonus_ro || 0) }}</p>
             </div>
             <div class="p-2 bg-[#f4f8fb] rounded-xl">
-              <p class="text-[10px] text-slate-400 font-bold uppercase">Reward</p>
-              <p class="font-bold text-rose-600 mt-0.5">{{ formatRupiah(wallet?.bonus_reward || 0) }}</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Perkembangan Kaki Binary Card -->
-        <div class="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm space-y-4">
-          <div class="flex items-center justify-between">
-            <span class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 flex items-center gap-1.5">
-              <Users class="w-3.5 h-3.5 text-[#1653a1]" />
-              PERKEMBANGAN KAKI BINARY
-            </span>
-            <span class="px-2.5 py-0.5 text-[10px] font-bold bg-[#e6f9f8] text-[#009c94] rounded-full border border-[#04bdb2]/30">
-              2 KAKI BINARY
-            </span>
-          </div>
-
-          <div class="grid grid-cols-2 gap-3 pt-2">
-            <!-- Left Leg -->
-            <div class="p-4 bg-[#f4f8fb] rounded-2xl border border-slate-100 space-y-2 text-center">
-              <span class="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider block">KAKI KIRI (LEFT)</span>
-              <h3 class="text-2xl font-black text-slate-900">{{ binary_legs?.left?.members || 3 }} <span class="text-xs font-semibold text-slate-400">Orang</span></h3>
-              <div class="px-2 py-1 bg-[#e6f9f8] text-[#009c94] border border-[#04bdb2]/30 rounded-lg text-[10px] font-bold">
-                MENUNGGU: {{ binary_legs?.left?.pending_points || 1 }} Poin
-              </div>
-            </div>
-
-            <!-- Right Leg -->
-            <div class="p-4 bg-[#f4f8fb] rounded-2xl border border-slate-100 space-y-2 text-center">
-              <span class="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider block">KAKI KANAN (RIGHT)</span>
-              <h3 class="text-2xl font-black text-slate-900">{{ binary_legs?.right?.members || 2 }} <span class="text-xs font-semibold text-slate-400">Orang</span></h3>
-              <div class="px-2 py-1 bg-[#e6f9f8] text-[#009c94] border border-[#04bdb2]/30 rounded-lg text-[10px] font-bold">
-                MENUNGGU: {{ binary_legs?.right?.pending_points || 0 }} Poin
-              </div>
+              <p class="text-[10px] text-slate-400 font-bold uppercase">Bonus TPR</p>
+              <p class="font-bold text-rose-600 mt-0.5">{{ formatRupiah(wallet?.bonus_tpr || 0) }}</p>
             </div>
           </div>
         </div>
