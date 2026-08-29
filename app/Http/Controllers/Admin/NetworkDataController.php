@@ -18,7 +18,7 @@ class NetworkDataController extends Controller
         $currentUser = auth()->user();
         $search = $request->input('search');
 
-        $query = User::with('parent')->orderBy('id', 'asc');
+        $query = User::with('parent')->withCount('children')->orderBy('id', 'asc');
 
         if ($search) {
             $query->where(function ($q) use ($search) {
@@ -39,10 +39,8 @@ class NetworkDataController extends Controller
                 'username' => $u->username ?? 'user' . $u->id,
                 'email' => $u->email,
                 'sponsor' => $sponsor,
-                'left_count' => (int) ($u->left_count ?? 0),
-                'left_points' => (int) ($u->left_points ?? 0),
-                'right_count' => (int) ($u->right_count ?? 0),
-                'right_points' => (int) ($u->right_points ?? 0),
+                'g1_count' => (int) ($u->children_count ?? 0),
+                'total_team' => $this->calculateTotalTeamCount($u->id),
                 'saldo' => (float) ($u->saldo ?? 0),
                 'is_self' => $u->id === $currentUser->id,
             ];
@@ -102,5 +100,23 @@ class NetworkDataController extends Controller
         session()->forget('impersonator_id');
 
         return redirect()->route('admin.network-data.index')->with('success', 'Kembali ke akun Admin utama.');
+    }
+
+    /**
+     * Calculate total team members count up to 15 generations depth.
+     */
+    private function calculateTotalTeamCount($rootUserId): int
+    {
+        $count = 0;
+        $currentIds = [$rootUserId];
+
+        for ($gen = 1; $gen <= 15; $gen++) {
+            if (empty($currentIds)) break;
+            $downlineIds = User::whereIn('parent_id', $currentIds)->pluck('id')->toArray();
+            $count += count($downlineIds);
+            $currentIds = $downlineIds;
+        }
+
+        return $count;
     }
 }

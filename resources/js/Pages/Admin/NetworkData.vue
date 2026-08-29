@@ -49,7 +49,7 @@ const formatRupiah = (val) => {
 </script>
 
 <template>
-  <Head title="Direktori Semua Member Jaringan - XSELLER" />
+  <Head title="Data Mitra - XSELLER" />
 
   <AdminLayout>
     <div class="space-y-6">
@@ -95,7 +95,7 @@ const formatRupiah = (val) => {
             </div>
             <div>
               <h2 class="text-base md:text-lg font-black text-slate-900 tracking-tight">
-                Direktori Semua Member Jaringan
+                Data Mitra
               </h2>
               <p class="text-xs text-slate-500 font-medium mt-0.5">
                 Cari, tinjau, dan ganti perspektif login untuk melihat bonus dan team mitra member lain.
@@ -123,7 +123,7 @@ const formatRupiah = (val) => {
                 <th class="py-3 px-4">ID & USERNAME</th>
                 <th class="py-3 px-4">NAMA LENGKAP / EMAIL</th>
                 <th class="py-3 px-4">SPONSOR LANGSUNG</th>
-                <th class="py-3 px-4">POIN (KIRI / KANAN)</th>
+                <th class="py-3 px-4">TIM MITRA (G1 / TOTAL)</th>
                 <th class="py-3 px-4">SALDO DOMPET</th>
                 <th v-if="is_admin" class="py-3 px-4 text-right">OPSI PENGUJIAN</th>
               </tr>
@@ -159,10 +159,10 @@ const formatRupiah = (val) => {
                   </span>
                 </td>
 
-                <!-- Poin (Kiri / Kanan) -->
+                <!-- Tim Mitra (G1 / Total) -->
                 <td class="py-3.5 px-4">
                   <span class="font-extrabold text-slate-700 text-[11px] font-mono">
-                    L: {{ m.left_count }} ({{ m.left_points }} P) &nbsp;|&nbsp; R: {{ m.right_count }} ({{ m.right_points }} P)
+                    G1: {{ m.g1_count }} Mitra &nbsp;|&nbsp; Total: {{ m.total_team }} Team
                   </span>
                 </td>
 

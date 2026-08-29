@@ -17,22 +17,22 @@ class ActivityController extends Controller
         $user = auth()->user();
         $tab = $request->input('tab', 'sponsor');
 
-        if (!in_array($tab, ['sponsor', 'pasangan', 'titik', 'reward', 'penarikan'])) {
+        if (!in_array($tab, ['sponsor', 'generasi', 'ro', 'tpr', 'penarikan'])) {
             $tab = 'sponsor';
         }
 
         // Summary totals for cards
         $bonusSponsor = BonusLog::where('user_id', $user->id)->where('category', 'sponsor')->sum('amount');
-        $bonusPasangan = BonusLog::where('user_id', $user->id)->where('category', 'pasangan')->sum('amount');
-        $bonusTitik = BonusLog::where('user_id', $user->id)->where('category', 'titik')->sum('amount');
-        $bonusReward = BonusLog::where('user_id', $user->id)->where('category', 'reward')->sum('amount');
+        $bonusGenerasi = BonusLog::where('user_id', $user->id)->where('category', 'generasi')->sum('amount');
+        $bonusRO = BonusLog::where('user_id', $user->id)->where('category', 'ro')->sum('amount');
+        $bonusTPR = BonusLog::where('user_id', $user->id)->where('category', 'tpr')->sum('amount');
 
         // Tab Info Descriptions
         $tabDescriptions = [
-            'sponsor' => 'Bonus Sponsor (100% dari pendaftaran): Diberikan setiap kali Anda mereferensikan secara langsung member baru yang diaktifkan dengan VOUCHER. Nilai per sponsor saat ini: Rp 100.000.',
-            'pasangan' => 'Bonus Pasangan (Keseimbangan Kaki): Diberikan saat terjadi pasangan volume omset pada kaki Kiri dan Kanan jaringan Anda.',
-            'titik' => 'Bonus Titik RO: Diberikan dari setiap pencapaian transaksi Repeat Order (RO) di jaringan Anda.',
-            'reward' => 'Bonus Reward: Diberikan secara otomatis saat akumulasi poin jaringan Anda mencapai target level reward.',
+            'sponsor' => 'Bonus Sponsor (Direct Referral 20%): Diberikan setiap kali Anda mereferensikan secara langsung member baru yang diaktifkan dengan VOUCHER.',
+            'generasi' => 'Bonus Generasi (Tier Allocation): Diberikan dari alokasi pembagian tier generasi (Generasi 1 s/d Generasi 15) dari pendaftaran member di jaringan Anda.',
+            'ro' => 'Bonus Repeat Order (RO): Diberikan dari setiap transaksi Repeat Order (RO) di jaringan Anda (Bonus Sponsor RO Rp 20.000 + Matching Bonus).',
+            'tpr' => 'Bonus TPR (Profit Share / Rebate): Diberikan dari program Trade Promotion Program (TPR) berupa profit sharing bulanan & rebate sponsor.',
             'penarikan' => 'Histori Penarikan Saldo: Rincian transaksi pencairan saldo dari e-wallet ke rekening bank Anda.',
         ];
 
@@ -58,10 +58,10 @@ class ActivityController extends Controller
 
         return Inertia::render('Admin/Activities', [
             'metrics' => [
-                'bonus_sponsor' => (float) ($bonusSponsor > 0 ? $bonusSponsor : 300000),
-                'bonus_pasangan' => (float) ($bonusPasangan > 0 ? $bonusPasangan : 100000),
-                'bonus_titik' => (float) $bonusTitik,
-                'bonus_reward' => (float) $bonusReward,
+                'bonus_sponsor' => (float) $bonusSponsor,
+                'bonus_generasi' => (float) $bonusGenerasi,
+                'bonus_ro' => (float) $bonusRO,
+                'bonus_tpr' => (float) $bonusTPR,
             ],
             'active_tab' => $tab,
             'tab_description' => $tabDescriptions[$tab] ?? '',

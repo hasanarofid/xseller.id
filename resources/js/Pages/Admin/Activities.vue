@@ -32,10 +32,10 @@ const formatRupiah = (val) => {
 };
 
 const tabList = [
-  { key: 'sponsor', label: 'Sponsor' },
-  { key: 'pasangan', label: 'Pasangan' },
-  { key: 'titik', label: 'Titik' },
-  { key: 'reward', label: 'Reward' },
+  { key: 'sponsor', label: 'Bonus Sponsor' },
+  { key: 'generasi', label: 'Bonus Generasi' },
+  { key: 'ro', label: 'Bonus RO' },
+  { key: 'tpr', label: 'Bonus TPR' },
   { key: 'penarikan', label: 'Penarikan' },
 ];
 </script>
@@ -45,55 +45,6 @@ const tabList = [
 
   <AdminLayout>
     <div class="space-y-6">
-      
-      <!-- 1. TOP METRIC CARDS ROW (4 Cards matching Mockup) -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        
-        <!-- Bonus Sponsor -->
-        <div class="bg-white border border-slate-100 rounded-3xl p-5 shadow-sm space-y-2 flex items-center justify-between">
-          <div>
-            <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">BONUS SPONSOR</span>
-            <h3 class="text-2xl font-black text-slate-900 tracking-tight">{{ formatRupiah(metrics?.bonus_sponsor || 300000) }}</h3>
-          </div>
-          <div class="w-11 h-11 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
-            <UserPlus class="w-5 h-5" />
-          </div>
-        </div>
-
-        <!-- Bonus Pasangan -->
-        <div class="bg-white border border-slate-100 rounded-3xl p-5 shadow-sm space-y-2 flex items-center justify-between">
-          <div>
-            <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">BONUS PASANGAN</span>
-            <h3 class="text-2xl font-black text-slate-900 tracking-tight">{{ formatRupiah(metrics?.bonus_pasangan || 100000) }}</h3>
-          </div>
-          <div class="w-11 h-11 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
-            <ArrowLeftRight class="w-5 h-5" />
-          </div>
-        </div>
-
-        <!-- Bonus Titik -->
-        <div class="bg-white border border-slate-100 rounded-3xl p-5 shadow-sm space-y-2 flex items-center justify-between">
-          <div>
-            <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">BONUS TITIK</span>
-            <h3 class="text-2xl font-black text-slate-900 tracking-tight">{{ formatRupiah(metrics?.bonus_titik || 0) }}</h3>
-          </div>
-          <div class="w-11 h-11 rounded-2xl bg-rose-50 text-rose-500 flex items-center justify-center shrink-0">
-            <TrendingUp class="w-5 h-5" />
-          </div>
-        </div>
-
-        <!-- Bonus Reward -->
-        <div class="bg-white border border-slate-100 rounded-3xl p-5 shadow-sm space-y-2 flex items-center justify-between">
-          <div>
-            <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">BONUS REWARD</span>
-            <h3 class="text-2xl font-black text-slate-900 tracking-tight">{{ formatRupiah(metrics?.bonus_reward || 0) }}</h3>
-          </div>
-          <div class="w-11 h-11 rounded-2xl bg-amber-50 text-amber-500 flex items-center justify-center shrink-0">
-            <Trophy class="w-5 h-5" />
-          </div>
-        </div>
-
-      </div>
 
       <!-- 2. MAIN TABLE CONTAINER CARD (Matching Mockup) -->
       <div class="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm space-y-5">
