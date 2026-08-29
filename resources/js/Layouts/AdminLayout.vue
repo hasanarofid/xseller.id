@@ -55,8 +55,6 @@ const navigation = [
   { name: 'Data Mitra', href: route('admin.network-data.index'), icon: Users, current: route().current('admin.network-data.index') },
   { name: 'Aktivitas', href: route('admin.activities.index'), icon: Activity, current: route().current('admin.activities.index') },
   { name: 'Laporan', href: route('admin.reports.index'), icon: FileText, current: route().current('admin.reports.index') },
-  { name: 'Pengaturan Profil', href: route('profile.edit'), icon: UserCheck, current: route().current('profile.edit') },
-  { name: 'Pengaturan Sistem', href: route('admin.settings.index'), icon: SettingsIcon, current: route().current('admin.settings.index'), special: 'amber' },
 ];
 
 const logout = () => {
