@@ -34,11 +34,17 @@ class ProfileController extends Controller
                 'phone' => $user->phone ?? '081234567890',
             ],
             'company_profile' => [
-                'name' => $settings['company_name'] ?? 'Duta Synergy',
-                'owner' => $settings['company_owner'] ?? 'President Director',
-                'copyright' => $settings['company_copyright'] ?? 'Duta Synergy Corp. Hak Cipta Dilindungi Undang-Undang. Application System v2.4 Binary',
+                'name' => $settings['company_name'] ?? 'PT.Xseller Punya Kita',
+                'owner' => $settings['company_owner'] ?? 'PT.Xseller Punya Kita',
+                'copyright' => $settings['company_copyright'] ?? 'PT.Xseller Punya Kita Corp. Hak Cipta Dilindungi Undang-Undang.',
                 'logo_url' => !empty($settings['site_logo']) ? Storage::url($settings['site_logo']) : null,
-                'banks' => is_array($companyBanks) ? $companyBanks : [],
+                'banks' => is_array($companyBanks) && count($companyBanks) > 0 ? $companyBanks : [
+                    [
+                        'bank_name' => 'Bank BRI',
+                        'account_number' => '806401000095564',
+                        'account_name' => 'PT.Xseller Punya Kita',
+                    ]
+                ],
             ],
             'status' => session('status'),
         ]);

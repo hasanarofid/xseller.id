@@ -12,12 +12,14 @@ import {
   ArrowRightLeft, 
   ShieldCheck,
   Clock,
-  UserCheck
+  UserCheck,
+  Building2
 } from '@lucide/vue';
 
 const props = defineProps({
   wallet: Object,
   voucher_price: Number,
+  company_bank: Object,
   vouchers: Array,
   available_vouchers: Array,
   transfers: Array,
@@ -102,6 +104,19 @@ const formatRupiah = (val) => {
                 <p class="text-xs text-slate-500 mt-1 leading-relaxed">
                   PIN Aktivasi digunakan untuk mengaktifkan pendaftaran downline baru. Harga: <strong class="text-slate-800">{{ formatRupiah(voucher_price || 100000) }}</strong> per PIN.
                 </p>
+              </div>
+            </div>
+
+            <!-- Manual Bank Transfer Info Box -->
+            <div class="p-4 bg-emerald-50/60 border border-emerald-200/80 rounded-2xl space-y-2">
+              <div class="flex items-center gap-2">
+                <Building2 class="w-4 h-4 text-emerald-600 shrink-0" />
+                <span class="text-xs font-black text-emerald-900 uppercase tracking-tight">REKENING PEMBAYARAN MANUAL</span>
+              </div>
+              <div class="text-xs text-slate-700 font-medium space-y-1">
+                <p><strong>Bank:</strong> {{ company_bank?.bank_name || 'Bank BRI' }}</p>
+                <p><strong>No. Rekening:</strong> <span class="font-mono font-black text-slate-900 select-all">{{ company_bank?.account_number || '806401000095564' }}</span></p>
+                <p><strong>Atas Nama:</strong> <strong class="text-slate-900">{{ company_bank?.account_name || 'PT.Xseller Punya Kita' }}</strong></p>
               </div>
             </div>
 

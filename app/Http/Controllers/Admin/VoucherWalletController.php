@@ -70,6 +70,16 @@ class VoucherWalletController extends Controller
                 ];
             });
 
+        $settings = \App\Models\Setting::all()->pluck('value', 'key');
+        $companyBanks = json_decode($settings['company_banks'] ?? '[]', true);
+        $companyBank = (is_array($companyBanks) && count($companyBanks) > 0) 
+            ? $companyBanks[0] 
+            : [
+                'bank_name' => 'Bank BRI',
+                'account_number' => '806401000095564',
+                'account_name' => 'PT.Xseller Punya Kita',
+            ];
+
         return Inertia::render('Admin/VoucherWallet', [
             'wallet' => [
                 'saldo' => (float) ($user->saldo ?? 2500000),
@@ -77,6 +87,7 @@ class VoucherWalletController extends Controller
                 'voucher_count' => $voucherCount,
             ],
             'voucher_price' => 100000,
+            'company_bank' => $companyBank,
             'vouchers' => $vouchers,
             'available_vouchers' => $availableVouchers,
             'transfers' => $transfers,

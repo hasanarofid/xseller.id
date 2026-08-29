@@ -15,12 +15,38 @@ class SettingSeeder extends Seeder
         $settings = [
             [
                 'key' => 'site_name',
-                'value' => 'My Premium CMS',
+                'value' => 'PT.Xseller Punya Kita',
                 'type' => 'text',
             ],
             [
+                'key' => 'company_name',
+                'value' => 'PT.Xseller Punya Kita',
+                'type' => 'text',
+            ],
+            [
+                'key' => 'company_owner',
+                'value' => 'PT.Xseller Punya Kita',
+                'type' => 'text',
+            ],
+            [
+                'key' => 'company_copyright',
+                'value' => 'PT.Xseller Punya Kita Corp. Hak Cipta Dilindungi Undang-Undang.',
+                'type' => 'text',
+            ],
+            [
+                'key' => 'company_banks',
+                'value' => json_encode([
+                    [
+                        'bank_name' => 'Bank BRI',
+                        'account_number' => '806401000095564',
+                        'account_name' => 'PT.Xseller Punya Kita',
+                    ]
+                ]),
+                'type' => 'json',
+            ],
+            [
                 'key' => 'site_description',
-                'value' => 'Sebuah platform CMS serbaguna berbasis Laravel 11 dan Vue 3 yang sangat fleksibel dan super cepat.',
+                'value' => 'Sebuah platform e-commerce & affiliate marketing serbaguna berbasis Laravel dan Vue 3.',
                 'type' => 'textarea',
             ],
             [
@@ -35,7 +61,7 @@ class SettingSeeder extends Seeder
             ],
             [
                 'key' => 'playstore_link',
-                'value' => 'https://play.google.com/store/apps/details?id=com.mycms.app',
+                'value' => 'https://play.google.com/store/apps/details?id=com.xseller.app',
                 'type' => 'url',
             ],
         ];

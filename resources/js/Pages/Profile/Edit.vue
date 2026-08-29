@@ -28,12 +28,12 @@ const flashError = computed(() => page.props.flash?.error);
 
 // Form for Corporate & User Profile
 const form = useForm({
-  company_name: props.company_profile?.name || 'Duta Synergy',
-  company_owner: props.company_profile?.owner || 'President Director',
-  company_copyright: props.company_profile?.copyright || 'Duta Synergy Corp. Hak Cipta Dilindungi Undang-Undang. Application System v2.4 Binary',
+  company_name: props.company_profile?.name || 'PT.Xseller Punya Kita',
+  company_owner: props.company_profile?.owner || 'PT.Xseller Punya Kita',
+  company_copyright: props.company_profile?.copyright || 'PT.Xseller Punya Kita Corp. Hak Cipta Dilindungi Undang-Undang.',
   name: props.admin_user?.name || 'President Director (Admin)',
   username: props.admin_user?.username || 'admin',
-  email: props.admin_user?.email || 'admin@binarymlm.com',
+  email: props.admin_user?.email || 'admin@xseller.id',
   phone: props.admin_user?.phone || '081234567890',
   password: '',
   site_logo: null,
@@ -45,7 +45,7 @@ const banksList = ref(props.company_profile?.banks || []);
 // Bank modal/add form
 const showAddBank = ref(false);
 const newBank = useForm({
-  bank_name: 'Bank Mandiri',
+  bank_name: 'Bank BRI',
   account_number: '',
   account_name: '',
 });
