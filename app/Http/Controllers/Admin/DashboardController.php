@@ -20,8 +20,8 @@ class DashboardController extends Controller
 
         return Inertia::render('Admin/Dashboard', [
             'referral_links' => [
-                'left' => url('/register?sponsor=' . ($user ? $user->id : 1) . '&position=left'),
-                'right' => url('/register?sponsor=' . ($user ? $user->id : 1) . '&position=right'),
+                'default' => url('/register?sponsor=' . ($user ? ($user->username ?: $user->id) : 1)),
+                'url' => url('/register?sponsor=' . ($user ? ($user->username ?: $user->id) : 1)),
             ],
             'wallet' => [
                 'saldo' => 2500000,
