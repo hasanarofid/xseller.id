@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Voucher;
 use App\Models\VoucherTransfer;
+use App\Models\WalletTransaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -14,7 +15,7 @@ use Inertia\Inertia;
 class VoucherWalletController extends Controller
 {
     /**
-     * Display the Voucher / PIN Wallet Management page.
+     * Display the Voucher Wallet Management page.
      */
     public function index()
     {
@@ -36,10 +37,12 @@ class VoucherWalletController extends Controller
                 return [
                     'id' => $v->id,
                     'code' => $v->code,
+                    'package_name' => $v->package_name ?: 'Basic',
+                    'voucher_type' => $v->voucher_type ?: 'activation',
                     'created_at' => $v->created_at->format('j/n/Y'),
                     'status' => $isAvailable ? 'TERSEDIA' : 'TERPAKAI',
                     'keterangan' => $isAvailable
-                        ? 'Menunggu pendaftaran'
+                        ? 'Tersedia di gudang voucher'
                         : 'Diaktifkan oleh member ID: @' . $usedByUsername . ' pada ' . $usedDate,
                 ];
             });
@@ -47,7 +50,14 @@ class VoucherWalletController extends Controller
         // Get available vouchers for transfer select options
         $availableVouchers = Voucher::where('user_id', $user->id)
             ->where('status', 'active')
-            ->get(['id', 'code']);
+            ->get()
+            ->map(function ($v) {
+                return [
+                    'id' => $v->id,
+                    'code' => $v->code,
+                    'label' => $v->code . ' - ' . ($v->package_name ?: 'Voucher'),
+                ];
+            });
 
         // Get transfer history
         $transfers = VoucherTransfer::where('sender_id', $user->id)
@@ -70,6 +80,7 @@ class VoucherWalletController extends Controller
                 ];
             });
 
+        // Company Bank Settings
         $settings = \App\Models\Setting::all()->pluck('value', 'key');
         $companyBanks = json_decode($settings['company_banks'] ?? '[]', true);
         $companyBank = (is_array($companyBanks) && count($companyBanks) > 0) 
@@ -80,13 +91,30 @@ class VoucherWalletController extends Controller
                 'account_name' => 'PT.Xseller Punya Kita',
             ];
 
+        // Voucher Package Catalog for Conversion
+        $convertPackages = [
+            // Activation Vouchers
+            ['key' => 'starter', 'group' => 'Voucher Activation', 'name' => 'Voucher Activation Starter (Rp 125.000)', 'price' => 125000, 'type' => 'activation'],
+            ['key' => 'basic', 'group' => 'Voucher Activation', 'name' => 'Voucher Activation Basic (Rp 550.000)', 'price' => 550000, 'type' => 'activation'],
+            ['key' => 'medium', 'group' => 'Voucher Activation', 'name' => 'Voucher Activation Medium (Rp 2.100.000)', 'price' => 2100000, 'type' => 'activation'],
+            ['key' => 'pro', 'group' => 'Voucher Activation', 'name' => 'Voucher Activation Pro (Rp 4.300.000)', 'price' => 4300000, 'type' => 'activation'],
+            ['key' => 'ultimate', 'group' => 'Voucher Activation', 'name' => 'Voucher Activation Ultimate (Rp 10.500.000)', 'price' => 10500000, 'type' => 'activation'],
+
+            // RO Voucher
+            ['key' => 'ro', 'group' => 'Voucher RO', 'name' => 'Voucher RO (Rp 125.000)', 'price' => 125000, 'type' => 'ro'],
+
+            // PO Vouchers
+            ['key' => 'po_star_seller', 'group' => 'Voucher PO', 'name' => 'Voucher PO Star Seller (Rp 550.000)', 'price' => 550000, 'type' => 'po_star_seller'],
+            ['key' => 'po_affiliate', 'group' => 'Voucher PO', 'name' => 'Voucher PO Affiliate (Rp 2.100.000)', 'price' => 2100000, 'type' => 'po_affiliate'],
+        ];
+
         return Inertia::render('Admin/VoucherWallet', [
             'wallet' => [
-                'saldo' => (float) ($user->saldo ?? 2500000),
-                'total_bonus' => (float) ($user->total_bonus ?? 400000),
+                'saldo' => (float) ($user->saldo ?? 0),
+                'total_bonus' => (float) ($user->total_bonus ?? 0),
                 'voucher_count' => $voucherCount,
             ],
-            'voucher_price' => 100000,
+            'convert_packages' => $convertPackages,
             'company_bank' => $companyBank,
             'vouchers' => $vouchers,
             'available_vouchers' => $availableVouchers,
@@ -96,33 +124,61 @@ class VoucherWalletController extends Controller
     }
 
     /**
-     * Purchase a voucher using wallet balance.
+     * Convert Saldo Wallet into Vouchers (Activation, RO, PO).
      */
     public function buy(Request $request)
     {
-        $user = auth()->user();
-        $price = 100000;
+        $request->validate([
+            'package_key' => 'required|string',
+            'quantity' => 'nullable|integer|min:1|max:35',
+        ]);
 
-        if (($user->saldo ?? 2500000) < $price) {
-            return back()->with('error', 'Saldo wallet Anda tidak mencukupi untuk membeli Voucher!');
+        $user = auth()->user();
+        $qty = max(1, min(35, (int) $request->input('quantity', 1)));
+
+        $catalog = [
+            'starter' => ['name' => 'Starter (Rp 125.000)', 'price' => 125000, 'type' => 'activation', 'prefix' => 'PIN'],
+            'basic' => ['name' => 'Basic (Rp 550.000)', 'price' => 550000, 'type' => 'activation', 'prefix' => 'PIN'],
+            'medium' => ['name' => 'Medium (Rp 2.100.000)', 'price' => 2100000, 'type' => 'activation', 'prefix' => 'PIN'],
+            'pro' => ['name' => 'Pro (Rp 4.300.000)', 'price' => 4300000, 'type' => 'activation', 'prefix' => 'PIN'],
+            'ultimate' => ['name' => 'Ultimate (Rp 10.500.000)', 'price' => 10500000, 'type' => 'activation', 'prefix' => 'PIN'],
+            'ro' => ['name' => 'Repeat Order (Rp 125.000)', 'price' => 125000, 'type' => 'ro', 'prefix' => 'RO'],
+            'po_star_seller' => ['name' => 'PO Star Seller (Rp 550.000)', 'price' => 550000, 'type' => 'po_star_seller', 'prefix' => 'PO'],
+            'po_affiliate' => ['name' => 'PO Affiliate (Rp 2.100.000)', 'price' => 2100000, 'type' => 'po_affiliate', 'prefix' => 'PO'],
+        ];
+
+        $pkg = $catalog[$request->package_key] ?? $catalog['basic'];
+        $totalPrice = $pkg['price'] * $qty;
+
+        if (($user->saldo ?? 0) < $totalPrice) {
+            return back()->with('error', "Saldo wallet Anda tidak mencukupi untuk konversi {$qty} Voucher {$pkg['name']} (Total: Rp " . number_format($totalPrice, 0, ',', '.') . ")!");
         }
 
-        DB::transaction(function () use ($user, $price) {
-            if ($user->saldo !== null) {
-                $user->decrement('saldo', $price);
-            }
+        DB::transaction(function () use ($user, $pkg, $totalPrice, $qty) {
+            $user->decrement('saldo', $totalPrice);
 
-            $code = 'PIN-' . rand(1000, 9999) . '-' . strtoupper(Str::random(3));
-
-            Voucher::create([
-                'code' => $code,
+            WalletTransaction::create([
                 'user_id' => $user->id,
-                'package_name' => 'Basic',
-                'status' => 'active',
+                'type' => 'out',
+                'category' => 'purchase_voucher',
+                'amount' => $totalPrice,
+                'description' => "Konversi Saldo Wallet ke {$qty} Voucher {$pkg['name']}",
             ]);
+
+            for ($i = 0; $i < $qty; $i++) {
+                $code = $pkg['prefix'] . '-' . rand(1000, 9999) . '-' . strtoupper(Str::random(3));
+
+                Voucher::create([
+                    'code' => $code,
+                    'user_id' => $user->id,
+                    'package_name' => $pkg['name'],
+                    'voucher_type' => $pkg['type'],
+                    'status' => 'active',
+                ]);
+            }
         });
 
-        return back()->with('success', 'Berhasil membeli 1 Voucher Aktivasi!');
+        return back()->with('success', "Berhasil mengonversi Saldo Wallet menjadi {$qty} Voucher {$pkg['name']}!");
     }
 
     /**
@@ -136,7 +192,14 @@ class VoucherWalletController extends Controller
             return back()->with('error', 'Hanya Admin yang berhak memproduksi voucher gratis!');
         }
 
+        $request->validate([
+            'package_key' => 'nullable|string',
+            'quantity' => 'nullable|integer|min:1|max:35',
+        ]);
+
+        $qty = max(1, min(35, (int) $request->input('quantity', 1)));
         $targetUser = $admin;
+
         if ($request->filled('username')) {
             $targetUser = User::where('username', $request->username)->first();
             if (!$targetUser) {
@@ -144,18 +207,35 @@ class VoucherWalletController extends Controller
             }
         }
 
-        DB::transaction(function () use ($targetUser) {
-            $code = 'PIN-' . rand(1000, 9999) . '-' . strtoupper(Str::random(3));
+        $catalog = [
+            'starter' => ['name' => 'Starter (Rp 125.000)', 'type' => 'activation', 'prefix' => 'PIN'],
+            'basic' => ['name' => 'Basic (Rp 550.000)', 'type' => 'activation', 'prefix' => 'PIN'],
+            'medium' => ['name' => 'Medium (Rp 2.100.000)', 'type' => 'activation', 'prefix' => 'PIN'],
+            'pro' => ['name' => 'Pro (Rp 4.300.000)', 'type' => 'activation', 'prefix' => 'PIN'],
+            'ultimate' => ['name' => 'Ultimate (Rp 10.500.000)', 'type' => 'activation', 'prefix' => 'PIN'],
+            'ro' => ['name' => 'Repeat Order (Rp 125.000)', 'type' => 'ro', 'prefix' => 'RO'],
+            'po_star_seller' => ['name' => 'PO Star Seller (Rp 550.000)', 'type' => 'po_star_seller', 'prefix' => 'PO'],
+            'po_affiliate' => ['name' => 'PO Affiliate (Rp 2.100.000)', 'type' => 'po_affiliate', 'prefix' => 'PO'],
+        ];
 
-            Voucher::create([
-                'code' => $code,
-                'user_id' => $targetUser->id,
-                'package_name' => 'Basic',
-                'status' => 'active',
-            ]);
+        $pkgKey = $request->input('package_key', 'basic');
+        $pkg = $catalog[$pkgKey] ?? $catalog['basic'];
+
+        DB::transaction(function () use ($targetUser, $pkg, $qty) {
+            for ($i = 0; $i < $qty; $i++) {
+                $code = $pkg['prefix'] . '-' . rand(1000, 9999) . '-' . strtoupper(Str::random(3));
+
+                Voucher::create([
+                    'code' => $code,
+                    'user_id' => $targetUser->id,
+                    'package_name' => $pkg['name'],
+                    'voucher_type' => $pkg['type'],
+                    'status' => 'active',
+                ]);
+            }
         });
 
-        return back()->with('success', 'Berhasil memproduksi Voucher Aktivasi gratis untuk @' . $targetUser->username . '!');
+        return back()->with('success', "Berhasil memproduksi {$qty} Voucher {$pkg['name']} gratis untuk @" . $targetUser->username . "!");
     }
 
     /**
