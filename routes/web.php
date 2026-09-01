@@ -44,6 +44,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     // Purchase Order (PO)
     Route::get('/purchase-order', [\App\Http\Controllers\Admin\PurchaseOrderController::class, 'index'])->name('purchase-order.index');
     Route::post('/purchase-order', [\App\Http\Controllers\Admin\PurchaseOrderController::class, 'store'])->name('purchase-order.store');
+    Route::post('/purchase-order/buy-voucher', [\App\Http\Controllers\Admin\PurchaseOrderController::class, 'buyVoucher'])->name('purchase-order.buy-voucher');
 
     // Voucher / PIN Wallet
     Route::get('/voucher-wallet', [\App\Http\Controllers\Admin\VoucherWalletController::class, 'index'])->name('voucher-wallet.index');
