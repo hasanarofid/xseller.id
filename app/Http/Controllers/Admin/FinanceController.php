@@ -85,33 +85,47 @@ class FinanceController extends Controller
     }
 
     /**
-     * Topup admin wallet balance.
+     * Admin action to generate / create / topup saldo for any member or admin.
      */
-    public function topupAdmin(Request $request)
+    public function generateSaldo(Request $request)
     {
         $request->validate([
             'amount' => 'required|numeric|min:1000',
+            'username' => 'nullable|string',
         ]);
 
         $admin = auth()->user();
 
         if (!$admin->hasRole('admin')) {
-            return back()->with('error', 'Hanya Admin yang dapat menggunakan fitur Topup Admin!');
+            return back()->with('error', 'Hanya Admin yang dapat menggunakan fitur Generate Saldo!');
         }
 
-        DB::transaction(function () use ($admin, $request) {
-            $admin->increment('saldo', $request->amount);
+        $targetUser = $admin;
+        if ($request->filled('username')) {
+            $targetUser = User::where('username', $request->username)->first();
+            if (!$targetUser) {
+                return back()->with('error', 'Username @' . $request->username . ' tidak ditemukan!');
+            }
+        }
+
+        DB::transaction(function () use ($targetUser, $request) {
+            $targetUser->increment('saldo', $request->amount);
 
             WalletTransaction::create([
-                'user_id' => $admin->id,
+                'user_id' => $targetUser->id,
                 'type' => 'in',
                 'category' => 'topup',
                 'amount' => $request->amount,
-                'description' => 'Set saldo awal / Topup Admin',
+                'description' => 'Generate / Topup Saldo E-Wallet via Admin',
             ]);
         });
 
-        return back()->with('success', 'Berhasil melakukan topup saldo sebesar Rp ' . number_format($request->amount, 0, ',', '.') . '!');
+        return back()->with('success', 'Berhasil generate saldo sebesar Rp ' . number_format($request->amount, 0, ',', '.') . ' untuk @' . $targetUser->username . '!');
+    }
+
+    public function topupAdmin(Request $request)
+    {
+        return $this->generateSaldo($request);
     }
 
     /**

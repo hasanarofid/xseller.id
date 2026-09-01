@@ -32,14 +32,15 @@ const submitCashout = () => {
   });
 };
 
-// Form Topup Admin
-const topupForm = useForm({
-  amount: 0,
+// Form Generate / Create Saldo Wallet Admin & Member
+const generateForm = useForm({
+  username: '',
+  amount: '',
 });
-const submitTopup = () => {
-  topupForm.post(route('admin.finance.topup-admin'), {
+const submitGenerateSaldo = () => {
+  generateForm.post(route('admin.finance.generate-saldo'), {
     preserveScroll: true,
-    onSuccess: () => topupForm.reset(),
+    onSuccess: () => generateForm.reset(),
   });
 };
 
@@ -135,39 +136,52 @@ const formatRupiah = (val) => {
             </div>
           </div>
 
-          <!-- 3. SET SALDO AWAL / TOPUP ADMIN CARD (Only visible if admin) -->
+          <!-- 3. GENERATE / CREATE SALDO WALLET CARD (Only visible if admin) -->
           <div v-if="is_admin" class="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm space-y-4">
             <div class="flex items-start gap-3">
               <div class="p-2.5 bg-emerald-50 text-emerald-600 rounded-xl shrink-0">
                 <CreditCard class="w-5 h-5" />
               </div>
               <div>
-                <h3 class="text-xs font-extrabold text-slate-900 uppercase tracking-wide">SET SALDO AWAL / TOPUP ADMIN</h3>
-                <p class="text-xs text-slate-500 mt-0.5">Tambahkan saldo ke wallet admin.</p>
+                <h3 class="text-xs font-extrabold text-slate-900 uppercase tracking-wide">GENERATE / CREATE SALDO WALLET</h3>
+                <p class="text-xs text-slate-500 mt-0.5">Isi atau tambahkan saldo wallet member / admin setelah konfirmasi transfer.</p>
               </div>
             </div>
 
-            <form @submit.prevent="submitTopup" class="space-y-3 pt-1">
+            <form @submit.prevent="submitGenerateSaldo" class="space-y-3 pt-1">
               <div>
                 <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
-                  NOMINAL TOPUP (RP)
+                  TARGET USERNAME (KOSONGKAN JIKA UNTUK ADMIN)
                 </label>
                 <input 
-                  v-model="topupForm.amount"
+                  v-model="generateForm.username"
+                  type="text"
+                  placeholder="cth: budisantoso"
+                  class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-xs font-semibold focus:outline-none focus:border-emerald-500"
+                />
+              </div>
+
+              <div>
+                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+                  NOMINAL SALDO (RP)
+                </label>
+                <input 
+                  v-model.number="generateForm.amount"
                   type="number"
                   required
                   min="1000"
                   step="1000"
+                  placeholder="cth: 2600000"
                   class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-xs font-semibold focus:outline-none focus:border-emerald-500"
                 />
               </div>
 
               <button 
                 type="submit"
-                :disabled="topupForm.processing"
+                :disabled="generateForm.processing"
                 class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs font-bold rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
               >
-                <span>Topup Saldo Sekarang</span>
+                <span>Generate Saldo Wallet</span>
               </button>
             </form>
           </div>

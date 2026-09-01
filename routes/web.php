@@ -52,10 +52,14 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::post('/voucher-wallet/produce', [\App\Http\Controllers\Admin\VoucherWalletController::class, 'produce'])->name('voucher-wallet.produce');
     Route::post('/voucher-wallet/transfer', [\App\Http\Controllers\Admin\VoucherWalletController::class, 'transfer'])->name('voucher-wallet.transfer');
 
-    // Keuangan (Finance & E-Wallet Management)
+    // Riwayat Steping (Khusus Member)
+    Route::get('/riwayat-steping', [\App\Http\Controllers\Admin\StepingHistoryController::class, 'index'])->name('steping-history.index');
+
+    // Keuangan (Finance & E-Wallet Management - Khusus Admin)
     Route::get('/keuangan', [\App\Http\Controllers\Admin\FinanceController::class, 'index'])->name('finance.index');
     Route::post('/keuangan/cashout', [\App\Http\Controllers\Admin\FinanceController::class, 'cashoutBonus'])->name('finance.cashout');
     Route::post('/keuangan/topup-admin', [\App\Http\Controllers\Admin\FinanceController::class, 'topupAdmin'])->name('finance.topup-admin');
+    Route::post('/keuangan/generate-saldo', [\App\Http\Controllers\Admin\FinanceController::class, 'generateSaldo'])->name('finance.generate-saldo');
     Route::post('/keuangan/transfer', [\App\Http\Controllers\Admin\FinanceController::class, 'transfer'])->name('finance.transfer');
 
     // Penarikan Saldo (Withdrawals / WD)
