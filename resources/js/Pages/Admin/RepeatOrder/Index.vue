@@ -25,6 +25,7 @@ const props = defineProps({
   repeat_orders: Array,
   user_saldo: Number,
   user_package: String,
+  company_bank: Object,
   is_admin: Boolean,
 });
 
@@ -49,6 +50,7 @@ const submitClaimRo = () => {
 // Form Buy / Produce Voucher RO
 const buyVoucherModalOpen = ref(false);
 const buyVoucherForm = useForm({
+  quantity: 1,
   is_produce: false,
   target_username: '',
 });
@@ -58,7 +60,7 @@ const submitBuyVoucher = () => {
     preserveScroll: true,
     onSuccess: () => {
       buyVoucherModalOpen.value = false;
-      buyVoucherForm.reset();
+      buyVoucherForm.reset({ quantity: 1, is_produce: false, target_username: '' });
     },
   });
 };
@@ -157,30 +159,38 @@ const formatRupiah = (val) => {
       <!-- Action Section: Claim RO Form & Buy Voucher Button -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
-        <!-- Left: Form Klaim Repeat Order -->
+        <!-- Left: Client Mockup Style Activation Card -->
         <div class="lg:col-span-2 bg-white rounded-3xl border border-slate-200/80 p-6 md:p-8 shadow-sm space-y-6">
-          <div class="flex items-center justify-between border-b border-slate-100 pb-4">
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#1653a1] to-[#04bdb2] text-white flex items-center justify-center shadow-md">
-                <RotateCcw class="w-5 h-5" />
-              </div>
-              <div>
-                <h2 class="text-base font-black text-slate-900">Klaim Repeat Order (RO)</h2>
-                <p class="text-xs text-slate-500 font-medium">Gunakan Voucher RO untuk klaim 1 Poin RO & alokasi bonus sponsor Rp 20.000</p>
-              </div>
+          
+          <div class="bg-white p-6 md:p-8 rounded-3xl text-center space-y-6 max-w-md mx-auto border border-slate-100 shadow-xs">
+            <div class="space-y-1">
+              <h2 class="text-xl font-black tracking-tight text-slate-900 uppercase">REPEAT ORDER</h2>
+              <p class="text-xs text-slate-500 font-medium">Kamu bisa melakukan RO sesuai dengan Voucher RO yang tersedia</p>
             </div>
-          </div>
 
-          <form @submit.prevent="submitClaimRo" class="space-y-5">
-            <div>
-              <label class="block text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-2">
-                Pilih Kode Voucher RO (Rp 125.000)
-              </label>
-              
-              <div v-if="available_ro_vouchers.length > 0">
+            <!-- Pill Box: Voucher RO tersedia -->
+            <div class="border-2 border-slate-900 rounded-full py-3 px-6 flex items-center justify-between text-sm font-bold text-slate-900 bg-white shadow-xs">
+              <span>Voucher RO tersedia</span>
+              <span class="text-base font-black text-[#1653a1]">{{ ro_stats.available_ro_vouchers_count }}</span>
+            </div>
+
+            <!-- Subtext: If available > 0 vs 0 -->
+            <p v-if="ro_stats.available_ro_vouchers_count > 0" class="text-xs font-semibold text-slate-600">
+              kamu memiliki Voucher RO = <span class="font-extrabold text-slate-900">{{ ro_stats.available_ro_vouchers_count }}</span> senilai Rp 125.000
+            </p>
+            <p v-else class="text-xs font-semibold text-slate-500">
+              kamu tidak memiliki Voucher RO
+            </p>
+
+            <!-- If user has vouchers: Show Select & AKTIVASI RO Button -->
+            <form v-if="available_ro_vouchers.length > 0" @submit.prevent="submitClaimRo" class="space-y-4 pt-2">
+              <div class="text-left">
+                <label class="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-1">
+                  Pilih Kode Voucher RO:
+                </label>
                 <select 
                   v-model="claimForm.voucher_code"
-                  class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-800 focus:ring-2 focus:ring-[#04bdb2] focus:bg-white transition-all"
+                  class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-800 focus:ring-2 focus:ring-[#04bdb2] transition-all"
                   required
                 >
                   <option v-for="v in available_ro_vouchers" :key="v.id" :value="v.code">
@@ -189,31 +199,35 @@ const formatRupiah = (val) => {
                 </select>
               </div>
 
-              <div v-else class="p-4 bg-amber-50 border border-amber-200 rounded-2xl text-xs text-amber-800 space-y-2">
-                <p class="font-bold">⚠️ Anda belum memiliki Voucher RO aktif.</p>
-                <p class="text-[11px]">Silakan beli Voucher RO terlebih dahulu menggunakan saldo wallet Anda.</p>
-              </div>
-            </div>
+              <button 
+                type="submit" 
+                :disabled="claimForm.processing"
+                class="w-full py-3.5 px-8 bg-[#04bdb2] hover:bg-[#009c94] text-white font-black text-xs uppercase tracking-widest rounded-full shadow-md shadow-[#04bdb2]/30 transition-all cursor-pointer"
+              >
+                AKTIVASI RO
+              </button>
+            </form>
 
-            <!-- Benefit Summary List -->
-            <div class="p-4 bg-[#f0f7fb] border border-[#04bdb2]/30 rounded-2xl space-y-2 text-xs text-slate-700">
-              <span class="font-black text-[#1653a1] block uppercase text-[10px] tracking-wider">Rincian Manfaat Repeat Order:</span>
-              <ul class="space-y-1.5 list-disc list-inside text-[11px] font-medium text-slate-600">
-                <li><strong class="text-slate-900">+1 Poin RO</strong> ditambahkan ke akumulasi Poin RO Anda.</li>
-                <li><strong class="text-slate-900">Rp 20.000</strong> ditransfer sebagai Bonus Tier 1 ke Sponsor langsung Anda.</li>
-                <li>Mendapatkan tambahan 1 paket produk sesuai ketentuan program Repeat Order.</li>
-              </ul>
+            <!-- If user HAS NO vouchers (count === 0): Show BELI Button -->
+            <div v-else class="pt-2">
+              <button 
+                @click="buyVoucherModalOpen = true"
+                class="w-full py-3.5 px-8 bg-[#04bdb2] hover:bg-[#009c94] text-white font-black text-xs uppercase tracking-widest rounded-full shadow-md shadow-[#04bdb2]/30 transition-all cursor-pointer"
+              >
+                BELI
+              </button>
             </div>
+          </div>
 
-            <button 
-              type="submit" 
-              :disabled="claimForm.processing || available_ro_vouchers.length === 0"
-              class="w-full py-3.5 px-6 bg-gradient-to-r from-[#1653a1] to-[#04bdb2] hover:from-[#103f80] hover:to-[#009c94] text-white font-black text-xs uppercase tracking-wider rounded-2xl shadow-lg shadow-[#1653a1]/20 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-            >
-              <RotateCcw class="w-4 h-4" />
-              <span>Proses Repeat Order Sekarang</span>
-            </button>
-          </form>
+          <!-- Benefit Summary List -->
+          <div class="p-4 bg-[#f0f7fb] border border-[#04bdb2]/30 rounded-2xl space-y-2 text-xs text-slate-700">
+            <span class="font-black text-[#1653a1] block uppercase text-[10px] tracking-wider">Rincian Manfaat Repeat Order:</span>
+            <ul class="space-y-1.5 list-disc list-inside text-[11px] font-medium text-slate-600">
+              <li><strong class="text-slate-900">+1 Poin RO</strong> ditambahkan ke akumulasi Poin RO Anda.</li>
+              <li><strong class="text-slate-900">Rp 20.000</strong> ditransfer sebagai Bonus Tier 1 ke Sponsor langsung Anda.</li>
+              <li>Mendapatkan tambahan 1 paket produk sesuai ketentuan program Repeat Order.</li>
+            </ul>
+          </div>
         </div>
 
         <!-- Right: Buy Voucher RO Widget -->
@@ -225,7 +239,7 @@ const formatRupiah = (val) => {
               </div>
               <div>
                 <h3 class="text-sm font-black text-slate-900">Beli Voucher RO</h3>
-                <p class="text-[11px] text-slate-500 font-medium">Nominal Rp 125.000 / Voucher</p>
+                <p class="text-[11px] text-slate-500 font-medium">Nominal Rp 125.000 / Voucher (1 s/d 35 pcs)</p>
               </div>
             </div>
 
@@ -241,7 +255,7 @@ const formatRupiah = (val) => {
             </div>
 
             <p class="text-[11px] text-slate-500 font-medium leading-relaxed">
-              Voucher RO dapat digunakan untuk klaim Repeat Order sendiri atau ditransfer ke anggota tim mitra Anda.
+              Voucher RO dapat dibeli sejumlah 1, 2, hingga maks 35 pcs sesuai kebutuhan Anda.
             </p>
           </div>
 
@@ -250,7 +264,7 @@ const formatRupiah = (val) => {
             class="w-full py-3 px-4 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-2xl shadow-md transition-all cursor-pointer flex items-center justify-center gap-2"
           >
             <Plus class="w-4 h-4 text-[#04bdb2]" />
-            <span>Beli Voucher RO (Rp 125.000)</span>
+            <span>Beli Voucher RO (1-35 pcs)</span>
           </button>
         </div>
 
@@ -318,26 +332,48 @@ const formatRupiah = (val) => {
     <div v-if="buyVoucherModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
       <div class="bg-white rounded-3xl max-w-md w-full p-6 space-y-5 shadow-2xl border border-slate-100 animate-fade-in">
         <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-          <h3 class="text-base font-black text-slate-900">Beli Voucher Repeat Order</h3>
+          <h3 class="text-base font-black text-slate-900">Beli Voucher Repeat Order (RO)</h3>
           <button @click="buyVoucherModalOpen = false" class="text-slate-400 hover:text-slate-700">
             <XCircle class="w-5 h-5" />
           </button>
         </div>
 
         <form @submit.prevent="submitBuyVoucher" class="space-y-4">
+          <!-- Quantity Selection -->
+          <div>
+            <label class="block text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-1.5">
+              Jumlah Voucher RO (1 s/d 35 Pcs):
+            </label>
+            <input 
+              type="number" 
+              v-model.number="buyVoucherForm.quantity" 
+              min="1" 
+              max="35" 
+              class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-bold text-slate-900 focus:ring-2 focus:ring-[#04bdb2]"
+              required
+            />
+          </div>
+
           <div class="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-2 text-xs">
             <div class="flex items-center justify-between">
-              <span class="text-slate-500 font-medium">Nama Paket Voucher:</span>
-              <span class="font-bold text-slate-800">Repeat Order (RO)</span>
+              <span class="text-slate-500 font-medium">Harga Per Voucher:</span>
+              <span class="font-bold text-slate-800">Rp 125.000</span>
             </div>
-            <div class="flex items-center justify-between">
-              <span class="text-slate-500 font-medium">Harga Voucher:</span>
-              <span class="font-black text-[#1653a1]">Rp 125.000</span>
+            <div class="flex items-center justify-between font-bold">
+              <span class="text-slate-700">Total Pembayaran ({{ buyVoucherForm.quantity || 1 }} Pcs):</span>
+              <span class="font-black text-[#1653a1] text-sm">{{ formatRupiah((buyVoucherForm.quantity || 1) * 125000) }}</span>
             </div>
-            <div class="flex items-center justify-between border-t border-slate-200 pt-2">
-              <span class="text-slate-500 font-medium">Saldo Wallet Anda:</span>
-              <span class="font-black text-slate-900">{{ formatRupiah(user_saldo) }}</span>
+            <div class="flex items-center justify-between border-t border-slate-200 pt-2 text-slate-500">
+              <span>Saldo Wallet Anda:</span>
+              <span class="font-bold text-slate-900">{{ formatRupiah(user_saldo) }}</span>
             </div>
+          </div>
+
+          <!-- Company Bank Transfer Info -->
+          <div class="p-3 bg-[#f0f7fb] border border-[#1653a1]/30 rounded-2xl text-xs space-y-1">
+            <span class="font-extrabold text-[#1653a1] block text-[10px] uppercase tracking-wider">Rekening Transfer Bank Perusahaan:</span>
+            <p class="font-black text-slate-900">{{ company_bank?.bank_name || 'Bank BRI' }} - {{ company_bank?.account_number || '806401000095564' }}</p>
+            <p class="text-[11px] text-slate-600 font-medium">a.n {{ company_bank?.account_name || 'PT.Xseller Punya Kita' }}</p>
           </div>
 
           <div v-if="is_admin" class="space-y-3 pt-2">
@@ -370,7 +406,7 @@ const formatRupiah = (val) => {
               :disabled="buyVoucherForm.processing"
               class="px-5 py-2.5 bg-[#1653a1] hover:bg-[#103f80] text-white font-black text-xs rounded-xl shadow-md transition-all cursor-pointer"
             >
-              Konfirmasi Beli (Rp 125.000)
+              Konfirmasi Beli ({{ formatRupiah((buyVoucherForm.quantity || 1) * 125000) }})
             </button>
           </div>
         </form>

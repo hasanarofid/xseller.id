@@ -65,6 +65,16 @@ class RepeatOrderController extends Controller
             ->where('description', 'LIKE', '%Repeat Order%')
             ->sum('amount');
 
+        $settings = \App\Models\Setting::all()->pluck('value', 'key');
+        $companyBanks = json_decode($settings['company_banks'] ?? '[]', true);
+        $companyBank = (is_array($companyBanks) && count($companyBanks) > 0) 
+            ? $companyBanks[0] 
+            : [
+                'bank_name' => 'Bank BRI',
+                'account_number' => '806401000095564',
+                'account_name' => 'PT.Xseller Punya Kita',
+            ];
+
         return Inertia::render('Admin/RepeatOrder/Index', [
             'ro_stats' => [
                 'total_ro_points' => $totalRoPoints,
@@ -75,6 +85,7 @@ class RepeatOrderController extends Controller
             'repeat_orders' => $repeatOrders,
             'user_saldo' => (float) ($user->saldo ?? 0),
             'user_package' => $user->package_name ?? 'Starter',
+            'company_bank' => $companyBank,
             'is_admin' => $user->hasRole('admin'),
         ]);
     }
@@ -152,12 +163,18 @@ class RepeatOrderController extends Controller
     }
 
     /**
-     * Purchase or produce Voucher RO (Rp 125.000).
+     * Purchase or produce Voucher RO (Rp 125.000 / pcs, quantity 1 to 35).
      */
     public function buyVoucher(Request $request)
     {
+        $request->validate([
+            'quantity' => 'nullable|integer|min:1|max:35',
+        ]);
+
+        $qty = max(1, min(35, (int) $request->input('quantity', 1)));
+        $unitPrice = 125000;
+        $totalPrice = $unitPrice * $qty;
         $user = auth()->user();
-        $price = 125000;
 
         if ($request->boolean('is_produce') && $user->hasRole('admin')) {
             // Admin produce free Voucher RO
@@ -169,46 +186,50 @@ class RepeatOrderController extends Controller
                 }
             }
 
-            DB::transaction(function () use ($targetUser) {
-                $code = 'RO-' . rand(1000, 9999) . '-' . strtoupper(Str::random(3));
-                Voucher::create([
-                    'code' => $code,
-                    'user_id' => $targetUser->id,
-                    'package_name' => 'Repeat Order (Rp 125.000)',
-                    'voucher_type' => 'ro',
-                    'status' => 'active',
-                ]);
+            DB::transaction(function () use ($targetUser, $qty) {
+                for ($i = 0; $i < $qty; $i++) {
+                    $code = 'RO-' . rand(1000, 9999) . '-' . strtoupper(Str::random(3));
+                    Voucher::create([
+                        'code' => $code,
+                        'user_id' => $targetUser->id,
+                        'package_name' => 'Repeat Order (Rp 125.000)',
+                        'voucher_type' => 'ro',
+                        'status' => 'active',
+                    ]);
+                }
             });
 
-            return back()->with('success', 'Berhasil memproduksi 1 Voucher RO untuk @' . $targetUser->username . '!');
+            return back()->with('success', "Berhasil memproduksi {$qty} Voucher RO untuk @" . $targetUser->username . "!");
         }
 
         // Member purchase using wallet balance
-        if (($user->saldo ?? 0) < $price) {
-            return back()->with('error', 'Saldo wallet Anda tidak mencukupi untuk membeli Voucher RO (Rp 125.000)!');
+        if (($user->saldo ?? 0) < $totalPrice) {
+            return back()->with('error', "Saldo wallet Anda tidak mencukupi untuk membeli {$qty} Voucher RO (Total: Rp " . number_format($totalPrice, 0, ',', '.') . ")!");
         }
 
-        DB::transaction(function () use ($user, $price) {
-            $user->decrement('saldo', $price);
+        DB::transaction(function () use ($user, $totalPrice, $qty) {
+            $user->decrement('saldo', $totalPrice);
 
             WalletTransaction::create([
                 'user_id' => $user->id,
                 'type' => 'out',
                 'category' => 'purchase_voucher',
-                'amount' => $price,
-                'description' => 'Pembelian Voucher Repeat Order (Rp 125.000)',
+                'amount' => $totalPrice,
+                'description' => "Pembelian {$qty} Voucher Repeat Order (Rp 125.000 / pcs)",
             ]);
 
-            $code = 'RO-' . rand(1000, 9999) . '-' . strtoupper(Str::random(3));
-            Voucher::create([
-                'code' => $code,
-                'user_id' => $user->id,
-                'package_name' => 'Repeat Order (Rp 125.000)',
-                'voucher_type' => 'ro',
-                'status' => 'active',
-            ]);
+            for ($i = 0; $i < $qty; $i++) {
+                $code = 'RO-' . rand(1000, 9999) . '-' . strtoupper(Str::random(3));
+                Voucher::create([
+                    'code' => $code,
+                    'user_id' => $user->id,
+                    'package_name' => 'Repeat Order (Rp 125.000)',
+                    'voucher_type' => 'ro',
+                    'status' => 'active',
+                ]);
+            }
         });
 
-        return back()->with('success', 'Berhasil membeli 1 Voucher RO (Rp 125.000)!');
+        return back()->with('success', "Berhasil membeli {$qty} Voucher RO!");
     }
 }
