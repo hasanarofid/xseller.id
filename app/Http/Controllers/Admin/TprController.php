@@ -33,7 +33,7 @@ class TprController extends Controller
                 'monthly_share_percent' => 7,
                 'monthly_share_amount' => 301000,
                 'duration_months' => 3,
-                'description' => 'Profit Share 7% per bulan selama 3 bulan (Rp 301.000 / bulan)',
+                'description' => 'Paket Rp 4.300.000 (Business)',
             ];
         }
         if ($isUltimate || $isAdmin) {
@@ -43,7 +43,7 @@ class TprController extends Controller
                 'monthly_share_percent' => 9,
                 'monthly_share_amount' => 945000,
                 'duration_months' => 3,
-                'description' => 'Profit Share 9% per bulan selama 3 bulan (Rp 945.000 / bulan)',
+                'description' => 'Paket Rp 10.500.000 (Partner)',
             ];
         }
 

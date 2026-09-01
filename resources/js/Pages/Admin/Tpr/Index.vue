@@ -139,7 +139,7 @@ const formatRupiah = (val) => {
           </span>
           <h3 class="text-xl font-black text-slate-900">Diperlukan Paket Rp 4.300.000 atau Rp 10.500.000</h3>
           <p class="text-xs text-slate-600 font-medium leading-relaxed max-w-lg mx-auto">
-            Untuk mendapatkan alokasi bulanan (Profit Share 7% / 9%), Anda harus membeli/mengaktifkan 
+            Untuk mengaktifkan Fitur TPR, Anda harus membeli/mengaktifkan 
             <strong class="text-slate-900">Paket Rp 4.300.000 (Business)</strong> atau 
             <strong class="text-slate-900">Paket Rp 10.500.000 (Partner)</strong> terlebih dahulu. Paket Anda saat ini: <span class="font-extrabold text-rose-600 uppercase">{{ user_package }}</span>.
           </p>
@@ -182,7 +182,7 @@ const formatRupiah = (val) => {
                   class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-xs font-bold focus:outline-none focus:border-amber-500"
                 >
                   <option v-for="opt in allowed_options" :key="opt.amount" :value="opt.amount">
-                    {{ opt.package_name }} - {{ opt.description }}
+                    {{ opt.package_name }}
                   </option>
                 </select>
               </div>
@@ -259,8 +259,8 @@ const formatRupiah = (val) => {
                     </span>
                   </div>
 
-                  <p class="text-xs text-slate-700 font-semibold">
-                    {{ item.package_name }} — Profit Share {{ item.monthly_share_percent }}%/Bulan ({{ formatRupiah(item.monthly_share_amount) }}/bln)
+                  <p class="text-xs text-slate-700 font-bold">
+                    {{ item.package_name }}
                   </p>
 
                   <p class="text-[10px] text-slate-400">
