@@ -93,17 +93,17 @@ const formatRupiah = (val) => {
       </div>
 
       <!-- Flash Messages -->
-      <div v-if="$page.props.flash.success" class="p-4 bg-emerald-50 border border-emerald-300 text-emerald-800 rounded-2xl flex items-center justify-between text-xs font-bold shadow-sm">
+      <div v-if="$page.props.flash?.success" class="p-4 bg-emerald-50 border border-emerald-300 text-emerald-800 rounded-2xl flex items-center justify-between text-xs font-bold shadow-sm">
         <div class="flex items-center gap-2">
           <CheckCircle2 class="w-4 h-4 text-emerald-600 shrink-0" />
-          <span>{{ $page.props.flash.success }}</span>
+          <span>{{ $page.props.flash?.success }}</span>
         </div>
       </div>
 
-      <div v-if="$page.props.flash.error" class="p-4 bg-rose-50 border border-rose-300 text-rose-800 rounded-2xl flex items-center justify-between text-xs font-bold shadow-sm">
+      <div v-if="$page.props.flash?.error" class="p-4 bg-rose-50 border border-rose-300 text-rose-800 rounded-2xl flex items-center justify-between text-xs font-bold shadow-sm">
         <div class="flex items-center gap-2">
           <XCircle class="w-4 h-4 text-rose-600 shrink-0" />
-          <span>{{ $page.props.flash.error }}</span>
+          <span>{{ $page.props.flash?.error }}</span>
         </div>
       </div>
 
