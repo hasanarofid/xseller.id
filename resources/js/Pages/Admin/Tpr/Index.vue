@@ -123,19 +123,8 @@ const formatRupiah = (val) => {
         </h2>
 
         <p class="text-xs text-amber-100 max-w-2xl font-medium leading-relaxed">
-          Fitur eksklusif menitipkan produk ke perusahaan untuk mendapatkan alokasi bulanan secara otomatis selama 3 bulan ke depan.
+          Fitur eksklusif dimana kamu bisa menitipkan produk kamu ke perusahaan atau conciate sale dan kamu berhak mendapatkan bagi hasil selama 3 bulan kedepan.
         </p>
-
-        <div class="pt-2 flex flex-wrap items-center gap-3 text-xs font-bold">
-          <div class="px-3.5 py-2 bg-black/25 rounded-2xl flex items-center gap-2 border border-white/10">
-            <span>Paket 4,3 Juta (Business):</span>
-            <span class="text-yellow-300 font-black">Profit Share 7% / Bulan (3 Bulan)</span>
-          </div>
-          <div class="px-3.5 py-2 bg-black/25 rounded-2xl flex items-center gap-2 border border-white/10">
-            <span>Paket 10,5 Juta (Partner):</span>
-            <span class="text-yellow-300 font-black">Profit Share 9% / Bulan (3 Bulan)</span>
-          </div>
-        </div>
       </div>
 
       <!-- Access Restricted Notice if Fitur TPR is OFF -->
