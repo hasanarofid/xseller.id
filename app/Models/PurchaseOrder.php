@@ -5,27 +5,19 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Voucher extends Model
+class PurchaseOrder extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'code',
         'user_id',
         'package_name',
-        'voucher_type',
-        'status',
-        'used_by_id',
-        'used_at',
+        'amount',
+        'po_points',
     ];
 
-    public function owner()
+    public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
-    }
-
-    public function usedBy()
-    {
-        return $this->belongsTo(User::class, 'used_by_id');
     }
 }

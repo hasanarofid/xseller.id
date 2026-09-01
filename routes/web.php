@@ -36,6 +36,15 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::get('/aktivasi-member', [\App\Http\Controllers\Admin\MemberActivationController::class, 'index'])->name('activation.index');
     Route::post('/aktivasi-member', [\App\Http\Controllers\Admin\MemberActivationController::class, 'store'])->name('activation.store');
 
+    // Repeat Order (RO)
+    Route::get('/repeat-order', [\App\Http\Controllers\Admin\RepeatOrderController::class, 'index'])->name('repeat-order.index');
+    Route::post('/repeat-order', [\App\Http\Controllers\Admin\RepeatOrderController::class, 'store'])->name('repeat-order.store');
+    Route::post('/repeat-order/buy-voucher', [\App\Http\Controllers\Admin\RepeatOrderController::class, 'buyVoucher'])->name('repeat-order.buy-voucher');
+
+    // Purchase Order (PO)
+    Route::get('/purchase-order', [\App\Http\Controllers\Admin\PurchaseOrderController::class, 'index'])->name('purchase-order.index');
+    Route::post('/purchase-order', [\App\Http\Controllers\Admin\PurchaseOrderController::class, 'store'])->name('purchase-order.store');
+
     // Voucher / PIN Wallet
     Route::get('/voucher-wallet', [\App\Http\Controllers\Admin\VoucherWalletController::class, 'index'])->name('voucher-wallet.index');
     Route::post('/voucher-wallet/buy', [\App\Http\Controllers\Admin\VoucherWalletController::class, 'buy'])->name('voucher-wallet.buy');

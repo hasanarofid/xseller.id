@@ -23,7 +23,9 @@ import {
   CheckCircle2,
   Activity,
   Crown,
-  Download
+  Download,
+  RotateCcw,
+  ShoppingBag
 } from '@lucide/vue';
 
 const page = usePage();
@@ -48,6 +50,8 @@ const navigation = [
   { name: 'Dashboard', href: route('admin.dashboard'), icon: LayoutDashboard, current: route().current('admin.dashboard') },
   { name: 'Team Mitra', href: route('admin.pohon-jaringan'), icon: GitFork, current: route().current('admin.pohon-jaringan') },
   { name: 'Aktivitas Mitra', href: route('admin.activation.index'), icon: UserPlus, current: route().current('admin.activation.index') },
+  { name: 'Repeat Order', href: route('admin.repeat-order.index'), icon: RotateCcw, current: route().current('admin.repeat-order.index') },
+  { name: 'Purchase Order', href: route('admin.purchase-order.index'), icon: ShoppingBag, current: route().current('admin.purchase-order.index') },
   { name: 'Voucher Wallet', href: route('admin.voucher-wallet.index'), icon: KeyRound, current: route().current('admin.voucher-wallet.index') },
   { name: 'Keuangan', href: route('admin.finance.index'), icon: Wallet, current: route().current('admin.finance.index') },
   { name: 'Penarikan Saldo', href: route('admin.withdrawals.index'), icon: ArrowUpRight, current: route().current('admin.withdrawals.index') },
