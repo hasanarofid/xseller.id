@@ -1,6 +1,6 @@
 <script setup>
 import AdminLayout from '@/Layouts/AdminLayout.vue';
-import { Head, useForm, usePage } from '@inertiajs/vue3';
+import { Head, useForm, usePage, Link } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
 import { 
   Crown, 
@@ -12,7 +12,9 @@ import {
   X, 
   Clock, 
   Lock, 
-  FileText 
+  FileText,
+  KeyRound,
+  ArrowRight
 } from '@lucide/vue';
 
 const props = defineProps({
@@ -66,7 +68,7 @@ const rejectTpr = (id) => {
 };
 
 const formatRupiah = (val) => {
-  return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(val);
+  return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(val || 0);
 };
 </script>
 
@@ -74,7 +76,7 @@ const formatRupiah = (val) => {
   <Head title="Fitur TPR (Trade Promotion Program) - XSELLER" />
 
   <AdminLayout>
-    <div class="space-y-6">
+    <div class="space-y-6 max-w-7xl mx-auto">
       
       <!-- Flash Alert Notifications -->
       <div v-if="flashSuccess" class="p-4 bg-emerald-50 border border-emerald-300 text-emerald-800 rounded-2xl text-xs font-semibold flex items-center justify-between shadow-sm">
@@ -92,50 +94,81 @@ const formatRupiah = (val) => {
       </div>
 
       <!-- Header Card Banner -->
-      <div class="bg-gradient-to-r from-amber-600 via-amber-700 to-yellow-600 rounded-3xl p-6 md:p-8 text-white shadow-lg space-y-3 relative overflow-hidden">
+      <div class="bg-gradient-to-r from-amber-600 via-amber-700 to-yellow-600 rounded-3xl p-6 md:p-8 text-white shadow-lg space-y-4 relative overflow-hidden">
         <div class="absolute right-0 top-0 bottom-0 opacity-10 flex items-center pr-10 pointer-events-none">
-          <Crown class="w-64 h-64" />
+          <Crown class="w-64 h-64 text-white" />
         </div>
 
-        <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-white/20 backdrop-blur rounded-full text-[10px] font-extrabold uppercase tracking-wider text-amber-100">
-          <Sparkles class="w-3.5 h-3.5" />
-          <span>PROGRAM EKSKLUSIF PROFIT SHARING</span>
+        <div class="flex items-center justify-between flex-wrap gap-3">
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-white/20 backdrop-blur rounded-full text-[10px] font-extrabold uppercase tracking-wider text-amber-100">
+            <Sparkles class="w-3.5 h-3.5" />
+            <span>TRADE PROMOTION PROGRAM (FITUR TPR)</span>
+          </div>
+
+          <!-- Status Indicator Badge -->
+          <div 
+            :class="[
+              is_eligible ? 'bg-emerald-500 text-white' : 'bg-rose-500 text-white',
+              'px-3.5 py-1 text-xs font-black rounded-full uppercase tracking-wider flex items-center gap-1.5 shadow-xs'
+            ]"
+          >
+            <CheckCircle2 v-if="is_eligible" class="w-3.5 h-3.5" />
+            <Lock v-else class="w-3.5 h-3.5" />
+            <span>FITUR TPR: {{ is_eligible ? 'ON (AKTIF)' : 'OFF (NON-AKTIF)' }}</span>
+          </div>
         </div>
 
         <h2 class="text-2xl md:text-3xl font-black tracking-tight">
-          Trade Promotion Program (TPR Fitur)
+          Fitur Trade Promotion Program (TPR)
         </h2>
 
         <p class="text-xs text-amber-100 max-w-2xl font-medium leading-relaxed">
-          Fitur eksklusif menitipkan produk ke perusahaan untuk mendapatkan bagi hasil (profit share) bulanan secara otomatis selama 3 bulan ke depan.
+          Fitur eksklusif menitipkan produk ke perusahaan untuk mendapatkan alokasi bulanan secara otomatis selama 3 bulan ke depan.
         </p>
 
-        <div class="pt-2 flex items-center gap-4 text-xs font-bold">
-          <div class="px-3 py-1.5 bg-black/20 rounded-xl flex items-center gap-2">
-            <span>Paket 4,3 Juta:</span>
-            <span class="text-yellow-300 font-extrabold">Profit Share 7% / Bulan (3 Bulan)</span>
+        <div class="pt-2 flex flex-wrap items-center gap-3 text-xs font-bold">
+          <div class="px-3.5 py-2 bg-black/25 rounded-2xl flex items-center gap-2 border border-white/10">
+            <span>Paket 4,3 Juta (Business):</span>
+            <span class="text-yellow-300 font-black">Profit Share 7% / Bulan (3 Bulan)</span>
           </div>
-          <div class="px-3 py-1.5 bg-black/20 rounded-xl flex items-center gap-2">
-            <span>Paket 10,5 Juta:</span>
-            <span class="text-yellow-300 font-extrabold">Profit Share 9% / Bulan (3 Bulan)</span>
+          <div class="px-3.5 py-2 bg-black/25 rounded-2xl flex items-center gap-2 border border-white/10">
+            <span>Paket 10,5 Juta (Partner):</span>
+            <span class="text-yellow-300 font-black">Profit Share 9% / Bulan (3 Bulan)</span>
           </div>
         </div>
       </div>
 
-      <!-- Access Restricted Notice if not eligible -->
-      <div v-if="!is_eligible" class="bg-white border border-rose-200 rounded-3xl p-8 text-center space-y-4 shadow-sm">
-        <div class="w-16 h-16 rounded-full bg-rose-50 text-rose-500 mx-auto flex items-center justify-center">
-          <Lock class="w-8 h-8" />
+      <!-- Access Restricted Notice if Fitur TPR is OFF -->
+      <div v-if="!is_eligible" class="bg-white border border-rose-200 rounded-3xl p-8 text-center space-y-5 shadow-sm max-w-2xl mx-auto">
+        <div class="w-20 h-20 rounded-full bg-rose-50 border border-rose-200 text-rose-500 mx-auto flex items-center justify-center shadow-xs">
+          <Lock class="w-10 h-10" />
         </div>
-        <div class="space-y-1 max-w-md mx-auto">
-          <h3 class="text-base font-extrabold text-slate-900">Fitur TPR Terkunci</h3>
-          <p class="text-xs text-slate-500 font-medium leading-relaxed">
-            Fitur Trade Promotion Program (TPR) ini hanya dapat dibuka oleh member yang telah mengambil **Paket Rp 4.300.000 (Pro)** atau **Paket Rp 10.500.000 (Ultimate)**. Paket Anda saat ini: **{{ user_package }}**.
+
+        <div class="space-y-2">
+          <span class="px-3 py-1 bg-rose-100 text-rose-700 rounded-full text-[10px] font-black uppercase tracking-wider">
+            FITUR TPR SAAT INI: OFF (NON-AKTIF)
+          </span>
+          <h3 class="text-xl font-black text-slate-900">Diperlukan Paket Rp 4.300.000 atau Rp 10.500.000</h3>
+          <p class="text-xs text-slate-600 font-medium leading-relaxed max-w-lg mx-auto">
+            Untuk mendapatkan alokasi bulanan (Profit Share 7% / 9%), Anda harus membeli/mengaktifkan 
+            <strong class="text-slate-900">Paket Rp 4.300.000 (Business)</strong> atau 
+            <strong class="text-slate-900">Paket Rp 10.500.000 (Partner)</strong> terlebih dahulu. Paket Anda saat ini: <span class="font-extrabold text-rose-600 uppercase">{{ user_package }}</span>.
           </p>
         </div>
+
+        <div class="pt-2 flex items-center justify-center gap-3">
+          <Link 
+            :href="route('admin.voucher-wallet.index')" 
+            class="px-6 py-3 bg-[#1653a1] hover:bg-[#103f80] text-white text-xs font-black rounded-2xl shadow-md transition-all inline-flex items-center gap-2 cursor-pointer"
+          >
+            <KeyRound class="w-4 h-4 text-[#a9fff7]" />
+            <span>Beli / Konversi Voucher Paket (4.3m / 10.5m)</span>
+            <ArrowRight class="w-4 h-4" />
+          </Link>
+        </div>
       </div>
 
-      <!-- Main Layout Grid if Eligible or Admin -->
+      <!-- Main Layout Grid if Fitur TPR is ON or Admin -->
       <div v-else class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
         <!-- LEFT: Request Form (5 Cols) -->
@@ -152,7 +185,7 @@ const formatRupiah = (val) => {
               <!-- Select Package -->
               <div>
                 <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
-                  PILIH PAKET TPR
+                  PILIH PAKET FITUR TPR
                 </label>
                 <select 
                   v-model="form.amount"
@@ -168,7 +201,7 @@ const formatRupiah = (val) => {
               <!-- Upload Transfer Proof -->
               <div>
                 <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
-                  UPLOAD BUKTI TRANSFER DANA TPR
+                  UPLOAD BUKTI TRANSFER DANA FITUR TPR
                 </label>
                 <input 
                   type="file" 
@@ -187,7 +220,7 @@ const formatRupiah = (val) => {
                 class="w-full py-3 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
               >
                 <Send class="w-4 h-4" />
-                <span>Kirim Request TPR</span>
+                <span>Kirim Request Fitur TPR</span>
               </button>
             </form>
           </div>
@@ -200,7 +233,7 @@ const formatRupiah = (val) => {
               <div class="flex items-center gap-2">
                 <FileText class="w-4 h-4 text-amber-600" />
                 <h3 class="text-xs font-black text-slate-900 uppercase tracking-tight">
-                  {{ is_admin ? 'DAFTAR REQUEST TPR SEMUA MEMBER (ADMIN)' : 'RIWAYAT REQUEST TPR ANDA' }}
+                  {{ is_admin ? 'DAFTAR REQUEST FITUR TPR SEMUA MEMBER (ADMIN)' : 'RIWAYAT REQUEST FITUR TPR ANDA' }}
                 </h3>
               </div>
               <span class="px-2.5 py-1 text-[10px] font-extrabold bg-slate-100 text-slate-600 rounded-full">
@@ -211,7 +244,7 @@ const formatRupiah = (val) => {
             <!-- List / Empty State -->
             <div v-if="requests.length === 0" class="p-12 text-center border-2 border-dashed border-slate-100 rounded-3xl bg-slate-50/50">
               <p class="text-xs text-slate-400 italic font-medium">
-                Belum ada pengajuan Trade Promotion Program (TPR) di sistem.
+                Belum ada pengajuan Fitur TPR di sistem.
               </p>
             </div>
 

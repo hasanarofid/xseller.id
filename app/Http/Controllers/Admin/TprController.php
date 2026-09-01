@@ -19,16 +19,16 @@ class TprController extends Controller
         $isAdmin = $user->hasRole('admin');
         $userPackage = strtolower($user->package_name ?? '');
 
-        // Determine if member is eligible for TPR Feature (Package 4,3 Juta or 10,5 Juta or Admin)
-        $isPro = str_contains($userPackage, '4.300') || str_contains($userPackage, '4300') || str_contains($userPackage, 'pro');
-        $isUltimate = str_contains($userPackage, '10.500') || str_contains($userPackage, '10500') || str_contains($userPackage, 'ultimate');
+        // Determine if member is eligible for TPR Feature (Package 4,3 Juta Business or 10,5 Juta Partner or Admin)
+        $isPro = str_contains($userPackage, '4.300') || str_contains($userPackage, '4300') || str_contains($userPackage, 'pro') || str_contains($userPackage, 'business');
+        $isUltimate = str_contains($userPackage, '10.500') || str_contains($userPackage, '10500') || str_contains($userPackage, 'ultimate') || str_contains($userPackage, 'partner');
         $isEligible = $isPro || $isUltimate || $isAdmin;
 
         // Determine allowed package option for member request
         $allowedOptions = [];
         if ($isPro || $isAdmin) {
             $allowedOptions[] = [
-                'package_name' => 'Paket Rp 4.300.000',
+                'package_name' => 'Paket Rp 4.300.000 (Business)',
                 'amount' => 4300000,
                 'monthly_share_percent' => 7,
                 'monthly_share_amount' => 301000,
@@ -38,7 +38,7 @@ class TprController extends Controller
         }
         if ($isUltimate || $isAdmin) {
             $allowedOptions[] = [
-                'package_name' => 'Paket Rp 10.500.000',
+                'package_name' => 'Paket Rp 10.500.000 (Partner)',
                 'amount' => 10500000,
                 'monthly_share_percent' => 9,
                 'monthly_share_amount' => 945000,
