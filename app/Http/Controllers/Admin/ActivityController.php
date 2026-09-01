@@ -17,7 +17,7 @@ class ActivityController extends Controller
         $user = auth()->user();
         $tab = $request->input('tab', 'sponsor');
 
-        if (!in_array($tab, ['sponsor', 'generasi', 'ro', 'tpr', 'penarikan'])) {
+        if (!in_array($tab, ['sponsor', 'generasi', 'ro', 'tpr', 'incentive', 'penarikan'])) {
             $tab = 'sponsor';
         }
 
@@ -26,13 +26,15 @@ class ActivityController extends Controller
         $bonusGenerasi = BonusLog::where('user_id', $user->id)->where('category', 'generasi')->sum('amount');
         $bonusRO = BonusLog::where('user_id', $user->id)->where('category', 'ro')->sum('amount');
         $bonusTPR = BonusLog::where('user_id', $user->id)->where('category', 'tpr')->sum('amount');
+        $bonusIncentive = BonusLog::where('user_id', $user->id)->where('category', 'incentive')->sum('amount');
 
         // Tab Info Descriptions
         $tabDescriptions = [
             'sponsor' => 'Bonus Sponsor (Direct Referral 20%): Diberikan setiap kali Anda mereferensikan secara langsung member baru yang diaktifkan dengan VOUCHER.',
             'generasi' => 'Bonus Generasi (Tier Allocation): Diberikan dari alokasi pembagian tier generasi (Generasi 1 s/d Generasi 15) dari pendaftaran member di jaringan Anda.',
             'ro' => 'Bonus Repeat Order (RO): Diberikan dari setiap transaksi Repeat Order (RO) di jaringan Anda (Bonus Sponsor RO Rp 20.000 + Matching Bonus).',
-            'tpr' => 'Bonus TPR (Profit Share / Rebate): Diberikan dari program Trade Promotion Program (TPR) berupa profit sharing bulanan & rebate sponsor.',
+            'tpr' => 'Bonus TPR: Diberikan dari alokasi program Trade Promotion Program (TPR) bulanan.',
+            'incentive' => 'Bonus Incentive: Diberikan atas pencapaian insentif khusus dan kualifikasi prestasi mitra di jaringan Anda.',
             'penarikan' => 'Histori Penarikan Saldo: Rincian transaksi pencairan saldo dari e-wallet ke rekening bank Anda.',
         ];
 

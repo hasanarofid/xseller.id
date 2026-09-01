@@ -36,6 +36,7 @@ const tabList = [
   { key: 'generasi', label: 'Bonus Generasi' },
   { key: 'ro', label: 'Bonus RO' },
   { key: 'tpr', label: 'Bonus TPR' },
+  { key: 'incentive', label: 'Incentive' },
   { key: 'penarikan', label: 'Penarikan' },
 ];
 </script>

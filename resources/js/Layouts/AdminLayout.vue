@@ -26,7 +26,9 @@ import {
   Download,
   RotateCcw,
   ShoppingBag,
-  Layers
+  Layers,
+  Award,
+  Coins
 } from '@lucide/vue';
 
 const page = usePage();
@@ -59,6 +61,9 @@ const navigation = computed(() => [
   { name: 'Aktivitas Mitra', href: route('admin.activation.index'), icon: UserPlus, current: route().current('admin.activation.index') },
   { name: 'Repeat Order', href: route('admin.repeat-order.index'), icon: RotateCcw, current: route().current('admin.repeat-order.index') },
   { name: 'Purchase Order', href: route('admin.purchase-order.index'), icon: ShoppingBag, current: route().current('admin.purchase-order.index') },
+  { name: 'Riwayat Poin RO', href: route('admin.repeat-order.index'), icon: Award, current: route().current('admin.repeat-order.index') },
+  { name: 'Riwayat Poin PO', href: route('admin.purchase-order.index'), icon: Coins, current: route().current('admin.purchase-order.index') },
+  { name: 'Riwayat Team Poin', href: route('admin.dashboard'), icon: LayoutDashboard, current: route().current('admin.dashboard') },
   { name: 'Voucher Wallet', href: route('admin.voucher-wallet.index'), icon: KeyRound, current: route().current('admin.voucher-wallet.index') },
   ...(isAdmin.value ? [
     { name: 'Keuangan', href: route('admin.finance.index'), icon: Wallet, current: route().current('admin.finance.index') },
