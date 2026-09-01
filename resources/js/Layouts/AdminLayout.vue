@@ -28,7 +28,8 @@ import {
   ShoppingBag,
   Layers,
   Award,
-  Coins
+  Coins,
+  Package
 } from '@lucide/vue';
 
 const page = usePage();
@@ -67,6 +68,7 @@ const navigation = computed(() => [
   { name: 'Voucher Wallet', href: route('admin.voucher-wallet.index'), icon: KeyRound, current: route().current('admin.voucher-wallet.index') },
   ...(isAdmin.value ? [
     { name: 'Keuangan', href: route('admin.finance.index'), icon: Wallet, current: route().current('admin.finance.index') },
+    { name: 'Kelola Produk', href: route('admin.products.index'), icon: Package, current: route().current('admin.products.index') },
   ] : [
     { name: 'Riwayat Steping', href: route('admin.steping-history.index'), icon: Layers, current: route().current('admin.steping-history.index') },
   ]),
@@ -158,15 +160,9 @@ const logout = () => {
             <div class="w-full mt-2 p-3 bg-[#f0f7fb] border border-[#04bdb2]/20 rounded-2xl text-left space-y-1.5 shadow-xs">
               <span class="text-[9px] font-extrabold text-[#1653a1] uppercase tracking-wider block">DOMPET SAYA</span>
               <p class="text-sm font-black text-slate-900 leading-tight">Rp 2.500.000</p>
-              <div class="grid grid-cols-2 gap-1 pt-1.5 border-t border-slate-200/80 text-[9px]">
-                <div>
-                  <span class="text-slate-400 font-medium block">VOUCHER:</span>
-                  <span class="font-bold text-slate-800">2 Pcs</span>
-                </div>
-                <div>
-                  <span class="text-slate-400 font-medium block">TOTAL BONUS:</span>
-                  <span class="font-bold text-[#009c94]">Rp 400.000</span>
-                </div>
+              <div class="pt-1.5 border-t border-slate-200/80 text-[9px]">
+                <span class="text-slate-400 font-medium block">TOTAL BONUS:</span>
+                <span class="font-bold text-[#009c94]">Rp 400.000</span>
               </div>
             </div>
           </div>
@@ -319,7 +315,7 @@ const logout = () => {
 
         <!-- Main Footer -->
         <footer class="p-4 text-center text-[11px] text-slate-500 border-t border-slate-200 bg-white">
-          <p>© 2026 XSELLER.ID. Hak Cipta Dilindungi Undang-Undang. E-Commerce Trade Promotion Program & Affiliasi MLM Binary 2 Kaki.</p>
+          <p>Copyright@Xseller 2026 Trade Promotion Program</p>
         </footer>
       </div>
     </div>

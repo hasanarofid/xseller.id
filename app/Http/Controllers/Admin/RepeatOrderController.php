@@ -75,6 +75,8 @@ class RepeatOrderController extends Controller
                 'account_name' => 'PT.Xseller Punya Kita',
             ];
 
+        $roProducts = \App\Models\Product::where('type', 'ro')->where('is_active', true)->get();
+
         return Inertia::render('Admin/RepeatOrder/Index', [
             'ro_stats' => [
                 'total_ro_points' => $totalRoPoints,
@@ -87,6 +89,7 @@ class RepeatOrderController extends Controller
             'user_package' => $user->package_name ?? 'Starter',
             'company_bank' => $companyBank,
             'is_admin' => $user->hasRole('admin'),
+            'products' => $roProducts,
         ]);
     }
 

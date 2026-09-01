@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
     {
         // 1. Seed Roles and Permissions
         $this->call(RoleAndPermissionSeeder::class);
+        $this->call(ProductSeeder::class);
 
         // 2. Seed Default Users and Assign Roles
         $admin = User::updateOrCreate(

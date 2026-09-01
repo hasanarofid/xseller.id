@@ -27,6 +27,7 @@ const props = defineProps({
   user_package: String,
   company_bank: Object,
   is_admin: Boolean,
+  products: Array,
 });
 
 const page = usePage();
@@ -268,6 +269,148 @@ const formatRupiah = (val) => {
           </button>
         </div>
 
+      </div>
+
+      <!-- PRODUK RO CATALOG SECTION (Matching Client Image 1 Mockup) -->
+      <div class="bg-white rounded-3xl border border-slate-200/80 p-6 md:p-8 shadow-sm space-y-6">
+        <div class="text-center space-y-1">
+          <h2 class="text-2xl md:text-3xl font-black text-[#5c3a21] uppercase tracking-wide">PRODUK RO</h2>
+          <p class="text-xs text-slate-500 font-medium">Katalog Pilihan Produk Paket Repeat Order (RO) Rp 125.000</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 pt-4">
+          <!-- Item 1: HAZAPRO -->
+          <div class="bg-slate-50/60 border border-slate-200/70 rounded-3xl p-5 text-center space-y-3 flex flex-col justify-between hover:shadow-md transition-all">
+            <div class="space-y-3">
+              <div class="w-full aspect-square rounded-2xl bg-white border border-slate-200/60 overflow-hidden flex items-center justify-center p-2 shadow-2xs">
+                <div class="w-full h-full bg-amber-900/10 rounded-xl flex items-center justify-center font-black text-amber-900 text-sm">
+                  💊 3IN1 HAZAPRO
+                </div>
+              </div>
+              <div class="text-left space-y-0.5">
+                <h3 class="text-base font-black text-[#5c3a21] uppercase tracking-tight">HAZAPRO</h3>
+                <p class="text-sm font-extrabold text-slate-900">Rp 125.000</p>
+                <p class="text-xs text-slate-500 font-bold">Jumlah : 1</p>
+              </div>
+            </div>
+            <div class="pt-2 flex justify-start">
+              <span class="px-3 py-1 bg-[#5c3a21] text-white text-xs font-black rounded-full flex items-center gap-1.5 shadow-2xs">
+                <span>Poin</span>
+                <span class="w-4 h-4 rounded-full bg-white text-[#5c3a21] text-[10px] font-black flex items-center justify-center">1</span>
+              </span>
+            </div>
+          </div>
+
+          <!-- Item 2: BANDAWASA -->
+          <div class="bg-slate-50/60 border border-slate-200/70 rounded-3xl p-5 text-center space-y-3 flex flex-col justify-between hover:shadow-md transition-all">
+            <div class="space-y-3">
+              <div class="w-full aspect-square rounded-2xl bg-white border border-slate-200/60 overflow-hidden flex items-center justify-center p-2 shadow-2xs">
+                <div class="w-full h-full bg-amber-900/10 rounded-xl flex items-center justify-center font-black text-amber-900 text-sm">
+                  🌿 BANDAWASA HERBAL
+                </div>
+              </div>
+              <div class="text-left space-y-0.5">
+                <h3 class="text-base font-black text-[#5c3a21] uppercase tracking-tight">BANDAWASA</h3>
+                <p class="text-sm font-extrabold text-slate-900">Rp 125.000</p>
+                <p class="text-xs text-slate-500 font-bold">Jumlah : 1</p>
+              </div>
+            </div>
+            <div class="pt-2 flex justify-start">
+              <span class="px-3 py-1 bg-[#5c3a21] text-white text-xs font-black rounded-full flex items-center gap-1.5 shadow-2xs">
+                <span>Poin</span>
+                <span class="w-4 h-4 rounded-full bg-white text-[#5c3a21] text-[10px] font-black flex items-center justify-center">1</span>
+              </span>
+            </div>
+          </div>
+
+          <!-- Item 3: OXIBUMIN -->
+          <div class="bg-slate-50/60 border border-slate-200/70 rounded-3xl p-5 text-center space-y-3 flex flex-col justify-between hover:shadow-md transition-all">
+            <div class="space-y-3">
+              <div class="w-full aspect-square rounded-2xl bg-white border border-slate-200/60 overflow-hidden flex items-center justify-center p-2 shadow-2xs">
+                <div class="w-full h-full bg-emerald-900/10 rounded-xl flex items-center justify-center font-black text-emerald-900 text-sm">
+                  🐟 OXIBUMIN 90% GABUS
+                </div>
+              </div>
+              <div class="text-left space-y-0.5">
+                <h3 class="text-base font-black text-[#5c3a21] uppercase tracking-tight">OXIBUMIN</h3>
+                <p class="text-sm font-extrabold text-slate-900">Rp 125.000</p>
+                <p class="text-xs text-slate-500 font-bold">Jumlah : 1</p>
+              </div>
+            </div>
+            <div class="pt-2 flex justify-start">
+              <span class="px-3 py-1 bg-[#5c3a21] text-white text-xs font-black rounded-full flex items-center gap-1.5 shadow-2xs">
+                <span>Poin</span>
+                <span class="w-4 h-4 rounded-full bg-white text-[#5c3a21] text-[10px] font-black flex items-center justify-center">1</span>
+              </span>
+            </div>
+          </div>
+
+          <!-- Item 4: Growfit -->
+          <div class="bg-slate-50/60 border border-slate-200/70 rounded-3xl p-5 text-center space-y-3 flex flex-col justify-between hover:shadow-md transition-all">
+            <div class="space-y-3">
+              <div class="w-full aspect-square rounded-2xl bg-white border border-slate-200/60 overflow-hidden flex items-center justify-center p-2 shadow-2xs">
+                <div class="w-full h-full bg-amber-500/10 rounded-xl flex items-center justify-center font-black text-amber-700 text-sm">
+                  🥛 GROWFIT KIDS
+                </div>
+              </div>
+              <div class="text-left space-y-0.5">
+                <h3 class="text-base font-black text-[#5c3a21] uppercase tracking-tight">Growfit</h3>
+                <p class="text-sm font-extrabold text-slate-900">Rp 125.000</p>
+                <p class="text-xs text-slate-500 font-bold">Jumlah : 2</p>
+              </div>
+            </div>
+            <div class="pt-2 flex justify-start">
+              <span class="px-3 py-1 bg-[#5c3a21] text-white text-xs font-black rounded-full flex items-center gap-1.5 shadow-2xs">
+                <span>Poin</span>
+                <span class="w-4 h-4 rounded-full bg-white text-[#5c3a21] text-[10px] font-black flex items-center justify-center">1</span>
+              </span>
+            </div>
+          </div>
+
+          <!-- Item 5: Growfit Lambung Gembira -->
+          <div class="bg-slate-50/60 border border-slate-200/70 rounded-3xl p-5 text-center space-y-3 flex flex-col justify-between hover:shadow-md transition-all">
+            <div class="space-y-3">
+              <div class="w-full aspect-square rounded-2xl bg-white border border-slate-200/60 overflow-hidden flex items-center justify-center p-2 shadow-2xs">
+                <div class="w-full h-full bg-emerald-500/10 rounded-xl flex items-center justify-center font-black text-emerald-800 text-sm">
+                  🍃 LAMBUNG GEMBIRA
+                </div>
+              </div>
+              <div class="text-left space-y-0.5">
+                <h3 class="text-base font-black text-[#5c3a21] uppercase tracking-tight">Growfit</h3>
+                <p class="text-sm font-extrabold text-slate-900">Rp 125.000</p>
+                <p class="text-xs text-slate-500 font-bold">Jumlah : 2</p>
+              </div>
+            </div>
+            <div class="pt-2 flex justify-start">
+              <span class="px-3 py-1 bg-[#5c3a21] text-white text-xs font-black rounded-full flex items-center gap-1.5 shadow-2xs">
+                <span>Poin</span>
+                <span class="w-4 h-4 rounded-full bg-white text-[#5c3a21] text-[10px] font-black flex items-center justify-center">1</span>
+              </span>
+            </div>
+          </div>
+
+          <!-- Item 6: Etawa Ajwa -->
+          <div class="bg-slate-50/60 border border-slate-200/70 rounded-3xl p-5 text-center space-y-3 flex flex-col justify-between hover:shadow-md transition-all">
+            <div class="space-y-3">
+              <div class="w-full aspect-square rounded-2xl bg-white border border-slate-200/60 overflow-hidden flex items-center justify-center p-2 shadow-2xs">
+                <div class="w-full h-full bg-amber-800/10 rounded-xl flex items-center justify-center font-black text-amber-900 text-sm">
+                  🥛 ETAWA AJWA
+                </div>
+              </div>
+              <div class="text-left space-y-0.5">
+                <h3 class="text-base font-black text-[#5c3a21] uppercase tracking-tight">Etawa Ajwa</h3>
+                <p class="text-sm font-extrabold text-slate-900">Rp 125.000</p>
+                <p class="text-xs text-slate-500 font-bold">Jumlah : 2</p>
+              </div>
+            </div>
+            <div class="pt-2 flex justify-start">
+              <span class="px-3 py-1 bg-[#5c3a21] text-white text-xs font-black rounded-full flex items-center gap-1.5 shadow-2xs">
+                <span>Poin</span>
+                <span class="w-4 h-4 rounded-full bg-white text-[#5c3a21] text-[10px] font-black flex items-center justify-center">1</span>
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Transaction History Table -->

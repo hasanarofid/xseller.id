@@ -88,9 +88,6 @@ const formatRupiah = (val) => {
               <Wallet class="w-3.5 h-3.5 text-[#04bdb2]" />
               SALDO WALLET
             </span>
-            <span class="px-2.5 py-0.5 text-[10px] font-bold bg-[#04bdb2]/20 text-[#a9fff7] rounded-full border border-[#04bdb2]/30">
-              VOUCHER Aktif: {{ wallet?.voucher_aktif || 2 }} Pcs
-            </span>
           </div>
 
           <div>

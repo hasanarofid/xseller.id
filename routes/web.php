@@ -62,6 +62,12 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::post('/keuangan/generate-saldo', [\App\Http\Controllers\Admin\FinanceController::class, 'generateSaldo'])->name('finance.generate-saldo');
     Route::post('/keuangan/transfer', [\App\Http\Controllers\Admin\FinanceController::class, 'transfer'])->name('finance.transfer');
 
+    // Kelola Produk (Product CRUD - Khusus Admin)
+    Route::get('/kelola-produk', [\App\Http\Controllers\Admin\ProductController::class, 'index'])->name('products.index');
+    Route::post('/kelola-produk', [\App\Http\Controllers\Admin\ProductController::class, 'store'])->name('products.store');
+    Route::post('/kelola-produk/{product}', [\App\Http\Controllers\Admin\ProductController::class, 'update'])->name('products.update');
+    Route::delete('/kelola-produk/{product}', [\App\Http\Controllers\Admin\ProductController::class, 'destroy'])->name('products.destroy');
+
     // Penarikan Saldo (Withdrawals / WD)
     Route::get('/penarikan-saldo', [\App\Http\Controllers\Admin\WithdrawalController::class, 'index'])->name('withdrawals.index');
     Route::post('/penarikan-saldo', [\App\Http\Controllers\Admin\WithdrawalController::class, 'store'])->name('withdrawals.store');

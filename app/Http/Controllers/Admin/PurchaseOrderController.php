@@ -78,6 +78,8 @@ class PurchaseOrderController extends Controller
                 'account_name' => 'PT.Xseller Punya Kita',
             ];
 
+        $poProducts = \App\Models\Product::where('type', 'po')->where('is_active', true)->get();
+
         return Inertia::render('Admin/PurchaseOrder/Index', [
             'po_stats' => [
                 'total_po_points' => $totalPoPoints,
@@ -92,6 +94,7 @@ class PurchaseOrderController extends Controller
             'user_saldo' => (float) ($user->saldo ?? 0),
             'company_bank' => $companyBank,
             'is_admin' => $user->hasRole('admin'),
+            'products' => $poProducts,
         ]);
     }
 
