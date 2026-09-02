@@ -107,34 +107,34 @@ class DashboardController extends Controller
                     'team_poin' => 0,
                     'max_tier' => 'Tier 3 (Steping s/d Tier 15)',
                     'tpr' => 'Non-TPR',
-                    'is_current' => false
+                    'is_current' => str_contains(strtolower($user->package_name ?? ''), 'starter') || str_contains(strtolower($user->package_name ?? ''), '125')
                 ],
                 [
                     'name' => 'Basic',
                     'price' => 550000,
                     'sponsor_bonus' => 100000,
                     'team_poin' => 1,
-                    'max_tier' => 'Tier 5 Generasi',
+                    'max_tier' => 'Tier 5 (Steping s/d Tier 15)',
                     'tpr' => 'Non-TPR',
-                    'is_current' => false
+                    'is_current' => str_contains(strtolower($user->package_name ?? ''), 'basic') || str_contains(strtolower($user->package_name ?? ''), '550')
                 ],
                 [
                     'name' => 'Medium',
                     'price' => 2100000,
                     'sponsor_bonus' => 400000,
                     'team_poin' => 4,
-                    'max_tier' => 'Tier 8 Generasi',
+                    'max_tier' => 'Tier 8 (Steping s/d Tier 15)',
                     'tpr' => 'Non-TPR',
-                    'is_current' => false
+                    'is_current' => str_contains(strtolower($user->package_name ?? ''), 'medium') || str_contains(strtolower($user->package_name ?? ''), '2.100') || str_contains(strtolower($user->package_name ?? ''), '2100')
                 ],
                 [
                     'name' => 'Pro',
                     'price' => 4300000,
                     'sponsor_bonus' => 800000,
                     'team_poin' => 8,
-                    'max_tier' => 'Tier 12 Generasi',
+                    'max_tier' => 'Tier 12 (Steping s/d Tier 15)',
                     'tpr' => 'Profit Share 7% / bulan (3 bulan)',
-                    'is_current' => false
+                    'is_current' => str_contains(strtolower($user->package_name ?? ''), 'pro') || str_contains(strtolower($user->package_name ?? ''), '4.300') || str_contains(strtolower($user->package_name ?? ''), '4300')
                 ],
                 [
                     'name' => 'Ultimate',
@@ -143,7 +143,7 @@ class DashboardController extends Controller
                     'team_poin' => 12,
                     'max_tier' => 'Tier 15 Generasi',
                     'tpr' => 'Profit Share 9% / bulan (3 bulan)',
-                    'is_current' => str_contains(strtolower($user->package_name ?? ''), 'ultimate')
+                    'is_current' => str_contains(strtolower($user->package_name ?? ''), 'ultimate') || str_contains(strtolower($user->package_name ?? ''), '10.500') || str_contains(strtolower($user->package_name ?? ''), '10500')
                 ],
             ],
             'steping_status' => [
