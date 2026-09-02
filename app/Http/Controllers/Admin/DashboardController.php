@@ -101,49 +101,49 @@ class DashboardController extends Controller
             ],
             'packages' => [
                 [
-                    'name' => 'Starter (Steping)',
+                    'name' => 'Seller (Steping)',
                     'price' => 125000,
                     'sponsor_bonus' => 20000,
                     'team_poin' => 0,
                     'max_tier' => 'Tier 3 (Steping s/d Tier 15)',
                     'tpr' => 'Non-TPR',
-                    'is_current' => str_contains(strtolower($user->package_name ?? ''), 'starter') || str_contains(strtolower($user->package_name ?? ''), '125')
+                    'is_current' => str_contains(strtolower($user->package_name ?? ''), 'seller') || str_contains(strtolower($user->package_name ?? ''), 'starter') || str_contains(strtolower($user->package_name ?? ''), '125')
                 ],
                 [
-                    'name' => 'Basic',
+                    'name' => 'Star Seller',
                     'price' => 550000,
                     'sponsor_bonus' => 100000,
                     'team_poin' => 1,
                     'max_tier' => 'Tier 5 (Steping s/d Tier 15)',
                     'tpr' => 'Non-TPR',
-                    'is_current' => str_contains(strtolower($user->package_name ?? ''), 'basic') || str_contains(strtolower($user->package_name ?? ''), '550')
+                    'is_current' => str_contains(strtolower($user->package_name ?? ''), 'star') || str_contains(strtolower($user->package_name ?? ''), 'basic') || str_contains(strtolower($user->package_name ?? ''), '550')
                 ],
                 [
-                    'name' => 'Medium',
+                    'name' => 'Affiliate',
                     'price' => 2100000,
-                    'sponsor_bonus' => 400000,
+                    'sponsor_bonus' => 300000,
                     'team_poin' => 4,
                     'max_tier' => 'Tier 8 (Steping s/d Tier 15)',
                     'tpr' => 'Non-TPR',
-                    'is_current' => str_contains(strtolower($user->package_name ?? ''), 'medium') || str_contains(strtolower($user->package_name ?? ''), '2.100') || str_contains(strtolower($user->package_name ?? ''), '2100')
+                    'is_current' => str_contains(strtolower($user->package_name ?? ''), 'affiliate') || str_contains(strtolower($user->package_name ?? ''), 'medium') || str_contains(strtolower($user->package_name ?? ''), '2.100') || str_contains(strtolower($user->package_name ?? ''), '2100')
                 ],
                 [
-                    'name' => 'Pro',
+                    'name' => 'Business',
                     'price' => 4300000,
-                    'sponsor_bonus' => 800000,
+                    'sponsor_bonus' => 600000,
                     'team_poin' => 8,
                     'max_tier' => 'Tier 12 (Steping s/d Tier 15)',
-                    'tpr' => 'Profit Share 7% / bulan (3 bulan)',
-                    'is_current' => str_contains(strtolower($user->package_name ?? ''), 'pro') || str_contains(strtolower($user->package_name ?? ''), '4.300') || str_contains(strtolower($user->package_name ?? ''), '4300')
+                    'tpr' => 'Qualified TPR',
+                    'is_current' => str_contains(strtolower($user->package_name ?? ''), 'business') || str_contains(strtolower($user->package_name ?? ''), 'pro') || str_contains(strtolower($user->package_name ?? ''), '4.300') || str_contains(strtolower($user->package_name ?? ''), '4300')
                 ],
                 [
-                    'name' => 'Ultimate',
+                    'name' => 'Partner',
                     'price' => 10500000,
-                    'sponsor_bonus' => 2000000,
+                    'sponsor_bonus' => 1500000,
                     'team_poin' => 12,
                     'max_tier' => 'Tier 15 Generasi',
-                    'tpr' => 'Profit Share 9% / bulan (3 bulan)',
-                    'is_current' => str_contains(strtolower($user->package_name ?? ''), 'ultimate') || str_contains(strtolower($user->package_name ?? ''), '10.500') || str_contains(strtolower($user->package_name ?? ''), '10500')
+                    'tpr' => 'Qualified TPR',
+                    'is_current' => str_contains(strtolower($user->package_name ?? ''), 'partner') || str_contains(strtolower($user->package_name ?? ''), 'ultimate') || str_contains(strtolower($user->package_name ?? ''), '10.500') || str_contains(strtolower($user->package_name ?? ''), '10500')
                 ],
             ],
             'steping_status' => [

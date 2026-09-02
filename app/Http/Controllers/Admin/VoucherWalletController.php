@@ -94,11 +94,11 @@ class VoucherWalletController extends Controller
         // Voucher Package Catalog for Conversion
         $convertPackages = [
             // Activation Vouchers
-            ['key' => 'starter', 'group' => 'Voucher Activation', 'name' => 'Voucher Activation Starter (Rp 125.000)', 'price' => 125000, 'type' => 'activation'],
-            ['key' => 'basic', 'group' => 'Voucher Activation', 'name' => 'Voucher Activation Basic (Rp 550.000)', 'price' => 550000, 'type' => 'activation'],
-            ['key' => 'medium', 'group' => 'Voucher Activation', 'name' => 'Voucher Activation Medium (Rp 2.100.000)', 'price' => 2100000, 'type' => 'activation'],
-            ['key' => 'pro', 'group' => 'Voucher Activation', 'name' => 'Voucher Activation Pro (Rp 4.300.000)', 'price' => 4300000, 'type' => 'activation'],
-            ['key' => 'ultimate', 'group' => 'Voucher Activation', 'name' => 'Voucher Activation Ultimate (Rp 10.500.000)', 'price' => 10500000, 'type' => 'activation'],
+            ['key' => 'seller', 'group' => 'Voucher Activation', 'name' => 'Voucher Activation Seller (Rp 125.000)', 'price' => 125000, 'type' => 'activation'],
+            ['key' => 'star_seller', 'group' => 'Voucher Activation', 'name' => 'Voucher Activation Star Seller (Rp 550.000)', 'price' => 550000, 'type' => 'activation'],
+            ['key' => 'affiliate', 'group' => 'Voucher Activation', 'name' => 'Voucher Activation Affiliate (Rp 2.100.000)', 'price' => 2100000, 'type' => 'activation'],
+            ['key' => 'business', 'group' => 'Voucher Activation', 'name' => 'Voucher Activation Business (Rp 4.300.000)', 'price' => 4300000, 'type' => 'activation'],
+            ['key' => 'partner', 'group' => 'Voucher Activation', 'name' => 'Voucher Activation Partner (Rp 10.500.000)', 'price' => 10500000, 'type' => 'activation'],
 
             // RO Voucher
             ['key' => 'ro', 'group' => 'Voucher RO', 'name' => 'Voucher RO (Rp 125.000)', 'price' => 125000, 'type' => 'ro'],
@@ -137,11 +137,16 @@ class VoucherWalletController extends Controller
         $qty = max(1, min(35, (int) $request->input('quantity', 1)));
 
         $catalog = [
-            'starter' => ['name' => 'Starter (Rp 125.000)', 'price' => 125000, 'type' => 'activation', 'prefix' => 'PIN'],
-            'basic' => ['name' => 'Basic (Rp 550.000)', 'price' => 550000, 'type' => 'activation', 'prefix' => 'PIN'],
-            'medium' => ['name' => 'Medium (Rp 2.100.000)', 'price' => 2100000, 'type' => 'activation', 'prefix' => 'PIN'],
-            'pro' => ['name' => 'Pro (Rp 4.300.000)', 'price' => 4300000, 'type' => 'activation', 'prefix' => 'PIN'],
-            'ultimate' => ['name' => 'Ultimate (Rp 10.500.000)', 'price' => 10500000, 'type' => 'activation', 'prefix' => 'PIN'],
+            'seller' => ['name' => 'Seller (Rp 125.000)', 'price' => 125000, 'type' => 'activation', 'prefix' => 'PIN'],
+            'starter' => ['name' => 'Seller (Rp 125.000)', 'price' => 125000, 'type' => 'activation', 'prefix' => 'PIN'],
+            'star_seller' => ['name' => 'Star Seller (Rp 550.000)', 'price' => 550000, 'type' => 'activation', 'prefix' => 'PIN'],
+            'basic' => ['name' => 'Star Seller (Rp 550.000)', 'price' => 550000, 'type' => 'activation', 'prefix' => 'PIN'],
+            'affiliate' => ['name' => 'Affiliate (Rp 2.100.000)', 'price' => 2100000, 'type' => 'activation', 'prefix' => 'PIN'],
+            'medium' => ['name' => 'Affiliate (Rp 2.100.000)', 'price' => 2100000, 'type' => 'activation', 'prefix' => 'PIN'],
+            'business' => ['name' => 'Business (Rp 4.300.000)', 'price' => 4300000, 'type' => 'activation', 'prefix' => 'PIN'],
+            'pro' => ['name' => 'Business (Rp 4.300.000)', 'price' => 4300000, 'type' => 'activation', 'prefix' => 'PIN'],
+            'partner' => ['name' => 'Partner (Rp 10.500.000)', 'price' => 10500000, 'type' => 'activation', 'prefix' => 'PIN'],
+            'ultimate' => ['name' => 'Partner (Rp 10.500.000)', 'price' => 10500000, 'type' => 'activation', 'prefix' => 'PIN'],
             'ro' => ['name' => 'Repeat Order (Rp 125.000)', 'price' => 125000, 'type' => 'ro', 'prefix' => 'RO'],
             'po_star_seller' => ['name' => 'PO Star Seller (Rp 550.000)', 'price' => 550000, 'type' => 'po_star_seller', 'prefix' => 'PO'],
             'po_affiliate' => ['name' => 'PO Affiliate (Rp 2.100.000)', 'price' => 2100000, 'type' => 'po_affiliate', 'prefix' => 'PO'],

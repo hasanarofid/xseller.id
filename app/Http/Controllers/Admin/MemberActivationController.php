@@ -195,35 +195,35 @@ class MemberActivationController extends Controller
     {
         $pkg = strtolower($packageName);
 
-        if (str_contains($pkg, '125') || str_contains($pkg, 'starter')) {
+        if (str_contains($pkg, '125') || str_contains($pkg, 'seller') || str_contains($pkg, 'starter')) {
             return [
-                'gen_1' => 25000,
+                'gen_1' => 20000,
                 'gen_2_15' => 0,
                 'team_points' => 0,
             ];
         }
-        if (str_contains($pkg, '550') || str_contains($pkg, 'basic')) {
+        if (str_contains($pkg, '550') || str_contains($pkg, 'star') || str_contains($pkg, 'basic')) {
             return [
                 'gen_1' => 100000,
                 'gen_2_15' => 5000,
                 'team_points' => 1,
             ];
         }
-        if (str_contains($pkg, '2.100') || str_contains($pkg, '2100') || str_contains($pkg, 'medium')) {
+        if (str_contains($pkg, '2.100') || str_contains($pkg, '2100') || str_contains($pkg, 'affiliate') || str_contains($pkg, 'medium')) {
             return [
                 'gen_1' => 300000,
                 'gen_2_15' => 15000,
                 'team_points' => 4,
             ];
         }
-        if (str_contains($pkg, '4.300') || str_contains($pkg, '4300') || str_contains($pkg, 'pro')) {
+        if (str_contains($pkg, '4.300') || str_contains($pkg, '4300') || str_contains($pkg, 'business') || str_contains($pkg, 'pro')) {
             return [
                 'gen_1' => 600000,
                 'gen_2_15' => 30000,
                 'team_points' => 8,
             ];
         }
-        if (str_contains($pkg, '10.500') || str_contains($pkg, '10500') || str_contains($pkg, 'ultimate')) {
+        if (str_contains($pkg, '10.500') || str_contains($pkg, '10500') || str_contains($pkg, 'partner') || str_contains($pkg, 'ultimate')) {
             return [
                 'gen_1' => 1500000,
                 'gen_2_15' => 100000,

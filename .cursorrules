@@ -26,38 +26,41 @@
 ## 2. Arsitektur Sistem Bisnis & Plan XSELLER (PRD 2026)
 
 ### A. Paket Join (Membership Packages)
-1. **Paket Rp 125.000 (Starter / Steping Base)**
+1. **Paket Rp 125.000 (Seller / Steping Base)**
    - Benefit: Produk Madu/Kopi/Teh.
-   - Bonus Direct Referral (Sponsor): Rp 20.000 (20%).
-   - Tier Allocation: Tidak ada alokasi.
+   - Bonus Direct Referral (Sponsor / Generasi 1): Rp 20.000.
+   - Tier Allocation: Generasi 1 = Rp 20.000, Generasi 2-15 = Rp 0.
    - Team Poin: 0 Poin.
    - Max Generasi Tier: Tier 3 Generasi (Bisa di-Steping hingga Tier 15).
-2. **Paket Rp 550.000 (Basic)**
+   - Fitur TPR: Non-TPR.
+2. **Paket Rp 550.000 (Star Seller)**
    - Benefit: Produk.
-   - Bonus Direct Referral: Rp 100.000 (20%).
+   - Bonus Direct Referral (Sponsor / Generasi 1): Rp 100.000.
    - Tier Allocation: Generasi 1 = Rp 100.000, Generasi 2-15 = Rp 5.000/gen.
    - Team Poin: 1 Poin Redemption.
-   - Max Generasi Tier: Tier 5 Generasi.
-3. **Paket Rp 2.100.000 (Medium)**
+   - Max Generasi Tier: Tier 5 Generasi (Bisa di-Steping hingga Tier 15).
+   - Fitur TPR: Non-TPR.
+3. **Paket Rp 2.100.000 (Affiliate)**
    - Benefit: Produk.
-   - Bonus Direct Referral: Rp 400.000 (20%).
-   - Tier Allocation: Generasi 1 = Rp 400.000, Generasi 2-15 = Rp 15.000/gen.
+   - Bonus Direct Referral (Sponsor / Generasi 1): Rp 300.000.
+   - Tier Allocation: Generasi 1 = Rp 300.000, Generasi 2-15 = Rp 15.000/gen.
    - Team Poin: 4 Poin Redemption.
-   - Max Generasi Tier: Tier 8 Generasi.
-4. **Paket Rp 4.300.000 (Pro)**
+   - Max Generasi Tier: Tier 8 Generasi (Bisa di-Steping hingga Tier 15).
+   - Fitur TPR: Non-TPR.
+4. **Paket Rp 4.300.000 (Business)**
    - Benefit: Produk + Akses Fitur TPR.
-   - Bonus Direct Referral: Rp 800.000 (20%).
-   - Tier Allocation: Generasi 1 = Rp 800.000, Generasi 2-15 = Rp 30.000/gen.
+   - Bonus Direct Referral (Sponsor / Generasi 1): Rp 600.000.
+   - Tier Allocation: Generasi 1 = Rp 600.000, Generasi 2-15 = Rp 30.000/gen.
    - Team Poin: 8 Poin Redemption.
-   - Max Generasi Tier: Tier 12 Generasi.
-   - TPR Fitur: Profit share 7% / bulan selama 3 bulan.
-5. **Paket Rp 10.500.000 (Ultimate)**
+   - Max Generasi Tier: Tier 12 Generasi (Bisa di-Steping hingga Tier 15).
+   - Fitur TPR: Qualified TPR.
+5. **Paket Rp 10.500.000 (Partner)**
    - Benefit: Produk + Akses Fitur TPR.
-   - Bonus Direct Referral: Rp 2.000.000 (20%).
-   - Tier Allocation: Generasi 1 = Rp 2.000.000, Generasi 2-15 = Rp 100.000/gen.
+   - Bonus Direct Referral (Sponsor / Generasi 1): Rp 1.500.000.
+   - Tier Allocation: Generasi 1 = Rp 1.500.000, Generasi 2-15 = Rp 100.000/gen.
    - Team Poin: 12 Poin Redemption.
    - Max Generasi Tier: Tier 15 Generasi.
-   - TPR Fitur: Profit share 9% / bulan selama 3 bulan.
+   - Fitur TPR: Qualified TPR.
 
 ---
 
