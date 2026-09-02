@@ -56,28 +56,34 @@ const closeAllToasts = () => {
   toastStack.value = [];
 };
 
-const navigation = computed(() => [
-  { name: 'Dashboard', href: route('admin.dashboard'), icon: LayoutDashboard, current: route().current('admin.dashboard') },
-  { name: 'Team Mitra', href: route('admin.pohon-jaringan'), icon: GitFork, current: route().current('admin.pohon-jaringan') },
-  { name: 'Aktivitas Mitra', href: route('admin.activation.index'), icon: UserPlus, current: route().current('admin.activation.index') },
-  { name: 'Repeat Order', href: route('admin.repeat-order.index'), icon: RotateCcw, current: route().current('admin.repeat-order.index') },
-  { name: 'Purchase Order', href: route('admin.purchase-order.index'), icon: ShoppingBag, current: route().current('admin.purchase-order.index') },
-  { name: 'Riwayat Poin RO', href: route('admin.repeat-order.index'), icon: Award, current: route().current('admin.repeat-order.index') },
-  { name: 'Riwayat Poin PO', href: route('admin.purchase-order.index'), icon: Coins, current: route().current('admin.purchase-order.index') },
-  { name: 'Riwayat Team Poin', href: route('admin.dashboard'), icon: LayoutDashboard, current: route().current('admin.dashboard') },
-  { name: 'Voucher Wallet', href: route('admin.voucher-wallet.index'), icon: KeyRound, current: route().current('admin.voucher-wallet.index') },
-  ...(isAdmin.value ? [
-    { name: 'Keuangan', href: route('admin.finance.index'), icon: Wallet, current: route().current('admin.finance.index') },
-    { name: 'Kelola Produk', href: route('admin.products.index'), icon: Package, current: route().current('admin.products.index') },
-  ] : [
-    { name: 'Riwayat Steping', href: route('admin.steping-history.index'), icon: Layers, current: route().current('admin.steping-history.index') },
-  ]),
-  { name: 'Penarikan Saldo', href: route('admin.withdrawals.index'), icon: ArrowUpRight, current: route().current('admin.withdrawals.index') },
-  { name: 'Fitur TPR', href: route('admin.tpr.index'), icon: Crown, current: route().current('admin.tpr.index') },
-  { name: 'Data Mitra', href: route('admin.network-data.index'), icon: Users, current: route().current('admin.network-data.index') },
-  { name: 'Aktivitas', href: route('admin.activities.index'), icon: Activity, current: route().current('admin.activities.index') },
-  { name: 'Laporan', href: route('admin.reports.index'), icon: FileText, current: route().current('admin.reports.index') },
-]);
+const navigation = computed(() => {
+  const currentTab = usePage().url.includes('?') 
+    ? new URLSearchParams(usePage().url.split('?')[1]).get('tab') 
+    : null;
+
+  return [
+    { name: 'Dashboard', href: route('admin.dashboard'), icon: LayoutDashboard, current: route().current('admin.dashboard') && currentTab !== 'team-poin' },
+    { name: 'Team Mitra', href: route('admin.pohon-jaringan'), icon: GitFork, current: route().current('admin.pohon-jaringan') },
+    { name: 'Aktivitas Mitra', href: route('admin.activation.index'), icon: UserPlus, current: route().current('admin.activation.index') },
+    { name: 'Repeat Order', href: route('admin.repeat-order.index'), icon: RotateCcw, current: route().current('admin.repeat-order.index') && currentTab !== 'poin' },
+    { name: 'Purchase Order', href: route('admin.purchase-order.index'), icon: ShoppingBag, current: route().current('admin.purchase-order.index') && currentTab !== 'poin' },
+    { name: 'Riwayat Poin RO', href: route('admin.repeat-order.index', { tab: 'poin' }), icon: Award, current: route().current('admin.repeat-order.index') && currentTab === 'poin' },
+    { name: 'Riwayat Poin PO', href: route('admin.purchase-order.index', { tab: 'poin' }), icon: Coins, current: route().current('admin.purchase-order.index') && currentTab === 'poin' },
+    { name: 'Riwayat Team Poin', href: route('admin.dashboard', { tab: 'team-poin' }), icon: LayoutDashboard, current: route().current('admin.dashboard') && currentTab === 'team-poin' },
+    { name: 'Voucher Wallet', href: route('admin.voucher-wallet.index'), icon: KeyRound, current: route().current('admin.voucher-wallet.index') },
+    ...(isAdmin.value ? [
+      { name: 'Keuangan', href: route('admin.finance.index'), icon: Wallet, current: route().current('admin.finance.index') },
+      { name: 'Kelola Produk', href: route('admin.products.index'), icon: Package, current: route().current('admin.products.index') },
+    ] : [
+      { name: 'Riwayat Steping', href: route('admin.steping-history.index'), icon: Layers, current: route().current('admin.steping-history.index') },
+    ]),
+    { name: 'Penarikan Saldo', href: route('admin.withdrawals.index'), icon: ArrowUpRight, current: route().current('admin.withdrawals.index') },
+    { name: 'Fitur TPR', href: route('admin.tpr.index'), icon: Crown, current: route().current('admin.tpr.index') },
+    { name: 'Data Mitra', href: route('admin.network-data.index'), icon: Users, current: route().current('admin.network-data.index') },
+    { name: 'Aktivitas', href: route('admin.activities.index'), icon: Activity, current: route().current('admin.activities.index') },
+    { name: 'Laporan', href: route('admin.reports.index'), icon: FileText, current: route().current('admin.reports.index') },
+  ];
+});
 
 const logout = () => {
   router.post(route('logout'));
