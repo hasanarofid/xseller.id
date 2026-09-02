@@ -57,19 +57,12 @@ const closeAllToasts = () => {
 };
 
 const navigation = computed(() => {
-  const currentTab = usePage().url.includes('?') 
-    ? new URLSearchParams(usePage().url.split('?')[1]).get('tab') 
-    : null;
-
   return [
-    { name: 'Dashboard', href: route('admin.dashboard'), icon: LayoutDashboard, current: route().current('admin.dashboard') && currentTab !== 'team-poin' },
+    { name: 'Dashboard', href: route('admin.dashboard'), icon: LayoutDashboard, current: route().current('admin.dashboard') },
     { name: 'Team Mitra', href: route('admin.pohon-jaringan'), icon: GitFork, current: route().current('admin.pohon-jaringan') },
     { name: 'Aktivitas Mitra', href: route('admin.activation.index'), icon: UserPlus, current: route().current('admin.activation.index') },
-    { name: 'Repeat Order', href: route('admin.repeat-order.index'), icon: RotateCcw, current: route().current('admin.repeat-order.index') && currentTab !== 'poin' },
-    { name: 'Purchase Order', href: route('admin.purchase-order.index'), icon: ShoppingBag, current: route().current('admin.purchase-order.index') && currentTab !== 'poin' },
-    { name: 'Riwayat Poin RO', href: route('admin.repeat-order.index', { tab: 'poin' }), icon: Award, current: route().current('admin.repeat-order.index') && currentTab === 'poin' },
-    { name: 'Riwayat Poin PO', href: route('admin.purchase-order.index', { tab: 'poin' }), icon: Coins, current: route().current('admin.purchase-order.index') && currentTab === 'poin' },
-    { name: 'Riwayat Team Poin', href: route('admin.dashboard', { tab: 'team-poin' }), icon: LayoutDashboard, current: route().current('admin.dashboard') && currentTab === 'team-poin' },
+    { name: 'Repeat Order', href: route('admin.repeat-order.index'), icon: RotateCcw, current: route().current('admin.repeat-order.index') },
+    { name: 'Purchase Order', href: route('admin.purchase-order.index'), icon: ShoppingBag, current: route().current('admin.purchase-order.index') },
     { name: 'Voucher Wallet', href: route('admin.voucher-wallet.index'), icon: KeyRound, current: route().current('admin.voucher-wallet.index') },
     ...(isAdmin.value ? [
       { name: 'Keuangan', href: route('admin.finance.index'), icon: Wallet, current: route().current('admin.finance.index') },

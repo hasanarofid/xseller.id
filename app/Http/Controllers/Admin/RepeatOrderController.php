@@ -65,6 +65,14 @@ class RepeatOrderController extends Controller
             ->where('description', 'LIKE', '%Repeat Order%')
             ->sum('amount');
 
+        // Calculate matching RO bonus
+        $matchingRoBonus = (float) BonusLog::where('user_id', $user->id)
+            ->where(function($q) {
+                $q->where('description', 'LIKE', '%Matching%RO%')
+                  ->orWhere('category', 'ro_matching');
+            })
+            ->sum('amount');
+
         $settings = \App\Models\Setting::all()->pluck('value', 'key');
         $companyBanks = json_decode($settings['company_banks'] ?? '[]', true);
         $companyBank = (is_array($companyBanks) && count($companyBanks) > 0) 
@@ -82,6 +90,7 @@ class RepeatOrderController extends Controller
                 'total_ro_points' => $totalRoPoints,
                 'available_ro_vouchers_count' => $activeRoVoucherCount,
                 'total_ro_bonus' => $totalRoBonus,
+                'matching_ro_bonus' => $matchingRoBonus,
             ],
             'available_ro_vouchers' => $availableRoVouchers,
             'repeat_orders' => $repeatOrders,

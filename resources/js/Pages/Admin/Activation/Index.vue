@@ -15,6 +15,7 @@ import {
 
 const props = defineProps({
   vouchers: Array,
+  voucher_stocks: Object,
   users: Array,
   default_sponsor: String,
 });
@@ -59,9 +60,9 @@ const submitForm = () => {
           <div class="space-y-1">
             <div class="flex items-center gap-2">
               <UserPlus class="w-5 h-5 text-indigo-600" />
-              <h2 class="text-base font-extrabold text-slate-900 tracking-tight">Registrasi & Aktivasi Member Baru (Matahari System)</h2>
+              <h2 class="text-base font-extrabold text-slate-900 tracking-tight">Registrasi & Aktivasi Member Baru</h2>
             </div>
-            <p class="text-xs text-slate-500">Daftarkan mitra baru ke dalam jaringan Anda menggunakan VOUCHER Activation (PIN Registrasi).</p>
+            <p class="text-xs text-slate-500">Daftarkan mitra baru ke dalam jaringan Anda menggunakan VOUCHER Activation.</p>
           </div>
 
           <!-- Auto Fill Demo Data Button -->
@@ -73,6 +74,30 @@ const submitForm = () => {
             <Wand2 class="w-3.5 h-3.5 text-emerald-600" />
             <span>Isi Data Demo Otomatis</span>
           </button>
+        </div>
+
+        <!-- Voucher Stock Summary Bar -->
+        <div v-if="voucher_stocks" class="grid grid-cols-2 sm:grid-cols-5 gap-3 pt-1 pb-2">
+          <div class="p-3 bg-slate-50 border border-slate-200/80 rounded-2xl space-y-0.5">
+            <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider block">Seller (125k)</span>
+            <span class="text-sm font-black text-slate-900">{{ voucher_stocks.seller || 0 }} <span class="text-[10px] font-medium text-slate-400">Voucher</span></span>
+          </div>
+          <div class="p-3 bg-slate-50 border border-slate-200/80 rounded-2xl space-y-0.5">
+            <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider block">Star Seller (550k)</span>
+            <span class="text-sm font-black text-slate-900">{{ voucher_stocks.star_seller || 0 }} <span class="text-[10px] font-medium text-slate-400">Voucher</span></span>
+          </div>
+          <div class="p-3 bg-slate-50 border border-slate-200/80 rounded-2xl space-y-0.5">
+            <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider block">Affiliate (2.1m)</span>
+            <span class="text-sm font-black text-slate-900">{{ voucher_stocks.affiliate || 0 }} <span class="text-[10px] font-medium text-slate-400">Voucher</span></span>
+          </div>
+          <div class="p-3 bg-slate-50 border border-slate-200/80 rounded-2xl space-y-0.5">
+            <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider block">Business (4.3m)</span>
+            <span class="text-sm font-black text-slate-900">{{ voucher_stocks.business || 0 }} <span class="text-[10px] font-medium text-slate-400">Voucher</span></span>
+          </div>
+          <div class="p-3 bg-slate-50 border border-slate-200/80 rounded-2xl space-y-0.5 col-span-2 sm:col-span-1">
+            <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider block">Partner (10.5m)</span>
+            <span class="text-sm font-black text-slate-900">{{ voucher_stocks.partner || 0 }} <span class="text-[10px] font-medium text-slate-400">Voucher</span></span>
+          </div>
         </div>
 
         <!-- Form -->

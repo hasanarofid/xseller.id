@@ -21,19 +21,47 @@ class MemberActivationController extends Controller
     {
         $currentUser = auth()->user() ?: User::first();
 
-        // Get user's active vouchers / PIN
-        $vouchers = Voucher::where('user_id', $currentUser->id)
+        // Get user's active vouchers
+        $activeVouchersRaw = Voucher::where('user_id', $currentUser->id)
             ->where('status', 'active')
-            ->get()
-            ->map(function ($v) {
-                return [
-                    'code' => $v->code,
-                    'package_name' => $v->package_name,
-                    'label' => $v->code . ' (Paket ' . $v->package_name . ')',
-                ];
-            });
+            ->where(function ($q) {
+                $q->whereNull('voucher_type')->orWhere('voucher_type', 'activation');
+            })
+            ->get();
 
-        // List of all active users to choose as Sponsor Langsung (Matahari System)
+        $vouchers = $activeVouchersRaw->map(function ($v) {
+            return [
+                'code' => $v->code,
+                'package_name' => $v->package_name,
+                'label' => $v->code . ' (Paket ' . ($v->package_name ?: 'Seller') . ')',
+            ];
+        });
+
+        // Calculate voucher stock count per package type
+        $voucherStocks = [
+            'seller' => 0,
+            'star_seller' => 0,
+            'affiliate' => 0,
+            'business' => 0,
+            'partner' => 0,
+        ];
+
+        foreach ($activeVouchersRaw as $v) {
+            $pkg = strtolower($v->package_name ?? '');
+            if (str_contains($pkg, 'partner') || str_contains($pkg, 'ultimate') || str_contains($pkg, '10.500') || str_contains($pkg, '10500')) {
+                $voucherStocks['partner']++;
+            } elseif (str_contains($pkg, 'business') || str_contains($pkg, 'pro') || str_contains($pkg, '4.300') || str_contains($pkg, '4300')) {
+                $voucherStocks['business']++;
+            } elseif (str_contains($pkg, 'affiliate') || str_contains($pkg, 'medium') || str_contains($pkg, '2.100') || str_contains($pkg, '2100')) {
+                $voucherStocks['affiliate']++;
+            } elseif (str_contains($pkg, 'star') || str_contains($pkg, 'basic') || str_contains($pkg, '550')) {
+                $voucherStocks['star_seller']++;
+            } else {
+                $voucherStocks['seller']++;
+            }
+        }
+
+        // List of all active users to choose as Sponsor Langsung
         $allUsers = User::select('id', 'name', 'username', 'email')->get()->map(function ($u) {
             return [
                 'username' => $u->username ?: strtolower(explode(' ', $u->name)[0]),
@@ -44,6 +72,7 @@ class MemberActivationController extends Controller
 
         return Inertia::render('Admin/Activation/Index', [
             'vouchers' => $vouchers,
+            'voucher_stocks' => $voucherStocks,
             'users' => $allUsers,
             'default_sponsor' => $currentUser->username ?: 'admin',
         ]);
