@@ -67,6 +67,62 @@ class User extends Authenticatable
     }
 
     /**
+     * Get base max tier generation limit according to package.
+     */
+    public function getBaseTier(): int
+    {
+        $pkg = strtolower($this->package_name ?? '');
+
+        if (str_contains($pkg, 'ultimate') || str_contains($pkg, '10.500') || str_contains($pkg, '10500')) {
+            return 15;
+        }
+        if (str_contains($pkg, 'pro') || str_contains($pkg, '4.300') || str_contains($pkg, '4300')) {
+            return 12;
+        }
+        if (str_contains($pkg, 'medium') || str_contains($pkg, '2.100') || str_contains($pkg, '2100')) {
+            return 8;
+        }
+        if (str_contains($pkg, 'basic') || str_contains($pkg, '550')) {
+            return 5;
+        }
+
+        return 3;
+    }
+
+    /**
+     * Calculate active max tier generation limit including stepping milestone bonuses.
+     */
+    public function getActiveTier(): int
+    {
+        $baseTier = $this->getBaseTier();
+        if ($baseTier >= 15) {
+            return 15;
+        }
+
+        $referralCount = static::where('parent_id', $this->id)->count();
+
+        $milestones = [
+            4 => 4,
+            5 => 8,
+            6 => 12,
+            7 => 16,
+            9 => 20,
+            11 => 24,
+            13 => 28,
+            15 => 32,
+        ];
+
+        $activeTier = $baseTier;
+        foreach ($milestones as $tier => $reqReferrals) {
+            if ($tier > $baseTier && $referralCount >= $reqReferrals) {
+                $activeTier = max($activeTier, $tier);
+            }
+        }
+
+        return $activeTier;
+    }
+
+    /**
      * Send custom reset password notification email.
      *
      * @param string $token

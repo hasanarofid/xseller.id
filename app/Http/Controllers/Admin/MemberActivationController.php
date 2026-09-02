@@ -153,7 +153,8 @@ class MemberActivationController extends Controller
                 }
 
                 $genAmount = $alloc['gen_2_15'];
-                if ($genAmount > 0) {
+                // Only distribute generation bonus if upline active tier reaches or exceeds $gen
+                if ($genAmount > 0 && $upline->getActiveTier() >= $gen) {
                     $upline->increment('saldo', $genAmount);
                     $upline->increment('total_bonus', $genAmount);
 

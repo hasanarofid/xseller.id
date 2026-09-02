@@ -17,6 +17,9 @@
 /public/fonts-manifest.dev.json
 /public/hot
 /public/storage
+/public/revisi2926
+/public/revisi*
+
 /storage/*.key
 /storage/pail
 /vendor

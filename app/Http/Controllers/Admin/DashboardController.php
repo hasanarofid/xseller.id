@@ -143,14 +143,14 @@ class DashboardController extends Controller
                     'team_poin' => 12,
                     'max_tier' => 'Tier 15 Generasi',
                     'tpr' => 'Profit Share 9% / bulan (3 bulan)',
-                    'is_current' => true
+                    'is_current' => str_contains(strtolower($user->package_name ?? ''), 'ultimate')
                 ],
             ],
             'steping_status' => [
-                'current_tier' => 3,
-                'pro_referrals' => 0,
-                'next_tier' => 4,
-                'required_pro_referrals' => 2,
+                'current_tier' => $user->getActiveTier(),
+                'total_referrals' => User::where('parent_id', $user->id)->count(),
+                'next_tier' => 15,
+                'required_referrals' => 32,
             ]
         ]);
     }

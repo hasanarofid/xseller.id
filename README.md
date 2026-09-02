@@ -12,19 +12,19 @@ Official Website: [https://xseller.id](https://xseller.id)
 - **Beli Voucher (= Beli Produk):** Transaksi kemitraan dan produk menggunakan istilah **Voucher** alih-alih PIN.
 - **Struktur Kemitraan:** Binary System Standard 2 Kaki (Leg Kiri & Leg Kanan).
 - **Tier (Generasi):** Level kedalaman bonus generasi dari Tier 1 s/d Tier 15.
-- **Upgrade Paket:** Berlaku sistem **Overwrite** (kecuali fitur **Steping** untuk Paket Rp 125.000).
+- **Upgrade Paket:** Berlaku sistem **Overwrite** (ditambah penambahan generasi via **Steping** untuk semua paket).
 
 ### 2. Paket Join (Membership)
-| Nama Paket | Nominal | Direct Referral (20%) | Max Tier | Team Poin | Fitur Tambahan |
+| Nama Paket | Nominal | Direct Referral (20%) | Max Tier Base | Team Poin | Fitur Tambahan |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **Starter** | Rp 125.000 | Rp 20.000 | Tier 3 (Up to 15 via Steping) | 0 Poin | - |
-| **Basic** | Rp 550.000 | Rp 100.000 | Tier 5 | 1 Poin | Alokasi Gen 1: 100k, Gen 2-15: 5k |
-| **Medium** | Rp 2.100.000 | Rp 400.000 | Tier 8 | 4 Poin | Alokasi Gen 1: 400k, Gen 2-15: 15k |
-| **Pro** | Rp 4.300.000 | Rp 800.000 | Tier 12 | 8 Poin | Alokasi Gen 1: 800k, Gen 2-15: 30k + Fitur TPR (7%/bln) |
-| **Ultimate** | Rp 10.500.000 | Rp 2.000.000 | Tier 15 | 12 Poin | Alokasi Gen 1: 2jt, Gen 2-15: 100k + Fitur TPR (9%/bln) |
+| **Basic** | Rp 550.000 | Rp 100.000 | Tier 5 (Up to 15 via Steping) | 1 Poin | Alokasi Gen 1: 100k, Gen 2-15: 5k |
+| **Medium** | Rp 2.100.000 | Rp 400.000 | Tier 8 (Up to 15 via Steping) | 4 Poin | Alokasi Gen 1: 400k, Gen 2-15: 15k |
+| **Pro** | Rp 4.300.000 | Rp 800.000 | Tier 12 (Up to 15 via Steping) | 8 Poin | Alokasi Gen 1: 800k, Gen 2-15: 30k + Fitur TPR (7%/bln) |
+| **Ultimate** | Rp 10.500.000 | Rp 2.000.000 | Tier 15 (Maksimal) | 12 Poin | Alokasi Gen 1: 2jt, Gen 2-15: 100k + Fitur TPR (9%/bln) |
 
 ### 3. Fitur Utama Sistem
-- **Mekanisme Steping (Paket Rp 125k):** Membuka Tier 4 s/d 15 berdasarkan akumulasi Sponsor Direct Paket Rp 4.300.000.
+- **Mekanisme Steping:** Membuka Tier kedalaman (Generasi 4 s/d 15) untuk semua Paket Join berdasarkan akumulasi Sponsor Direct Paket Rp 125.000.
 - **Team Poin Redemption:** Akumulasi poin redemption dari pembelanjaan downline (35 Poin s/d 5.000 Poin).
 - **Repeat Order (RO) Paket Rp 125k:** Memberikan 1 Poin RO + Bonus Sponsor Rp 20.000 + Matching Bonus 20%.
 - **Purchase Order (PO) & Personal Poin:** Pembelian produk tambahan dengan alokasi 15 Generasi dan akumulasi Personal Poin Reward.
