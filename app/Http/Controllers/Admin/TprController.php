@@ -32,18 +32,20 @@ class TprController extends Controller
                 'amount' => 4300000,
                 'monthly_share_percent' => 7,
                 'monthly_share_amount' => 301000,
+                'sponsor_rebate_amount' => 60200,
                 'duration_months' => 3,
-                'description' => 'Paket Rp 4.300.000 (Business)',
+                'description' => 'Bagi Hasil Rp 301.000/bulan, Rebate Sponsor Rp 60.200/bulan',
             ];
         }
         if ($isUltimate || $isAdmin) {
             $allowedOptions[] = [
                 'package_name' => 'Paket Rp 10.500.000 (Partner)',
                 'amount' => 10500000,
-                'monthly_share_percent' => 9,
-                'monthly_share_amount' => 945000,
+                'monthly_share_percent' => 3.6,
+                'monthly_share_amount' => 378000,
+                'sponsor_rebate_amount' => 378000,
                 'duration_months' => 3,
-                'description' => 'Paket Rp 10.500.000 (Partner)',
+                'description' => 'Bagi Hasil Rp 378.000/bulan, Rebate Sponsor Rp 378.000/bulan',
             ];
         }
 
@@ -107,8 +109,8 @@ class TprController extends Controller
             $shareAmount = 301000;
         } else {
             $packageName = 'Paket Rp 10.500.000';
-            $percent = 9;
-            $shareAmount = 945000;
+            $percent = 3.6;
+            $shareAmount = 378000;
         }
 
         $proofPath = $request->file('proof_of_transfer')->store('tpr_proofs', 'public');

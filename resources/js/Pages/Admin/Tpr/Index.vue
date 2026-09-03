@@ -125,6 +125,23 @@ const formatRupiah = (val) => {
         <p class="text-xs text-amber-100 max-w-2xl font-medium leading-relaxed">
           Fitur eksklusif dimana kamu bisa menitipkan produk kamu ke perusahaan atau conciate sale dan kamu berhak mendapatkan bagi hasil selama 3 bulan kedepan.
         </p>
+
+        <!-- Acuan Bonus TPR & Rebate Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+          <div class="p-3 bg-white/10 backdrop-blur rounded-2xl border border-white/20 space-y-1">
+            <span class="text-[10px] font-black text-amber-200 uppercase tracking-wider block">PAKET 4,3 JUTA</span>
+            <p class="text-xs text-white font-bold">Bagi Hasil User: <span class="text-amber-200">Rp 301.000 / Bulan</span></p>
+            <p class="text-xs text-white font-bold">Sponsor Rebate: <span class="text-amber-200">Rp 60.200 / Bulan</span></p>
+            <span class="text-[9px] text-amber-100 italic block">(Selama 3 Bulan)</span>
+          </div>
+
+          <div class="p-3 bg-white/10 backdrop-blur rounded-2xl border border-white/20 space-y-1">
+            <span class="text-[10px] font-black text-amber-200 uppercase tracking-wider block">PAKET 10,5 JUTA</span>
+            <p class="text-xs text-white font-bold">Bagi Hasil User: <span class="text-amber-200">Rp 378.000 / Bulan</span></p>
+            <p class="text-xs text-white font-bold">Sponsor Rebate: <span class="text-amber-200">Rp 378.000 / Bulan</span></p>
+            <span class="text-[9px] text-amber-100 italic block">(Selama 3 Bulan)</span>
+          </div>
+        </div>
       </div>
 
       <!-- Access Restricted Notice if Fitur TPR is OFF -->

@@ -34,9 +34,11 @@ class ActivityController extends Controller
             'generasi' => 'Bonus Generasi (Tier Allocation): Diberikan dari alokasi pembagian tier generasi (Generasi 1 s/d Generasi 15) dari pendaftaran member di jaringan Anda.',
             'ro' => 'Bonus Repeat Order (RO): Diberikan dari setiap transaksi Repeat Order (RO) di jaringan Anda (Bonus Sponsor RO Rp 20.000 + Matching Bonus).',
             'tpr' => 'Bonus TPR: Diberikan dari alokasi program Trade Promotion Program (TPR) bulanan.',
-            'incentive' => 'Bonus Incentive: Diberikan atas pencapaian insentif khusus dan kualifikasi prestasi mitra di jaringan Anda.',
+            'incentive' => 'Diberikan atas pencapaian kamu dalam menjalankan bisnis Xseller yang mengacu pada total Income kamu',
             'penarikan' => 'Histori Penarikan Saldo: Rincian transaksi pencairan saldo dari e-wallet ke rekening bank Anda.',
         ];
+
+        $totalIncome = $bonusSponsor + $bonusGenerasi + $bonusRO + $bonusTPR + $bonusIncentive;
 
         // Fetch logs for active tab
         $logs = BonusLog::with('sourceUser')
@@ -55,6 +57,10 @@ class ActivityController extends Controller
                     'source' => $source,
                     'description' => $log->description,
                     'amount' => '+Rp ' . number_format($log->amount, 0, ',', '.'),
+                    'qualified' => $log->qualified_amount ? 'Rp ' . number_format($log->qualified_amount, 0, ',', '.') : '-',
+                    'incentive' => 'Rp ' . number_format($log->amount, 0, ',', '.'),
+                    'status' => 'Klaim',
+                    'date' => $log->created_at->format('d/m/Y'),
                 ];
             });
 
@@ -64,7 +70,9 @@ class ActivityController extends Controller
                 'bonus_generasi' => (float) $bonusGenerasi,
                 'bonus_ro' => (float) $bonusRO,
                 'bonus_tpr' => (float) $bonusTPR,
+                'bonus_incentive' => (float) $bonusIncentive,
             ],
+            'user_income' => (float) $totalIncome,
             'active_tab' => $tab,
             'tab_description' => $tabDescriptions[$tab] ?? '',
             'logs' => $logs,
