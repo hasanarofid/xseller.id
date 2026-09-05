@@ -139,7 +139,7 @@ class DashboardController extends Controller
                 [
                     'name' => 'Partner',
                     'price' => 10500000,
-                    'sponsor_bonus' => 1500000,
+                    'sponsor_bonus' => 945000,
                     'team_poin' => 12,
                     'max_tier' => 'Tier 15 Generasi',
                     'tpr' => 'Qualified TPR',

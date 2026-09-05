@@ -136,17 +136,17 @@ const formatRupiah = (val) => {
           </div>
         </div>
 
-        <!-- Card 3: Saldo Wallet Anda -->
-        <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm flex items-center justify-between relative overflow-hidden group hover:border-amber-500/50 transition-all">
+        <!-- Card 3: PAL Bonus (Personal Allocation Level) -->
+        <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm flex items-center justify-between relative overflow-hidden group hover:border-emerald-500/50 transition-all">
           <div class="space-y-1">
-            <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">Saldo Wallet Anda</span>
+            <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">PAL Bonus (Gen 1 PO)</span>
             <div class="flex items-baseline gap-1">
-              <span class="text-2xl font-black text-amber-600">{{ formatRupiah(user_saldo) }}</span>
+              <span class="text-2xl font-black text-emerald-600">Active</span>
             </div>
-            <p class="text-[10px] text-slate-500">Gunakan saldo untuk transaksi PO</p>
+            <p class="text-[10px] text-slate-500">Star Seller +50k | Affiliate +200k</p>
           </div>
-          <div class="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-600 flex items-center justify-center font-bold shadow-xs">
-            <CreditCard class="w-6 h-6" />
+          <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 flex items-center justify-center font-bold shadow-xs">
+            <TrendingUp class="w-6 h-6" />
           </div>
         </div>
       </div>

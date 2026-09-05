@@ -133,14 +133,16 @@ class PurchaseOrderController extends Controller
             $amount = 2100000;
             $poPoints = 8;
             $tierAmount = 50000;
+            $palBonusAmount = 200000;
         } else {
             $packageName = 'PO Paket Star Seller (Rp 550.000)';
             $amount = 550000;
             $poPoints = 2;
             $tierAmount = 10000;
+            $palBonusAmount = 50000;
         }
 
-        DB::transaction(function () use ($user, $voucher, $packageName, $amount, $poPoints, $tierAmount) {
+        DB::transaction(function () use ($user, $voucher, $packageName, $amount, $poPoints, $tierAmount, $palBonusAmount) {
             // 1. Mark voucher as used
             $voucher->update([
                 'status' => 'used',
@@ -159,7 +161,33 @@ class PurchaseOrderController extends Controller
                 'po_points' => $poPoints,
             ]);
 
-            // 4. Distribute 15 Generasi Tier Allocation to Uplines
+            // 4. PAL Bonus for Direct Upline (Generasi 1)
+            if ($user->parent_id) {
+                $sponsorUpline = User::find($user->parent_id);
+                if ($sponsorUpline) {
+                    $sponsorUpline->increment('saldo', $palBonusAmount);
+                    $sponsorUpline->increment('total_bonus', $palBonusAmount);
+
+                    BonusLog::create([
+                        'transaction_code' => 'PAL' . sprintf('%04d', BonusLog::count() + 1),
+                        'user_id' => $sponsorUpline->id,
+                        'category' => 'pal',
+                        'source_user_id' => $user->id,
+                        'description' => "PAL Bonus: Klaim Personal Poin PO dari @{$user->username} ({$packageName})",
+                        'amount' => $palBonusAmount,
+                    ]);
+
+                    WalletTransaction::create([
+                        'user_id' => $sponsorUpline->id,
+                        'type' => 'in',
+                        'category' => 'bonus_pal',
+                        'amount' => $palBonusAmount,
+                        'description' => "PAL Bonus klaim Personal Poin PO dari @{$user->username}",
+                    ]);
+                }
+            }
+
+            // 5. Distribute 15 Generasi Tier Allocation to Uplines
             $currentUpline = $user;
             for ($gen = 1; $gen <= 15; $gen++) {
                 if (!$currentUpline->parent_id) {
@@ -177,7 +205,7 @@ class PurchaseOrderController extends Controller
                 BonusLog::create([
                     'transaction_code' => 'PO' . sprintf('%04d', BonusLog::count() + 1),
                     'user_id' => $upline->id,
-                    'category' => 'tier',
+                    'category' => 'po',
                     'source_user_id' => $user->id,
                     'description' => "Bonus Tier PO Generasi {$gen} dari @{$user->username} ({$packageName})",
                     'amount' => $tierAmount,
@@ -186,7 +214,7 @@ class PurchaseOrderController extends Controller
                 WalletTransaction::create([
                     'user_id' => $upline->id,
                     'type' => 'in',
-                    'category' => 'bonus_tier',
+                    'category' => 'bonus_tier_po',
                     'amount' => $tierAmount,
                     'description' => "Bonus Tier PO Generasi {$gen} dari @{$user->username}",
                 ]);

@@ -254,7 +254,7 @@ class MemberActivationController extends Controller
         }
         if (str_contains($pkg, '10.500') || str_contains($pkg, '10500') || str_contains($pkg, 'partner') || str_contains($pkg, 'ultimate')) {
             return [
-                'gen_1' => 1500000,
+                'gen_1' => 945000,
                 'gen_2_15' => 100000,
                 'team_points' => 12,
             ];

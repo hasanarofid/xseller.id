@@ -64,6 +64,35 @@ class StepingHistoryController extends Controller
             }
         }
 
+        // Team Point Matrix Rules per package
+        $teamPointRules = [
+            ['package_name' => 'Star Seller (Rp 550.000)', 'team_points' => 1, 'max_gen' => 5],
+            ['package_name' => 'Affiliate (Rp 2.100.000)', 'team_points' => 4, 'max_gen' => 8],
+            ['package_name' => 'Business (Rp 4.300.000)', 'team_points' => 8, 'max_gen' => 12],
+            ['package_name' => 'Partner (Rp 10.500.000)', 'team_points' => 12, 'max_gen' => 15],
+        ];
+
+        // Team Point History Logs
+        $teamPointLogs = \App\Models\BonusLog::with('sourceUser')
+            ->where('user_id', $user->id)
+            ->whereIn('category', ['sponsor', 'generasi', 'tier'])
+            ->latest()
+            ->get()
+            ->map(function ($log) {
+                $source = $log->sourceUser ? '@' . $log->sourceUser->username : '-';
+                $pkg = $log->sourceUser ? ($log->sourceUser->package_name ?? 'Star Seller') : 'Star Seller';
+                $pts = str_contains(strtolower($pkg), 'partner') ? 12 : (str_contains(strtolower($pkg), 'business') ? 8 : (str_contains(strtolower($pkg), 'affiliate') ? 4 : 1));
+
+                return [
+                    'id' => $log->id,
+                    'created_at' => $log->created_at->format('d/m/Y H:i'),
+                    'source_username' => $source,
+                    'source_name' => $log->sourceUser ? $log->sourceUser->name : 'Mitra',
+                    'package_name' => $pkg,
+                    'points_earned' => $pts,
+                ];
+            });
+
         return Inertia::render('Admin/StepingHistory/Index', [
             'steping_summary' => [
                 'user_package' => $user->package_name ?: 'Starter',
@@ -73,9 +102,12 @@ class StepingHistoryController extends Controller
                 'next_tier' => $nextMilestone ? $nextMilestone['tier'] : 15,
                 'required_referrals' => $nextMilestone ? $nextMilestone['required_referrals'] : 32,
                 'remaining_referrals' => $nextMilestone ? max(0, $nextMilestone['required_referrals'] - $totalReferrals) : 0,
+                'total_team_points' => (int) ($user->team_points ?? 0),
             ],
             'milestones' => $milestones,
             'referrals' => $referrals,
+            'team_point_rules' => $teamPointRules,
+            'team_point_logs' => $teamPointLogs,
             'is_admin' => $user->hasRole('admin'),
         ]);
     }
