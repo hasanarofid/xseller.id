@@ -123,7 +123,7 @@ const formatRupiah = (val) => {
         </h2>
 
         <p class="text-xs text-amber-100 max-w-2xl font-medium leading-relaxed">
-          Fitur eksklusif dimana kamu bisa menitipkan produk kamu ke perusahaan atau conciate sale dan kamu berhak mendapatkan bagi hasil selama 3 bulan kedepan.
+          Fitur eksklusif di mana Anda bisa menitipkan produk Anda ke perusahaan atau konsinyasi dan Anda berhak mendapatkan bagi hasil selama 3 bulan ke depan.
         </p>
 
         <!-- Acuan Bonus TPR & Rebate Grid -->

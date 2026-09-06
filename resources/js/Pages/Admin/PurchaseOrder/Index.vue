@@ -160,7 +160,7 @@ const formatRupiah = (val) => {
           <div class="bg-white p-6 md:p-8 rounded-3xl text-center space-y-6 max-w-md mx-auto border border-slate-100 shadow-xs">
             <div class="space-y-1">
               <h2 class="text-xl font-black tracking-tight text-slate-900 uppercase">PURCHASE ORDER</h2>
-              <p class="text-xs text-slate-500 font-medium">Kamu bisa melakukan PO sesuai dengan Voucher PO yang tersedia</p>
+              <p class="text-xs text-slate-500 font-medium">Anda bisa melakukan PO sesuai dengan Voucher PO yang tersedia</p>
             </div>
 
             <!-- Pill Box: Voucher PO tersedia (Select or Zero Display) -->
@@ -182,11 +182,11 @@ const formatRupiah = (val) => {
 
             <!-- Subtext: Voucher PO counts -->
             <div v-if="po_stats.total_po_vouchers_count > 0" class="text-xs font-semibold text-slate-600 space-y-1 text-left px-2">
-              <p>kamu memiliki Voucher PO Star Seller = <span class="font-extrabold text-slate-900">{{ po_stats.star_seller_count }}</span></p>
-              <p>kamu memiliki Voucher PO Affiliate = <span class="font-extrabold text-slate-900">{{ po_stats.affiliate_count }}</span></p>
+              <p>Anda memiliki Voucher PO Star Seller = <span class="font-extrabold text-slate-900">{{ po_stats.star_seller_count }}</span></p>
+              <p>Anda memiliki Voucher PO Affiliate = <span class="font-extrabold text-slate-900">{{ po_stats.affiliate_count }}</span></p>
             </div>
             <p v-else class="text-xs font-semibold text-slate-500">
-              kamu tidak memiliki Voucher PO
+              Anda tidak memiliki Voucher PO
             </p>
 
             <!-- Button: AKTIVASI PO (If > 0) vs BELI (If === 0) -->

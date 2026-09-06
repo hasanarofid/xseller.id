@@ -121,7 +121,7 @@ const formatRupiah = (val) => {
               <div>
                 <h3 class="text-base font-black text-slate-900 uppercase tracking-tight">BELI VOUCHER</h3>
                 <p class="text-xs text-slate-500 mt-0.5 leading-relaxed font-medium">
-                  Kamu bisa membeli Voucher Activation, Voucher RO dan Voucher PO
+                  Anda bisa membeli Voucher Activation, Voucher RO dan Voucher PO
                 </p>
               </div>
             </div>
@@ -259,7 +259,7 @@ const formatRupiah = (val) => {
               <div>
                 <h3 class="text-base font-black text-slate-900 uppercase tracking-tight">TRANSFER VOUCHER</h3>
                 <p class="text-xs text-slate-500 mt-0.5 leading-relaxed font-medium">
-                  Kirim voucher yang tersedia ke team kamu, baik Voucher Activation, Voucher RO atau Voucher PO agar mereka bisa melakukan aktivasi secara mandiri.
+                  Kirim voucher yang tersedia ke tim Anda, baik Voucher Activation, Voucher RO atau Voucher PO agar mereka bisa melakukan aktivasi secara mandiri.
                 </p>
               </div>
             </div>
@@ -310,10 +310,10 @@ const formatRupiah = (val) => {
         <!-- RIGHT COLUMN: Warehouse & Transfer History (7 Cols) -->
         <div class="lg:col-span-7 space-y-6">
           
-          <!-- 4. GUDANG VOUCHER KAMU TABLE CARD -->
+          <!-- 4. GUDANG VOUCHER ANDA TABLE CARD -->
           <div class="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm space-y-4">
             <div class="flex items-center justify-between border-b border-slate-100 pb-4">
-              <h3 class="text-base font-black text-slate-900 uppercase tracking-tight">GUDANG VOUCHER KAMU</h3>
+              <h3 class="text-base font-black text-slate-900 uppercase tracking-tight">GUDANG VOUCHER ANDA</h3>
               <span class="px-3 py-1 text-[10px] font-extrabold bg-slate-100 text-slate-700 rounded-full">
                 Total: {{ vouchers.length }} Voucher
               </span>

@@ -185,7 +185,7 @@ const formatRupiah = (val) => {
               </div>
               <h2 class="text-xl font-black tracking-tight text-slate-900 uppercase">REPEAT ORDER</h2>
               <p class="text-xs text-slate-500 font-medium">
-                Kamu bisa melakukan RO sesuai dengan Voucher RO yang tersedia
+                Anda bisa melakukan RO sesuai dengan Voucher RO yang tersedia
               </p>
             </div>
 
@@ -197,10 +197,10 @@ const formatRupiah = (val) => {
 
             <!-- Subtext: Total Value Calculation (Quantity * 125,000) -->
             <p v-if="ro_stats.available_ro_vouchers_count > 0" class="text-xs font-semibold text-slate-600">
-              kamu memiliki Voucher RO = <span class="font-extrabold text-slate-900">{{ ro_stats.available_ro_vouchers_count }}</span> senilai <span class="font-bold text-[#1653a1]">{{ formatRupiah(ro_stats.available_ro_vouchers_count * 125000) }}</span>
+              Anda memiliki Voucher RO = <span class="font-extrabold text-slate-900">{{ ro_stats.available_ro_vouchers_count }}</span> senilai <span class="font-bold text-[#1653a1]">{{ formatRupiah(ro_stats.available_ro_vouchers_count * 125000) }}</span>
             </p>
             <p v-else class="text-xs font-semibold text-slate-500">
-              kamu tidak memiliki Voucher RO
+              Anda tidak memiliki Voucher RO
             </p>
 
             <!-- If user has vouchers: Show Select & AKTIVASI RO Button -->
