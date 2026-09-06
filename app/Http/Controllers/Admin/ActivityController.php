@@ -37,10 +37,10 @@ class ActivityController extends Controller
             'generasi' => 'Bonus Generasi (Tier Allocation): Diberikan dari alokasi pembagian tier generasi (Generasi 1 s/d Generasi 15) dari pendaftaran member di jaringan Anda.',
             'ro' => 'Bonus Repeat Order (RO): Diberikan dari setiap transaksi Repeat Order (RO) di jaringan Anda (Bonus Sponsor RO Rp 20.000 + Matching Bonus).',
             'po' => 'Bonus PO (Purchase Order): Diberikan dari alokasi 15 Generasi Tier transaksi Purchase Order (PO) di jaringan Anda.',
-            'pal' => 'PAL Bonus (Personal Allocation Level): Bonus yang didapatkan dari Generasi 1 yang melakukan klaim Personal Poin PO (Rp 50.000 untuk Star Seller, Rp 200.000 untuk Affiliate).',
+            'pal' => 'PAL Bonus (Personal Allocation Level): Bonus yang didapatkan dari Generasi 1 yang terkoleksi Poin PO (Rp 200.000 saat 35 Poin PO, Rp 600.000 saat 90 Poin, Rp 2.400.000 saat 300 Poin, Rp 14.000.000 saat 2.000 Poin, Rp 30.000.000 saat 5.000 Poin).',
             'team_point' => 'Team Poin: Poin perolehan tim terakumulasi dari hasil pendaftaran member di jaringan Anda sesuai alokasi paket (Star Seller +1, Affiliate +4, Business +8, Partner +12).',
             'tpr' => 'Bonus TPR: Diberikan dari alokasi program Trade Promotion Program (TPR) bulanan.',
-            'incentive' => 'Diberikan atas pencapaian kamu dalam menjalankan bisnis Xseller yang mengacu pada total Income kamu',
+            'incentive' => 'Diberikan atas pencapaian Anda dalam menjalankan bisnis Xseller yang mengacu pada total Income Anda',
             'penarikan' => 'Histori Penarikan Saldo: Rincian transaksi pencairan saldo dari e-wallet ke rekening bank Anda.',
         ];
 
@@ -74,7 +74,7 @@ class ActivityController extends Controller
                 ->map(function ($log) {
                     $source = $log->sourceUser ? '@' . $log->sourceUser->username : '-';
                     $code = $log->transaction_code ?? ('TP' . str_pad($log->id, 3, '0', STR_PAD_LEFT));
-                    $pkg = $log->sourceUser ? ($log->sourceUser->package_name ?? 'Basic') : 'Basic';
+                    $pkg = $log->sourceUser ? ($log->sourceUser->package_name ?? 'Star Seller') : 'Star Seller';
                     $pts = str_contains(strtolower($pkg), 'partner') ? 12 : (str_contains(strtolower($pkg), 'business') ? 8 : (str_contains(strtolower($pkg), 'affiliate') ? 4 : 1));
 
                     return [
@@ -88,6 +88,36 @@ class ActivityController extends Controller
                         'incentive' => $pts . ' Poin',
                         'status' => 'Klaim',
                         'date' => $log->created_at->format('d/m/Y'),
+                    ];
+                });
+        } elseif ($tab === 'pal') {
+            $logs = BonusLog::with('sourceUser')
+                ->where('user_id', $user->id)
+                ->where('category', 'pal')
+                ->latest()
+                ->get()
+                ->map(function ($log) {
+                    $source = $log->sourceUser ? '@' . $log->sourceUser->username : '-';
+                    $code = $log->transaction_code ?? ('PAL' . str_pad($log->id, 4, '0', STR_PAD_LEFT));
+
+                    $poPts = 35;
+                    if (str_contains($log->description, '90')) $poPts = 90;
+                    elseif (str_contains($log->description, '300')) $poPts = 300;
+                    elseif (str_contains($log->description, '2000')) $poPts = 2000;
+                    elseif (str_contains($log->description, '5000')) $poPts = 5000;
+
+                    $nominal = $log->qualified_amount ?: ($poPts == 35 ? 1000000 : ($poPts == 90 ? 3000000 : ($poPts == 300 ? 12000000 : ($poPts == 2000 ? 70000000 : 150000000))));
+
+                    return [
+                        'id' => $log->id,
+                        'transaction_code' => $code,
+                        'created_at' => $log->created_at->format('j/n/Y, H.i.s'),
+                        'date' => $log->created_at->format('d/m/Y'),
+                        'source' => $source,
+                        'po_points' => $poPts,
+                        'nominal' => 'Rp ' . number_format($nominal, 0, ',', '.'),
+                        'amount' => 'Rp ' . number_format($log->amount, 0, ',', '.'),
+                        'description' => $log->description,
                     ];
                 });
         } else {

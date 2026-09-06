@@ -35,7 +35,7 @@ const flashError = computed(() => page.props.flash?.error);
 
 // Form Convert Saldo Wallet to Voucher
 const buyForm = useForm({
-  package_key: props.convert_packages.length > 0 ? props.convert_packages[0].key : 'starter',
+  package_key: props.convert_packages.length > 0 ? props.convert_packages[0].key : 'seller',
   quantity: 1,
 });
 

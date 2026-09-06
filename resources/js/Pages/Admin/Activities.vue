@@ -63,7 +63,7 @@ const tabList = [
             <div>
               <h2 class="text-base font-black text-slate-900 uppercase tracking-tight">RINCIAN MUTASI BONUS ANDA</h2>
               <p class="text-xs text-slate-500 font-medium mt-0.5">
-                Berikut adalah Rincian detail Bonus {{ active_tab === 'incentive' ? 'insentif' : 'anda' }} kamu
+                Berikut adalah Rincian detail Bonus {{ active_tab === 'incentive' ? 'insentif' : 'anda' }}
               </p>
             </div>
           </div>
@@ -103,12 +103,20 @@ const tabList = [
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs border-collapse">
             <thead>
-              <!-- Special Headers for Incentive Tab as in Mockup WhatsApp Image 2026-09-03 at 13.15.33.jpeg -->
+              <!-- Special Headers for Incentive Tab -->
               <tr v-if="active_tab === 'incentive'" class="border-b border-slate-100 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
                 <th class="py-3 px-4">Qualified</th>
                 <th class="py-3 px-4">Incentive</th>
                 <th class="py-3 px-4">Status</th>
                 <th class="py-3 px-4 text-right">Date</th>
+              </tr>
+              <!-- Special Headers for PAL Bonus Tab (Matching Mockup WhatsApp Image 2026-09-06 at 21.35.57.jpeg) -->
+              <tr v-else-if="active_tab === 'pal'" class="border-b border-slate-100 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
+                <th class="py-3 px-4">Date</th>
+                <th class="py-3 px-4">Sumber</th>
+                <th class="py-3 px-4 text-center">Poin PO</th>
+                <th class="py-3 px-4 text-right">Nominal</th>
+                <th class="py-3 px-4 text-right">PAL Bonus</th>
               </tr>
               <!-- Standard Headers for Other Tabs -->
               <tr v-else class="border-b border-slate-100 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
@@ -142,6 +150,31 @@ const tabList = [
                 </tr>
               </template>
 
+              <!-- PAL Bonus Rows (Matching Mockup WhatsApp Image 2026-09-06 at 21.35.57.jpeg) -->
+              <template v-else-if="active_tab === 'pal'">
+                <tr 
+                  v-for="item in logs" 
+                  :key="item.id" 
+                  class="hover:bg-slate-50/80 transition-colors"
+                >
+                  <td class="py-3.5 px-4 text-slate-500 font-mono text-xs">
+                    {{ item.date || item.created_at }}
+                  </td>
+                  <td class="py-3.5 px-4 font-extrabold text-emerald-600 font-mono text-xs">
+                    {{ item.source }}
+                  </td>
+                  <td class="py-3.5 px-4 text-center font-bold text-slate-800">
+                    {{ item.po_points }}
+                  </td>
+                  <td class="py-3.5 px-4 text-right font-bold text-slate-800 font-mono">
+                    {{ item.nominal }}
+                  </td>
+                  <td class="py-3.5 px-4 text-right font-black text-emerald-600 font-mono text-xs tracking-tight">
+                    {{ item.amount }}
+                  </td>
+                </tr>
+              </template>
+
               <!-- Standard Rows -->
               <template v-else>
                 <tr 
@@ -168,7 +201,7 @@ const tabList = [
               </template>
 
               <tr v-if="logs.length === 0">
-                <td :colspan="active_tab === 'incentive' ? 4 : 5" class="py-12 text-center text-slate-400 text-xs italic">
+                <td :colspan="active_tab === 'incentive' ? 4 : (active_tab === 'pal' ? 5 : 5)" class="py-12 text-center text-slate-400 text-xs italic">
                   Belum ada catatan mutasi bonus untuk kategori ini.
                 </td>
               </tr>

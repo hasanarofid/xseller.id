@@ -31,7 +31,20 @@ class RepeatOrderController extends Controller
                   ->orWhere('package_name', 'LIKE', '%RO%')
                   ->orWhere('package_name', 'LIKE', '%125%');
             })
-            ->get(['id', 'code', 'package_name']);
+            ->get(['id', 'code', 'package_name'])
+            ->map(function ($v) {
+                $pkgName = $v->package_name ?: 'Seller (Rp 125.000)';
+                $pkgName = str_replace(
+                    ['Starter (Rp 125.000)', 'Starter', 'Basic (Rp 550.000)', 'Basic'],
+                    ['Seller (Rp 125.000)', 'Seller', 'Star Seller (Rp 550.000)', 'Star Seller'],
+                    $pkgName
+                );
+                return [
+                    'id' => $v->id,
+                    'code' => $v->code,
+                    'package_name' => $pkgName,
+                ];
+            });
 
         // Count active RO vouchers
         $activeRoVoucherCount = $availableRoVouchers->count();

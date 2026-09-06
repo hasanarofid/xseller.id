@@ -133,16 +133,14 @@ class PurchaseOrderController extends Controller
             $amount = 2100000;
             $poPoints = 8;
             $tierAmount = 50000;
-            $palBonusAmount = 200000;
         } else {
             $packageName = 'PO Paket Star Seller (Rp 550.000)';
             $amount = 550000;
             $poPoints = 2;
             $tierAmount = 10000;
-            $palBonusAmount = 50000;
         }
 
-        DB::transaction(function () use ($user, $voucher, $packageName, $amount, $poPoints, $tierAmount, $palBonusAmount) {
+        DB::transaction(function () use ($user, $voucher, $packageName, $amount, $poPoints, $tierAmount) {
             // 1. Mark voucher as used
             $voucher->update([
                 'status' => 'used',
@@ -150,8 +148,11 @@ class PurchaseOrderController extends Controller
                 'used_at' => now(),
             ]);
 
-            // 2. Increment Personal Poin PO
+            // 2. Track old and new Personal Poin PO
+            $oldPoPoints = (int) ($user->po_points ?? 0);
             $user->increment('po_points', $poPoints);
+            $user->refresh();
+            $newPoPoints = (int) $user->po_points;
 
             // 3. Create PurchaseOrder record
             PurchaseOrder::create([
@@ -161,29 +162,45 @@ class PurchaseOrderController extends Controller
                 'po_points' => $poPoints,
             ]);
 
-            // 4. PAL Bonus for Direct Upline (Generasi 1)
+            // 4. PAL Bonus for Direct Upline (Generasi 1) - Triggered on PO Points Milestones
             if ($user->parent_id) {
                 $sponsorUpline = User::find($user->parent_id);
                 if ($sponsorUpline) {
-                    $sponsorUpline->increment('saldo', $palBonusAmount);
-                    $sponsorUpline->increment('total_bonus', $palBonusAmount);
+                    $milestones = [
+                        35 => ['reward' => 1000000, 'pal' => 200000],
+                        90 => ['reward' => 3000000, 'pal' => 600000],
+                        300 => ['reward' => 12000000, 'pal' => 2400000],
+                        2000 => ['reward' => 70000000, 'pal' => 14000000],
+                        5000 => ['reward' => 150000000, 'pal' => 30000000],
+                    ];
 
-                    BonusLog::create([
-                        'transaction_code' => 'PAL' . sprintf('%04d', BonusLog::count() + 1),
-                        'user_id' => $sponsorUpline->id,
-                        'category' => 'pal',
-                        'source_user_id' => $user->id,
-                        'description' => "PAL Bonus: Klaim Personal Poin PO dari @{$user->username} ({$packageName})",
-                        'amount' => $palBonusAmount,
-                    ]);
+                    foreach ($milestones as $pts => $m) {
+                        if ($oldPoPoints < $pts && $newPoPoints >= $pts) {
+                            $palBonusAmount = $m['pal'];
+                            $rewardNominal = $m['reward'];
 
-                    WalletTransaction::create([
-                        'user_id' => $sponsorUpline->id,
-                        'type' => 'in',
-                        'category' => 'bonus_pal',
-                        'amount' => $palBonusAmount,
-                        'description' => "PAL Bonus klaim Personal Poin PO dari @{$user->username}",
-                    ]);
+                            $sponsorUpline->increment('saldo', $palBonusAmount);
+                            $sponsorUpline->increment('total_bonus', $palBonusAmount);
+
+                            BonusLog::create([
+                                'transaction_code' => 'PAL' . sprintf('%04d', BonusLog::count() + 1),
+                                'user_id' => $sponsorUpline->id,
+                                'category' => 'pal',
+                                'source_user_id' => $user->id,
+                                'description' => "PAL Bonus: Generasi 1 @{$user->username} menyentuh {$pts} Poin PO",
+                                'amount' => $palBonusAmount,
+                                'qualified_amount' => $rewardNominal,
+                            ]);
+
+                            WalletTransaction::create([
+                                'user_id' => $sponsorUpline->id,
+                                'type' => 'in',
+                                'category' => 'bonus_pal',
+                                'amount' => $palBonusAmount,
+                                'description' => "PAL Bonus (Gen 1 @{$user->username} menyentuh {$pts} Poin PO)",
+                            ]);
+                        }
+                    }
                 }
             }
 

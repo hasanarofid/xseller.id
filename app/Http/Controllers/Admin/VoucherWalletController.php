@@ -34,10 +34,17 @@ class VoucherWalletController extends Controller
                 $usedByUsername = $v->usedBy ? $v->usedBy->username : 'member';
                 $usedDate = $v->used_at ? $v->used_at->format('j/n/Y') : $v->updated_at->format('j/n/Y');
 
+                $pkgName = $v->package_name ?: 'Seller (Rp 125.000)';
+                $pkgName = str_replace(
+                    ['Starter (Rp 125.000)', 'Starter', 'Basic (Rp 550.000)', 'Basic', 'Medium (Rp 2.100.000)', 'Medium', 'Pro (Rp 4.300.000)', 'Pro', 'Ultimate (Rp 10.500.000)', 'Ultimate'],
+                    ['Seller (Rp 125.000)', 'Seller', 'Star Seller (Rp 550.000)', 'Star Seller', 'Affiliate (Rp 2.100.000)', 'Affiliate', 'Business (Rp 4.300.000)', 'Business', 'Partner (Rp 10.500.000)', 'Partner'],
+                    $pkgName
+                );
+
                 return [
                     'id' => $v->id,
                     'code' => $v->code,
-                    'package_name' => $v->package_name ?: 'Basic',
+                    'package_name' => $pkgName,
                     'voucher_type' => $v->voucher_type ?: 'activation',
                     'created_at' => $v->created_at->format('j/n/Y'),
                     'status' => $isAvailable ? 'TERSEDIA' : 'TERPAKAI',
@@ -52,10 +59,16 @@ class VoucherWalletController extends Controller
             ->where('status', 'active')
             ->get()
             ->map(function ($v) {
+                $pkgName = $v->package_name ?: 'Seller (Rp 125.000)';
+                $pkgName = str_replace(
+                    ['Starter (Rp 125.000)', 'Starter', 'Basic (Rp 550.000)', 'Basic', 'Medium (Rp 2.100.000)', 'Medium', 'Pro (Rp 4.300.000)', 'Pro', 'Ultimate (Rp 10.500.000)', 'Ultimate'],
+                    ['Seller (Rp 125.000)', 'Seller', 'Star Seller (Rp 550.000)', 'Star Seller', 'Affiliate (Rp 2.100.000)', 'Affiliate', 'Business (Rp 4.300.000)', 'Business', 'Partner (Rp 10.500.000)', 'Partner'],
+                    $pkgName
+                );
                 return [
                     'id' => $v->id,
                     'code' => $v->code,
-                    'label' => $v->code . ' - ' . ($v->package_name ?: 'Voucher'),
+                    'label' => $v->code . ' - ' . $pkgName,
                 ];
             });
 
@@ -213,11 +226,16 @@ class VoucherWalletController extends Controller
         }
 
         $catalog = [
-            'starter' => ['name' => 'Starter (Rp 125.000)', 'type' => 'activation', 'prefix' => 'PIN'],
-            'basic' => ['name' => 'Basic (Rp 550.000)', 'type' => 'activation', 'prefix' => 'PIN'],
-            'medium' => ['name' => 'Medium (Rp 2.100.000)', 'type' => 'activation', 'prefix' => 'PIN'],
-            'pro' => ['name' => 'Pro (Rp 4.300.000)', 'type' => 'activation', 'prefix' => 'PIN'],
-            'ultimate' => ['name' => 'Ultimate (Rp 10.500.000)', 'type' => 'activation', 'prefix' => 'PIN'],
+            'seller' => ['name' => 'Seller (Rp 125.000)', 'type' => 'activation', 'prefix' => 'PIN'],
+            'starter' => ['name' => 'Seller (Rp 125.000)', 'type' => 'activation', 'prefix' => 'PIN'],
+            'star_seller' => ['name' => 'Star Seller (Rp 550.000)', 'type' => 'activation', 'prefix' => 'PIN'],
+            'basic' => ['name' => 'Star Seller (Rp 550.000)', 'type' => 'activation', 'prefix' => 'PIN'],
+            'affiliate' => ['name' => 'Affiliate (Rp 2.100.000)', 'type' => 'activation', 'prefix' => 'PIN'],
+            'medium' => ['name' => 'Affiliate (Rp 2.100.000)', 'type' => 'activation', 'prefix' => 'PIN'],
+            'business' => ['name' => 'Business (Rp 4.300.000)', 'type' => 'activation', 'prefix' => 'PIN'],
+            'pro' => ['name' => 'Business (Rp 4.300.000)', 'type' => 'activation', 'prefix' => 'PIN'],
+            'partner' => ['name' => 'Partner (Rp 10.500.000)', 'type' => 'activation', 'prefix' => 'PIN'],
+            'ultimate' => ['name' => 'Partner (Rp 10.500.000)', 'type' => 'activation', 'prefix' => 'PIN'],
             'ro' => ['name' => 'Repeat Order (Rp 125.000)', 'type' => 'ro', 'prefix' => 'RO'],
             'po_star_seller' => ['name' => 'PO Star Seller (Rp 550.000)', 'type' => 'po_star_seller', 'prefix' => 'PO'],
             'po_affiliate' => ['name' => 'PO Affiliate (Rp 2.100.000)', 'type' => 'po_affiliate', 'prefix' => 'PO'],

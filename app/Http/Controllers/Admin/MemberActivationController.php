@@ -30,10 +30,16 @@ class MemberActivationController extends Controller
             ->get();
 
         $vouchers = $activeVouchersRaw->map(function ($v) {
+            $pkgName = $v->package_name ?: 'Seller';
+            $pkgName = str_replace(
+                ['Starter (Rp 125.000)', 'Starter', 'Basic (Rp 550.000)', 'Basic', 'Medium (Rp 2.100.000)', 'Medium', 'Pro (Rp 4.300.000)', 'Pro', 'Ultimate (Rp 10.500.000)', 'Ultimate'],
+                ['Seller (Rp 125.000)', 'Seller', 'Star Seller (Rp 550.000)', 'Star Seller', 'Affiliate (Rp 2.100.000)', 'Affiliate', 'Business (Rp 4.300.000)', 'Business', 'Partner (Rp 10.500.000)', 'Partner'],
+                $pkgName
+            );
             return [
                 'code' => $v->code,
-                'package_name' => $v->package_name,
-                'label' => $v->code . ' (Paket ' . ($v->package_name ?: 'Seller') . ')',
+                'package_name' => $pkgName,
+                'label' => $v->code . ' (Paket ' . $pkgName . ')',
             ];
         });
 

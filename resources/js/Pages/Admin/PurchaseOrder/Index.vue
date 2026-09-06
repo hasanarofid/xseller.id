@@ -143,7 +143,7 @@ const formatRupiah = (val) => {
             <div class="flex items-baseline gap-1">
               <span class="text-2xl font-black text-emerald-600">Active</span>
             </div>
-            <p class="text-[10px] text-slate-500">Star Seller +50k | Affiliate +200k</p>
+            <p class="text-[10px] text-slate-500">Didapat dari Klaim Personal Poin PO Generasi 1</p>
           </div>
           <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 flex items-center justify-center font-bold shadow-xs">
             <TrendingUp class="w-6 h-6" />

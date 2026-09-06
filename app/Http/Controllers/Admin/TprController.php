@@ -41,11 +41,11 @@ class TprController extends Controller
             $allowedOptions[] = [
                 'package_name' => 'Paket Rp 10.500.000 (Partner)',
                 'amount' => 10500000,
-                'monthly_share_percent' => 3.6,
-                'monthly_share_amount' => 378000,
+                'monthly_share_percent' => 9,
+                'monthly_share_amount' => 945000,
                 'sponsor_rebate_amount' => 378000,
                 'duration_months' => 3,
-                'description' => 'Bagi Hasil Rp 378.000/bulan, Rebate Sponsor Rp 378.000/bulan',
+                'description' => 'Bagi Hasil Rp 945.000/bulan, Rebate Sponsor Rp 378.000/bulan',
             ];
         }
 
@@ -109,8 +109,8 @@ class TprController extends Controller
             $shareAmount = 301000;
         } else {
             $packageName = 'Paket Rp 10.500.000';
-            $percent = 3.6;
-            $shareAmount = 378000;
+            $percent = 9;
+            $shareAmount = 945000;
         }
 
         $proofPath = $request->file('proof_of_transfer')->store('tpr_proofs', 'public');
