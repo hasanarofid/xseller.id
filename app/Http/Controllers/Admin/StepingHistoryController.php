@@ -35,7 +35,8 @@ class StepingHistoryController extends Controller
         $activeTier = $baseMaxTier;
 
         // Steping milestones definitions per 02 Sept 2026 revision
-        $milestones = [
+        // Hanya tampilkan milestone DIATAS base tier user
+        $allMilestones = [
             ['tier' => 4,  'required_referrals' => 4,  'unlocked' => false],
             ['tier' => 5,  'required_referrals' => 8,  'unlocked' => false],
             ['tier' => 6,  'required_referrals' => 12, 'unlocked' => false],
@@ -46,14 +47,17 @@ class StepingHistoryController extends Controller
             ['tier' => 15, 'required_referrals' => 32, 'unlocked' => false],
         ];
 
+        $milestones = array_values(array_filter($allMilestones, fn($m) => $m['tier'] > $baseMaxTier));
+
         foreach ($milestones as &$m) {
-            if ($baseMaxTier >= $m['tier'] || $totalReferrals >= $m['required_referrals']) {
+            if ($totalReferrals >= $m['required_referrals']) {
                 $m['unlocked'] = true;
                 if ($m['tier'] > $activeTier) {
                     $activeTier = $m['tier'];
                 }
             }
         }
+        unset($m);
 
         // Find next milestone
         $nextMilestone = null;
