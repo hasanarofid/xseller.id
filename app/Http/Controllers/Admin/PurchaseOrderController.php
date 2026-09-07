@@ -103,6 +103,17 @@ class PurchaseOrderController extends Controller
      */
     public function store(Request $request)
     {
+        $user = auth()->user();
+        $userPackage = strtolower($user->package_name ?? '');
+        $isAdmin = $user->hasRole('admin');
+
+        $isStarSeller = str_contains($userPackage, 'star') || str_contains($userPackage, '550') || str_contains($userPackage, 'basic');
+        $isAffiliate = str_contains($userPackage, 'affiliate') || str_contains($userPackage, '2.100') || str_contains($userPackage, '2100') || str_contains($userPackage, 'medium');
+
+        if (!$isStarSeller && !$isAffiliate && !$isAdmin) {
+            return back()->with('error', 'Fitur PO hanya tersedia untuk member Paket Star Seller dan Affiliate!');
+        }
+
         $request->validate([
             'voucher_code' => 'required|string|exists:vouchers,code',
         ]);
@@ -248,6 +259,17 @@ class PurchaseOrderController extends Controller
      */
     public function buyVoucher(Request $request)
     {
+        $user = auth()->user();
+        $userPackage = strtolower($user->package_name ?? '');
+        $isAdmin = $user->hasRole('admin');
+
+        $isStarSeller = str_contains($userPackage, 'star') || str_contains($userPackage, '550') || str_contains($userPackage, 'basic');
+        $isAffiliate = str_contains($userPackage, 'affiliate') || str_contains($userPackage, '2.100') || str_contains($userPackage, '2100') || str_contains($userPackage, 'medium');
+
+        if (!$isStarSeller && !$isAffiliate && !$isAdmin) {
+            return back()->with('error', 'Fitur PO hanya tersedia untuk member Paket Star Seller dan Affiliate!');
+        }
+
         $request->validate([
             'package_type' => 'required|string|in:star_seller,affiliate',
             'quantity' => 'nullable|integer|min:1|max:35',

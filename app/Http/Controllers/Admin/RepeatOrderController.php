@@ -120,6 +120,17 @@ class RepeatOrderController extends Controller
      */
     public function store(Request $request)
     {
+        $user = auth()->user();
+        $userPackage = strtolower($user->package_name ?? '');
+        $isAdmin = $user->hasRole('admin');
+
+        $isSeller = str_contains($userPackage, 'seller') && !str_contains($userPackage, 'star');
+        $isStarter = str_contains($userPackage, 'starter');
+
+        if (!$isSeller && !$isStarter && !$isAdmin) {
+            return back()->with('error', 'Fitur RO hanya tersedia untuk member Paket Seller (Rp 125.000)!');
+        }
+
         $request->validate([
             'voucher_code' => 'required|string|exists:vouchers,code',
         ]);
@@ -192,6 +203,17 @@ class RepeatOrderController extends Controller
      */
     public function buyVoucher(Request $request)
     {
+        $user = auth()->user();
+        $userPackage = strtolower($user->package_name ?? '');
+        $isAdmin = $user->hasRole('admin');
+
+        $isSeller = str_contains($userPackage, 'seller') && !str_contains($userPackage, 'star');
+        $isStarter = str_contains($userPackage, 'starter');
+
+        if (!$isSeller && !$isStarter && !$isAdmin) {
+            return back()->with('error', 'Fitur RO hanya tersedia untuk member Paket Seller (Rp 125.000)!');
+        }
+
         $request->validate([
             'quantity' => 'nullable|integer|min:1|max:35',
         ]);
