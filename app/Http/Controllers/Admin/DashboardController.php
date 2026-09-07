@@ -107,7 +107,7 @@ class DashboardController extends Controller
                     'team_poin' => 0,
                     'max_tier' => 'Tier 3 (Steping s/d Tier 15)',
                     'tpr' => 'Non-TPR',
-                    'is_current' => str_contains(strtolower($user->package_name ?? ''), 'seller') || str_contains(strtolower($user->package_name ?? ''), 'starter') || str_contains(strtolower($user->package_name ?? ''), '125')
+                    'is_current' => (str_contains(strtolower($user->package_name ?? ''), 'seller') && !str_contains(strtolower($user->package_name ?? ''), 'star')) || str_contains(strtolower($user->package_name ?? ''), 'starter') || str_contains(strtolower($user->package_name ?? ''), '125')
                 ],
                 [
                     'name' => 'Star Seller',

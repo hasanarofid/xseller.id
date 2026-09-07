@@ -78,10 +78,32 @@ class StepingHistoryController extends Controller
             ->whereIn('category', ['sponsor', 'generasi', 'tier'])
             ->latest()
             ->get()
+            ->filter(function ($log) {
+                $pkg = $log->sourceUser ? ($log->sourceUser->package_name ?? '') : '';
+                $pkgLower = strtolower($pkg);
+                if (str_contains($pkgLower, 'seller') && !str_contains($pkgLower, 'star')) {
+                    return false;
+                }
+                if (str_contains($pkgLower, '125') || str_contains($pkgLower, 'starter')) {
+                    return false;
+                }
+                return true;
+            })
             ->map(function ($log) {
-                $source = $log->sourceUser ? '@' . $log->sourceUser->username : '-';
+                $rawSource = $log->sourceUser ? $log->sourceUser->username : '';
+                $source = $rawSource ? '@' . ltrim($rawSource, '@') : '-';
                 $pkg = $log->sourceUser ? ($log->sourceUser->package_name ?? 'Star Seller') : 'Star Seller';
-                $pts = str_contains(strtolower($pkg), 'partner') ? 12 : (str_contains(strtolower($pkg), 'business') ? 8 : (str_contains(strtolower($pkg), 'affiliate') ? 4 : 1));
+                $pkgLower = strtolower($pkg);
+                $pts = 0;
+                if (str_contains($pkgLower, 'partner') || str_contains($pkgLower, '10.500') || str_contains($pkgLower, '10500')) {
+                    $pts = 12;
+                } elseif (str_contains($pkgLower, 'business') || str_contains($pkgLower, '4.300') || str_contains($pkgLower, '4300')) {
+                    $pts = 8;
+                } elseif (str_contains($pkgLower, 'affiliate') || str_contains($pkgLower, '2.100') || str_contains($pkgLower, '2100')) {
+                    $pts = 4;
+                } elseif (str_contains($pkgLower, 'star') || str_contains($pkgLower, '550')) {
+                    $pts = 1;
+                }
 
                 return [
                     'id' => $log->id,
@@ -91,7 +113,8 @@ class StepingHistoryController extends Controller
                     'package_name' => $pkg,
                     'points_earned' => $pts,
                 ];
-            });
+            })
+            ->values();
 
         return Inertia::render('Admin/StepingHistory/Index', [
             'steping_summary' => [

@@ -71,25 +71,48 @@ class ActivityController extends Controller
                 ->whereIn('category', ['sponsor', 'generasi', 'tier'])
                 ->latest()
                 ->get()
+                ->filter(function ($log) {
+                    $pkg = $log->sourceUser ? ($log->sourceUser->package_name ?? '') : '';
+                    $pkgLower = strtolower($pkg);
+                    if (str_contains($pkgLower, 'seller') && !str_contains($pkgLower, 'star')) {
+                        return false;
+                    }
+                    if (str_contains($pkgLower, '125') || str_contains($pkgLower, 'starter')) {
+                        return false;
+                    }
+                    return true;
+                })
                 ->map(function ($log) {
-                    $source = $log->sourceUser ? '@' . $log->sourceUser->username : '-';
+                    $rawSource = $log->sourceUser ? $log->sourceUser->username : '';
+                    $source = $rawSource ? '@' . ltrim($rawSource, '@') : '-';
                     $code = $log->transaction_code ?? ('TP' . str_pad($log->id, 3, '0', STR_PAD_LEFT));
                     $pkg = $log->sourceUser ? ($log->sourceUser->package_name ?? 'Star Seller') : 'Star Seller';
-                    $pts = str_contains(strtolower($pkg), 'partner') ? 12 : (str_contains(strtolower($pkg), 'business') ? 8 : (str_contains(strtolower($pkg), 'affiliate') ? 4 : 1));
+                    $pkgLower = strtolower($pkg);
+                    $pts = 0;
+                    if (str_contains($pkgLower, 'partner') || str_contains($pkgLower, '10.500') || str_contains($pkgLower, '10500')) {
+                        $pts = 12;
+                    } elseif (str_contains($pkgLower, 'business') || str_contains($pkgLower, '4.300') || str_contains($pkgLower, '4300')) {
+                        $pts = 8;
+                    } elseif (str_contains($pkgLower, 'affiliate') || str_contains($pkgLower, '2.100') || str_contains($pkgLower, '2100')) {
+                        $pts = 4;
+                    } elseif (str_contains($pkgLower, 'star') || str_contains($pkgLower, '550')) {
+                        $pts = 1;
+                    }
 
                     return [
                         'id' => $log->id,
                         'transaction_code' => $code,
                         'created_at' => $log->created_at->format('j/n/Y, H.i.s'),
                         'source' => $source,
-                        'description' => "Perolehan Team Poin dari member @{$source} (Paket {$pkg})",
+                        'description' => "Perolehan Team Poin dari member {$source} (Paket {$pkg})",
                         'amount' => '+' . $pts . ' Poin',
                         'qualified' => '-',
                         'incentive' => $pts . ' Poin',
                         'status' => 'Klaim',
                         'date' => $log->created_at->format('d/m/Y'),
                     ];
-                });
+                })
+                ->values();
         } elseif ($tab === 'pal') {
             $logs = BonusLog::with('sourceUser')
                 ->where('user_id', $user->id)
