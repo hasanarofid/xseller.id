@@ -15,7 +15,7 @@ return new class extends Migration
             Schema::create('bonus_logs', function (Blueprint $table) {
                 $table->id();
                 $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
-                $table->enum('category', ['sponsor', 'pasangan', 'titik', 'reward', 'penarikan'])->default('sponsor');
+                $table->enum('category', ['sponsor', 'pasangan', 'titik', 'reward', 'penarikan', 'po', 'pal', 'ro', 'tpr', 'tier'])->default('sponsor');
                 $table->string('transaction_code')->nullable();
                 $table->foreignId('source_user_id')->nullable()->constrained('users')->nullOnDelete();
                 $table->string('description');
