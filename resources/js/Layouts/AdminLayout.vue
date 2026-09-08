@@ -47,6 +47,11 @@ const isTprEligible = computed(() => {
   return pkg.includes('4.300') || pkg.includes('4300') || pkg.includes('business') || pkg.includes('pro') || 
          pkg.includes('10.500') || pkg.includes('10500') || pkg.includes('partner') || pkg.includes('ultimate');
 });
+
+const formatRupiah = (val) => {
+  return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(val || 0);
+};
+
 const isSidebarOpen = ref(false);
 const isSidebarCollapsed = ref(false);
 const isUserMenuOpen = ref(false);
@@ -77,9 +82,7 @@ const navigation = computed(() => {
       { name: 'Riwayat Steping', href: route('admin.steping-history.index'), icon: Layers, current: route().current('admin.steping-history.index') },
     ]),
     { name: 'Penarikan Saldo', href: route('admin.withdrawals.index'), icon: ArrowUpRight, current: route().current('admin.withdrawals.index') },
-    ...(isTprEligible.value ? [
-      { name: 'Fitur TPR', href: route('admin.tpr.index'), icon: Crown, current: route().current('admin.tpr.index') }
-    ] : []),
+    { name: 'Fitur TPR', href: route('admin.tpr.index'), icon: Crown, current: route().current('admin.tpr.index') },
     { name: 'Data Mitra', href: route('admin.network-data.index'), icon: Users, current: route().current('admin.network-data.index') },
     { name: 'Aktivitas', href: route('admin.activities.index'), icon: Activity, current: route().current('admin.activities.index') },
     { name: 'Laporan', href: route('admin.reports.index'), icon: FileText, current: route().current('admin.reports.index') },
@@ -166,10 +169,10 @@ const logout = () => {
             <!-- Dompet Saya Card Widget -->
             <div class="w-full mt-2 p-3 bg-[#f0f7fb] border border-[#04bdb2]/20 rounded-2xl text-left space-y-1.5 shadow-xs">
               <span class="text-[9px] font-extrabold text-[#1653a1] uppercase tracking-wider block">DOMPET SAYA</span>
-              <p class="text-sm font-black text-slate-900 leading-tight">Rp 2.500.000</p>
+              <p class="text-sm font-black text-slate-900 leading-tight">{{ formatRupiah(user.saldo ?? 0) }}</p>
               <div class="pt-1.5 border-t border-slate-200/80 text-[9px]">
                 <span class="text-slate-400 font-medium block">TOTAL BONUS:</span>
-                <span class="font-bold text-[#009c94]">Rp 400.000</span>
+                <span class="font-bold text-[#009c94]">{{ formatRupiah(user.total_bonus ?? 0) }}</span>
               </div>
             </div>
           </div>

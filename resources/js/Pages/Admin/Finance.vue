@@ -99,7 +99,7 @@ const formatRupiah = (val) => {
                 SALDO E-WALLET AKTIF
               </span>
               <h2 class="text-3xl md:text-4xl font-black text-white tracking-tight">
-                {{ formatRupiah(wallet?.saldo || 2500000) }}
+                {{ formatRupiah(wallet?.saldo ?? 0) }}
               </h2>
               <p class="text-[11px] text-slate-400 font-medium">
                 Batas penarikan harian maksimum: {{ formatRupiah(wallet?.max_daily_withdrawal || 50000000) }}

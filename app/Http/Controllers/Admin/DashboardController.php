@@ -7,6 +7,8 @@ use App\Models\User;
 use App\Models\Page;
 use App\Models\Post;
 use App\Models\Setting;
+use App\Models\BonusLog;
+use App\Models\Voucher;
 use Inertia\Inertia;
 
 class DashboardController extends Controller
@@ -18,19 +20,39 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
 
+        $bonusSponsor = (float) BonusLog::where('user_id', $user->id)
+            ->whereIn('category', ['sponsor', 'bonus_sponsor'])
+            ->sum('amount');
+
+        $bonusGenerasi = (float) BonusLog::where('user_id', $user->id)
+            ->whereIn('category', ['generasi', 'bonus_tier', 'tier', 'po'])
+            ->sum('amount');
+
+        $bonusRO = (float) BonusLog::where('user_id', $user->id)
+            ->whereIn('category', ['ro', 'ro_matching', 'bonus_ro'])
+            ->sum('amount');
+
+        $bonusTPR = (float) BonusLog::where('user_id', $user->id)
+            ->whereIn('category', ['tpr', 'bonus_tpr'])
+            ->sum('amount');
+
+        $voucherAktif = Voucher::where('user_id', $user->id)
+            ->where('status', 'active')
+            ->count();
+
         return Inertia::render('Admin/Dashboard', [
             'referral_links' => [
                 'default' => url('/register?sponsor=' . ($user ? ($user->username ?: $user->id) : 1)),
                 'url' => url('/register?sponsor=' . ($user ? ($user->username ?: $user->id) : 1)),
             ],
             'wallet' => [
-                'saldo' => 2500000,
-                'voucher_aktif' => 2, // Strict terminology: VOUCHER (no PIN)
+                'saldo' => (float) ($user->saldo ?? 0),
+                'voucher_aktif' => $voucherAktif,
                 'total_bonus_cair' => (float) ($user->total_bonus ?? 0),
-                'bonus_sponsor' => 300000,
-                'bonus_pasangan' => 100000,
-                'bonus_titik' => 0,
-                'bonus_reward' => 0,
+                'bonus_sponsor' => $bonusSponsor,
+                'bonus_generasi' => $bonusGenerasi,
+                'bonus_ro' => $bonusRO,
+                'bonus_tpr' => $bonusTPR,
             ],
             'binary_legs' => [
                 'left' => [

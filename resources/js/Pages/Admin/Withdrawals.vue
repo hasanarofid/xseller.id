@@ -153,7 +153,7 @@ const bankList = [
             SALDO E-WALLET ANDA SAAT INI
           </span>
           <h2 class="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">
-            {{ formatRupiah(wallet?.saldo || 2500000) }}
+            {{ formatRupiah(wallet?.saldo ?? 0) }}
           </h2>
           <p class="text-xs text-slate-500 font-medium pt-0.5">
             Min. Penarikan: <strong class="text-slate-800">{{ formatRupiah(wallet?.min_withdrawal || 50000) }}</strong> | Biaya Admin: <strong class="text-emerald-600">{{ formatRupiah(wallet?.admin_fee || 0) }}</strong>
@@ -276,7 +276,7 @@ const bankList = [
                 />
                 <div class="flex items-center justify-between text-[10px] mt-1.5 font-medium">
                   <span class="text-slate-400">Min. {{ formatRupiah(wallet?.min_withdrawal || 50000) }}</span>
-                  <span class="text-slate-500">Max. Bisa ditarik: <strong class="text-emerald-600 font-bold">{{ formatRupiah(wallet?.saldo || 2500000) }}</strong></span>
+                  <span class="text-slate-500">Max. Bisa ditarik: <strong class="text-emerald-600 font-bold">{{ formatRupiah(wallet?.saldo ?? 0) }}</strong></span>
                 </div>
               </div>
 

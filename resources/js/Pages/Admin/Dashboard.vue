@@ -91,7 +91,7 @@ const formatRupiah = (val) => {
           </div>
 
           <div>
-            <h2 class="text-3xl md:text-4xl font-black text-white tracking-tight">{{ formatRupiah(wallet?.saldo || 2500000) }}</h2>
+            <h2 class="text-3xl md:text-4xl font-black text-white tracking-tight">{{ formatRupiah(wallet?.saldo ?? 0) }}</h2>
           </div>
 
           <div class="pt-2 flex items-center justify-between border-t border-white/10">
@@ -116,26 +116,26 @@ const formatRupiah = (val) => {
           </div>
 
           <div>
-            <h2 class="text-3xl font-black text-slate-900 tracking-tight">{{ formatRupiah(wallet?.total_bonus_cair || 0) }}</h2>
+            <h2 class="text-3xl font-black text-slate-900 tracking-tight">{{ formatRupiah(wallet?.total_bonus_cair ?? 0) }}</h2>
           </div>
 
           <!-- Bonus Breakdown -->
           <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100 text-xs">
             <div class="p-2 bg-[#f4f8fb] rounded-xl">
               <p class="text-[10px] text-slate-400 font-bold uppercase">Sponsor (20%)</p>
-              <p class="font-bold text-[#1653a1] mt-0.5">{{ formatRupiah(wallet?.bonus_sponsor || 300000) }}</p>
+              <p class="font-bold text-[#1653a1] mt-0.5">{{ formatRupiah(wallet?.bonus_sponsor ?? 0) }}</p>
             </div>
             <div class="p-2 bg-[#f4f8fb] rounded-xl">
               <p class="text-[10px] text-slate-400 font-bold uppercase">Generasi (Tier)</p>
-              <p class="font-bold text-[#009c94] mt-0.5">{{ formatRupiah(wallet?.bonus_generasi || 100000) }}</p>
+              <p class="font-bold text-[#009c94] mt-0.5">{{ formatRupiah(wallet?.bonus_generasi ?? 0) }}</p>
             </div>
             <div class="p-2 bg-[#f4f8fb] rounded-xl">
               <p class="text-[10px] text-slate-400 font-bold uppercase">Bonus RO</p>
-              <p class="font-bold text-amber-600 mt-0.5">{{ formatRupiah(wallet?.bonus_ro || 0) }}</p>
+              <p class="font-bold text-amber-600 mt-0.5">{{ formatRupiah(wallet?.bonus_ro ?? 0) }}</p>
             </div>
             <div class="p-2 bg-[#f4f8fb] rounded-xl">
               <p class="text-[10px] text-slate-400 font-bold uppercase">Bonus TPR</p>
-              <p class="font-bold text-rose-600 mt-0.5">{{ formatRupiah(wallet?.bonus_tpr || 0) }}</p>
+              <p class="font-bold text-rose-600 mt-0.5">{{ formatRupiah(wallet?.bonus_tpr ?? 0) }}</p>
             </div>
           </div>
         </div>
