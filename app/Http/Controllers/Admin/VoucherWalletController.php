@@ -282,7 +282,8 @@ class VoucherWalletController extends Controller
             return back()->with('error', 'Voucher tidak valid atau sudah terpakai!');
         }
 
-        $recipient = User::where('username', $request->recipient_username)->first();
+        $recipientUsername = ltrim(trim($request->recipient_username), '@');
+        $recipient = User::where('username', $recipientUsername)->first();
 
         if (!$recipient) {
             return back()->with('error', 'Username penerima @' . $request->recipient_username . ' tidak ditemukan!');
