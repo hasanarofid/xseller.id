@@ -292,6 +292,7 @@ const formatRupiah = (val) => {
                   placeholder="cth: budisantoso"
                   class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-slate-800 placeholder-slate-400 text-xs font-bold focus:outline-none focus:border-[#04bdb2]"
                 />
+                <div v-if="transferForm.errors.recipient_username" class="text-rose-500 text-[10px] mt-1">{{ transferForm.errors.recipient_username }}</div>
               </div>
 
               <button 

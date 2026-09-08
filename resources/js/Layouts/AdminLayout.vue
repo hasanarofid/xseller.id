@@ -41,6 +41,12 @@ const isAdmin = computed(() => {
   return user.roles && Array.isArray(user.roles) && user.roles.some(r => r.name === 'admin');
 });
 
+const isTprEligible = computed(() => {
+  if (isAdmin.value) return true;
+  const pkg = (user.package_name || '').toLowerCase();
+  return pkg.includes('4.300') || pkg.includes('4300') || pkg.includes('business') || pkg.includes('pro') || 
+         pkg.includes('10.500') || pkg.includes('10500') || pkg.includes('partner') || pkg.includes('ultimate');
+});
 const isSidebarOpen = ref(false);
 const isSidebarCollapsed = ref(false);
 const isUserMenuOpen = ref(false);
@@ -71,7 +77,9 @@ const navigation = computed(() => {
       { name: 'Riwayat Steping', href: route('admin.steping-history.index'), icon: Layers, current: route().current('admin.steping-history.index') },
     ]),
     { name: 'Penarikan Saldo', href: route('admin.withdrawals.index'), icon: ArrowUpRight, current: route().current('admin.withdrawals.index') },
-    { name: 'Fitur TPR', href: route('admin.tpr.index'), icon: Crown, current: route().current('admin.tpr.index') },
+    ...(isTprEligible.value ? [
+      { name: 'Fitur TPR', href: route('admin.tpr.index'), icon: Crown, current: route().current('admin.tpr.index') }
+    ] : []),
     { name: 'Data Mitra', href: route('admin.network-data.index'), icon: Users, current: route().current('admin.network-data.index') },
     { name: 'Aktivitas', href: route('admin.activities.index'), icon: Activity, current: route().current('admin.activities.index') },
     { name: 'Laporan', href: route('admin.reports.index'), icon: FileText, current: route().current('admin.reports.index') },
