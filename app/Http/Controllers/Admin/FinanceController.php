@@ -46,7 +46,7 @@ class FinanceController extends Controller
         return Inertia::render('Admin/Finance', [
             'wallet' => [
                 'saldo' => (float) ($user->saldo ?? 2500000),
-                'total_bonus_cair' => (float) ($user->total_bonus ?? 400000),
+                'total_bonus_cair' => (float) ($user->total_bonus ?? 0),
                 'bonus_uncashed' => (float) ($user->bonus_uncashed ?? 0),
                 'max_daily_withdrawal' => 50000000,
             ],

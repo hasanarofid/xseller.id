@@ -116,7 +116,7 @@ const formatRupiah = (val) => {
           </div>
 
           <div>
-            <h2 class="text-3xl font-black text-slate-900 tracking-tight">{{ formatRupiah(wallet?.total_bonus_cair || 400000) }}</h2>
+            <h2 class="text-3xl font-black text-slate-900 tracking-tight">{{ formatRupiah(wallet?.total_bonus_cair || 0) }}</h2>
           </div>
 
           <!-- Bonus Breakdown -->

@@ -26,7 +26,7 @@ class DashboardController extends Controller
             'wallet' => [
                 'saldo' => 2500000,
                 'voucher_aktif' => 2, // Strict terminology: VOUCHER (no PIN)
-                'total_bonus_cair' => 400000,
+                'total_bonus_cair' => (float) ($user->total_bonus ?? 0),
                 'bonus_sponsor' => 300000,
                 'bonus_pasangan' => 100000,
                 'bonus_titik' => 0,

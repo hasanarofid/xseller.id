@@ -13,8 +13,8 @@ return new class extends Migration
     {
         if (!Schema::hasColumn('users', 'saldo')) {
             Schema::table('users', function (Blueprint $table) {
-                $table->decimal('saldo', 15, 2)->default(2500000)->after('package_name');
-                $table->decimal('total_bonus', 15, 2)->default(400000)->after('saldo');
+                $table->decimal('saldo', 15, 2)->default(0)->after('package_name');
+                $table->decimal('total_bonus', 15, 2)->default(0)->after('saldo');
             });
         }
 
