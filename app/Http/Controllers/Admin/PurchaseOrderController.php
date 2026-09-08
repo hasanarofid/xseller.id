@@ -23,16 +23,14 @@ class PurchaseOrderController extends Controller
         $user = auth()->user();
 
         // Get user's available active PO vouchers
+        // Only include vouchers specifically typed as PO (po_star_seller / po_affiliate)
+        // or those with code prefix 'PO-' to avoid mixing with activation/PIN vouchers
         $availablePoVouchers = Voucher::where('user_id', $user->id)
             ->where('status', 'active')
             ->where(function ($q) {
-                $q->where('voucher_type', 'LIKE', '%po%')
-                  ->orWhere('package_name', 'LIKE', '%PO%')
-                  ->orWhere('package_name', 'LIKE', '%Star Seller%')
-                  ->orWhere('package_name', 'LIKE', '%Affiliate%')
-                  ->orWhere('package_name', 'LIKE', '%550%')
-                  ->orWhere('package_name', 'LIKE', '%2.100%')
-                  ->orWhere('package_name', 'LIKE', '%2100%');
+                $q->where('voucher_type', 'po_star_seller')
+                  ->orWhere('voucher_type', 'po_affiliate')
+                  ->orWhere('code', 'LIKE', 'PO-%');
             })
             ->get(['id', 'code', 'package_name', 'voucher_type']);
 
