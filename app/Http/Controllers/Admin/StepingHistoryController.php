@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\BonusLog;
 use App\Models\TeamPointRedemption;
 use App\Models\User;
 use Illuminate\Http\Request;
