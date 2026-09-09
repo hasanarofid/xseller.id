@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 
 class FixRoMatchingBonus extends Command
 {
-    protected $signature = 'fix:ro-matching-bonus {member_username : Username member yang sudah capai 35 poin RO}';
+    protected $signature = 'fix:ro-matching-bonus {member_username : Username member yang sudah capai 35 poin RO} {--force : Jalankan tanpa konfirmasi (untuk web runner)}';
     protected $description = 'Koreksi Matching Bonus RO (Rp 100.000) ke sponsor yang terlewat';
 
     public function handle(): int
@@ -57,7 +57,7 @@ class FixRoMatchingBonus extends Command
 
         $this->warn("Perlu kirim {$toSend}x Matching Bonus RO (masing-masing Rp 100.000) ke @{$sponsor->username}");
 
-        if (!$this->confirm("Konfirmasi kirim koreksi?")) {
+        if (!$this->option('force') && !$this->confirm("Konfirmasi kirim koreksi?")) {
             return 0;
         }
 
