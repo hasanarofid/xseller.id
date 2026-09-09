@@ -23,7 +23,7 @@ class ActivityController extends Controller
 
         // Summary totals for cards
         $bonusSponsor = BonusLog::where('user_id', $user->id)->where('category', 'sponsor')->sum('amount');
-        $bonusGenerasi = BonusLog::where('user_id', $user->id)->where('category', 'generasi')->sum('amount');
+        $bonusGenerasi = BonusLog::where('user_id', $user->id)->where('category', 'tier')->sum('amount');
         $bonusRO = BonusLog::where('user_id', $user->id)->where('category', 'ro')->sum('amount');
         $bonusPO = BonusLog::where('user_id', $user->id)->where('category', 'po')->sum('amount');
         $bonusPAL = BonusLog::where('user_id', $user->id)->where('category', 'pal')->sum('amount');
@@ -144,9 +144,10 @@ class ActivityController extends Controller
                     ];
                 });
         } else {
+            $category = $tab === 'generasi' ? 'tier' : $tab;
             $logs = BonusLog::with('sourceUser')
                 ->where('user_id', $user->id)
-                ->where('category', $tab)
+                ->where('category', $category)
                 ->latest()
                 ->get()
                 ->map(function ($log) {

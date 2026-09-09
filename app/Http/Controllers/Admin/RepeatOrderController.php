@@ -169,7 +169,7 @@ class RepeatOrderController extends Controller
                 BonusLog::create([
                     'transaction_code' => 'RO' . sprintf('%04d', BonusLog::count() + 1),
                     'user_id' => $sponsor->id,
-                    'category' => 'sponsor',
+                    'category' => 'ro',
                     'source_user_id' => $user->id,
                     'description' => "Bonus Repeat Order dari @{$user->username} (Tier 1)",
                     'amount' => $sponsorBonus,
