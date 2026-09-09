@@ -157,6 +157,8 @@ class RepeatOrderController extends Controller
 
             // 2. Increment user RO Poin
             $user->increment('ro_points', 1);
+            $user->refresh(); // reload fresh ro_points after increment
+            $newRoPoints = (int) $user->ro_points;
 
             // 3. Distribute Tier 1 Bonus (Rp 20.000) to Direct Sponsor
             $sponsor = $user->parent;
@@ -193,6 +195,32 @@ class RepeatOrderController extends Controller
                 'sponsor_bonus' => $sponsorBonus,
                 'ro_points' => 1,
             ]);
+
+            // 5. Matching Bonus RO: Rp 100.000 ke sponsor saat member capai kelipatan 35 Poin RO
+            // (20% × Rp 500.000 konversi reward per 35 poin)
+            if ($sponsor && $newRoPoints > 0 && ($newRoPoints % 35 === 0)) {
+                $matchingBonus = 100000;
+
+                $sponsor->increment('saldo', $matchingBonus);
+                $sponsor->increment('total_bonus', $matchingBonus);
+
+                BonusLog::create([
+                    'transaction_code' => 'ROMB' . sprintf('%04d', BonusLog::count() + 1),
+                    'user_id' => $sponsor->id,
+                    'category' => 'ro_matching',
+                    'source_user_id' => $user->id,
+                    'description' => "Matching Bonus RO dari @{$user->username} (Capai {$newRoPoints} Poin RO = 20% × Rp 500.000)",
+                    'amount' => $matchingBonus,
+                ]);
+
+                WalletTransaction::create([
+                    'user_id' => $sponsor->id,
+                    'type' => 'in',
+                    'category' => 'ro_matching',
+                    'amount' => $matchingBonus,
+                    'description' => "Matching Bonus RO dari @{$user->username} (Capai {$newRoPoints} Poin RO)",
+                ]);
+            }
         });
 
         return back()->with('success', 'Berhasil melakukan Repeat Order! Anda mendapatkan 1 Poin RO dan Sponsor Anda menerima Bonus Tier 1 (Rp 20.000).');
