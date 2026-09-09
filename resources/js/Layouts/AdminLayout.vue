@@ -78,6 +78,7 @@ const navigation = computed(() => {
     ...(isAdmin.value ? [
       { name: 'Keuangan', href: route('admin.finance.index'), icon: Wallet, current: route().current('admin.finance.index') },
       { name: 'Kelola Produk', href: route('admin.products.index'), icon: Package, current: route().current('admin.products.index') },
+      { name: 'Reward Team Poin', href: route('admin.team-point-redemptions.index'), icon: Award, current: route().current('admin.team-point-redemptions.index') },
     ] : [
       { name: 'Riwayat Steping', href: route('admin.steping-history.index'), icon: Layers, current: route().current('admin.steping-history.index') },
     ]),

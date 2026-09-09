@@ -1,6 +1,7 @@
 <script setup>
 import AdminLayout from '@/Layouts/AdminLayout.vue';
-import { Head, usePage } from '@inertiajs/vue3';
+import { Head, usePage, useForm } from '@inertiajs/vue3';
+import { computed } from 'vue';
 import { 
   Layers, 
   CheckCircle2, 
@@ -22,9 +23,34 @@ const props = defineProps({
   team_point_rules: Array,
   team_point_logs: Array,
   is_admin: Boolean,
+  pending_redemption: Object, // null jika tidak ada pending request
 });
 
 const page = usePage();
+const flashSuccess = computed(() => page.props.flash?.success);
+const flashError   = computed(() => page.props.flash?.error);
+
+// Reward bracket table
+const rewardBrackets = [
+  { points: 35,   reward: 500000 },
+  { points: 90,   reward: 1500000 },
+  { points: 300,  reward: 6000000 },
+  { points: 2000, reward: 35000000 },
+  { points: 5000, reward: 80000000 },
+];
+
+// Tentukan bracket tertinggi yang bisa diklaim sekarang
+const eligibleBracket = computed(() => {
+  const pts = props.steping_summary?.total_team_points ?? 0;
+  for (let i = rewardBrackets.length - 1; i >= 0; i--) {
+    if (pts >= rewardBrackets[i].points) return rewardBrackets[i];
+  }
+  return null;
+});
+
+const formatRp = (val) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(val || 0);
+
+const redeemForm = useForm({});
 </script>
 
 <template>
@@ -49,6 +75,16 @@ const page = usePage();
             Kelola kedalaman Tier Generasi dan pantau statistik akumulasi <span class="font-bold text-[#a9fff7]">Team Poin</span> dari pertumbuhan jaringan Anda.
           </p>
         </div>
+      </div>
+
+      <!-- Flash Alerts -->
+      <div v-if="flashSuccess" class="p-4 bg-emerald-50 border border-emerald-300 text-emerald-800 rounded-2xl text-xs font-semibold flex items-center gap-2 shadow-sm">
+        <CheckCircle2 class="w-4 h-4 shrink-0" />
+        <span>{{ flashSuccess }}</span>
+      </div>
+      <div v-if="flashError" class="p-4 bg-rose-50 border border-rose-300 text-rose-800 rounded-2xl text-xs font-semibold flex items-center gap-2 shadow-sm">
+        <XCircle class="w-4 h-4 shrink-0" />
+        <span>{{ flashError }}</span>
       </div>
 
       <!-- Stats Overview Cards -->
@@ -267,6 +303,97 @@ const page = usePage();
               </tr>
             </tbody>
           </table>
+        </div>
+      </div>
+
+      <!-- SECTION: REWARD TEAM POIN KLAIM -->
+      <div class="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-3xl p-6 md:p-8 shadow-sm space-y-6">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-amber-200/70 pb-5">
+          <div>
+            <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-[10px] font-black uppercase tracking-wider mb-1">
+              <Award class="w-3.5 h-3.5" />
+              <span>Reward Konversi Team Poin</span>
+            </div>
+            <h2 class="text-xl font-black text-slate-900 uppercase tracking-tight">KLAIM REWARD TEAM POIN</h2>
+            <p class="text-xs text-slate-600 font-medium mt-0.5">
+              Kumpulkan Team Poin dari jaringan Anda, lalu klaim reward tunai sesuai bracket pencapaian.
+            </p>
+          </div>
+          <div class="px-5 py-3 bg-white border border-amber-300 rounded-2xl text-center shadow-sm">
+            <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">Team Poin Anda</span>
+            <span class="text-3xl font-black text-amber-600">{{ steping_summary.total_team_points || 0 }}</span>
+            <span class="text-xs font-bold text-slate-500 block">Poin</span>
+          </div>
+        </div>
+
+        <!-- Bracket Reward Table -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+          <div
+            v-for="b in rewardBrackets"
+            :key="b.points"
+            :class="[
+              'p-4 rounded-2xl border-2 text-center space-y-1 transition-all',
+              (steping_summary.total_team_points || 0) >= b.points
+                ? 'bg-amber-400 border-amber-500 text-white shadow-md'
+                : 'bg-white border-slate-200 text-slate-500'
+            ]"
+          >
+            <span class="block text-lg font-black">{{ b.points }} Poin</span>
+            <span class="block text-xs font-bold">{{ formatRp(b.reward) }}</span>
+            <span
+              v-if="(steping_summary.total_team_points || 0) >= b.points"
+              class="inline-block text-[9px] font-black uppercase px-2 py-0.5 bg-white/30 rounded-full"
+            >✓ ELIGIBLE</span>
+          </div>
+        </div>
+
+        <!-- Klaim Status / Button -->
+        <div class="pt-2">
+          <!-- Sudah ada pending request -->
+          <div v-if="pending_redemption" class="flex items-center gap-3 p-4 bg-amber-100 border border-amber-300 rounded-2xl">
+            <div class="p-2 bg-amber-500 rounded-xl shrink-0">
+              <Award class="w-4 h-4 text-white" />
+            </div>
+            <div>
+              <p class="text-xs font-black text-amber-900">Permintaan Klaim Sedang Diproses</p>
+              <p class="text-[11px] text-amber-800 font-medium mt-0.5">
+                Anda sudah mengajukan klaim <strong>{{ pending_redemption.points_used }} Poin</strong> = <strong>{{ formatRp(pending_redemption.reward_amount) }}</strong>. Menunggu persetujuan Admin.
+              </p>
+            </div>
+          </div>
+
+          <!-- Eligible dan belum ada pending -->
+          <div v-else-if="eligibleBracket" class="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-5 bg-white border border-amber-300 rounded-2xl shadow-sm">
+            <div class="flex-1">
+              <p class="text-sm font-black text-slate-900">
+                Selamat! 🎉 Anda bisa klaim reward <span class="text-amber-600">{{ eligibleBracket.points }} Team Poin</span>
+              </p>
+              <p class="text-xs text-slate-600 font-medium mt-0.5">
+                Reward tunai sebesar <strong class="text-emerald-600">{{ formatRp(eligibleBracket.reward) }}</strong> akan diproses ke saldo e-wallet Anda setelah disetujui Admin.
+              </p>
+            </div>
+            <button
+              @click="redeemForm.post(route('admin.team-point-redemptions.store'))"
+              :disabled="redeemForm.processing"
+              class="shrink-0 px-6 py-3 bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-white text-sm font-black rounded-2xl shadow-md transition-all disabled:opacity-50 flex items-center gap-2 cursor-pointer"
+            >
+              <Award class="w-4 h-4" />
+              Klaim {{ formatRp(eligibleBracket.reward) }}
+            </button>
+          </div>
+
+          <!-- Belum eligible -->
+          <div v-else class="flex items-center gap-3 p-4 bg-slate-50 border border-slate-200 rounded-2xl">
+            <div class="p-2 bg-slate-200 rounded-xl shrink-0">
+              <Lock class="w-4 h-4 text-slate-500" />
+            </div>
+            <div>
+              <p class="text-xs font-black text-slate-700">Belum Eligible untuk Klaim</p>
+              <p class="text-[11px] text-slate-500 font-medium mt-0.5">
+                Kumpulkan minimal <strong>35 Team Poin</strong> untuk mulai klaim reward. Saat ini Anda memiliki <strong>{{ steping_summary.total_team_points || 0 }} Poin</strong>.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 

@@ -77,7 +77,7 @@ class StepingHistoryController extends Controller
         ];
 
         // Team Point History Logs
-        $teamPointLogs = \App\Models\BonusLog::with('sourceUser')
+        $teamPointLogs = BonusLog::with('sourceUser')
             ->where('user_id', $user->id)
             ->whereIn('category', ['sponsor', 'generasi', 'tier'])
             ->latest()
@@ -136,6 +136,16 @@ class StepingHistoryController extends Controller
             'team_point_rules' => $teamPointRules,
             'team_point_logs' => $teamPointLogs,
             'is_admin' => $user->hasRole('admin'),
+            'pending_redemption' => TeamPointRedemption::where('user_id', $user->id)
+                ->where('status', 'pending')
+                ->latest()
+                ->first()
+                ? TeamPointRedemption::where('user_id', $user->id)
+                    ->where('status', 'pending')
+                    ->latest()
+                    ->first()
+                    ->only(['id', 'points_used', 'reward_amount', 'status'])
+                : null,
         ]);
     }
 }

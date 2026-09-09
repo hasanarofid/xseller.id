@@ -88,6 +88,12 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     // Aktivitas (Activity & Bonus Breakdown)
     Route::get('/aktivitas', [\App\Http\Controllers\Admin\ActivityController::class, 'index'])->name('activities.index');
 
+    // Klaim Reward Team Poin
+    Route::post('/team-point-redemptions', [\App\Http\Controllers\Admin\TeamPointRedemptionController::class, 'store'])->name('team-point-redemptions.store');
+    Route::get('/team-point-redemptions', [\App\Http\Controllers\Admin\TeamPointRedemptionController::class, 'index'])->name('team-point-redemptions.index');
+    Route::post('/team-point-redemptions/{redemption}/approve', [\App\Http\Controllers\Admin\TeamPointRedemptionController::class, 'approve'])->name('team-point-redemptions.approve');
+    Route::post('/team-point-redemptions/{redemption}/reject', [\App\Http\Controllers\Admin\TeamPointRedemptionController::class, 'reject'])->name('team-point-redemptions.reject');
+
     // Laporan (Reports & Excel/PDF Exports)
     Route::get('/laporan', [\App\Http\Controllers\Admin\ReportController::class, 'index'])->name('reports.index');
     Route::get('/laporan/export-excel', [\App\Http\Controllers\Admin\ReportController::class, 'exportExcel'])->name('reports.export-excel');
