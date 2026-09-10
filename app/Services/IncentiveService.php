@@ -59,10 +59,10 @@ class IncentiveService
                     
                     WalletTransaction::create([
                         'user_id' => $user->id,
-                        'type' => 'credit',
+                        'type' => 'in',
+                        'category' => 'bonus',
                         'amount' => $m['reward'],
                         'description' => "Bonus Incentive Promotion (Pencapaian Rp " . number_format($m['income'], 0, ',', '.') . ")",
-                        'balance' => $user->saldo,
                     ]);
                     
                     // Re-calculate totalIncome after giving incentive to check the next milestone properly
