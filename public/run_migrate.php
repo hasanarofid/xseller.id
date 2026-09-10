@@ -33,6 +33,10 @@ try {
             'command' => 'fix:incentive-bonus',
             'label'   => 'Fix Incentive Promotion Bonus',
         ],
+        'fix-personal-rewards' => [
+            'command' => 'fix:personal-rewards',
+            'label'   => 'Fix Personal RO & PO Rewards',
+        ],
     ];
 
     $cmdKey = $_GET['cmd'] ?? null;

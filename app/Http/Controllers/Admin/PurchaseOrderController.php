@@ -171,23 +171,46 @@ class PurchaseOrderController extends Controller
                 'po_points' => $poPoints,
             ]);
 
-            // 4. PAL Bonus for Direct Upline (Generasi 1) - Triggered on PO Points Milestones
-            if ($user->parent_id) {
-                $sponsorUpline = User::find($user->parent_id);
-                if ($sponsorUpline) {
-                    $milestones = [
-                        35 => ['reward' => 1000000, 'pal' => 200000],
-                        90 => ['reward' => 3000000, 'pal' => 600000],
-                        300 => ['reward' => 12000000, 'pal' => 2400000],
-                        2000 => ['reward' => 70000000, 'pal' => 14000000],
-                        5000 => ['reward' => 150000000, 'pal' => 30000000],
-                    ];
+            // 4. Personal Reward and PAL Bonus for Direct Upline (Generasi 1) - Triggered on PO Points Milestones
+            $milestones = [
+                35 => ['reward' => 1000000, 'pal' => 200000],
+                90 => ['reward' => 3000000, 'pal' => 600000],
+                300 => ['reward' => 12000000, 'pal' => 2400000],
+                2000 => ['reward' => 70000000, 'pal' => 14000000],
+                5000 => ['reward' => 150000000, 'pal' => 30000000],
+            ];
 
-                    foreach ($milestones as $pts => $m) {
-                        if ($oldPoPoints < $pts && $newPoPoints >= $pts) {
-                            $palBonusAmount = $m['pal'];
-                            $rewardNominal = $m['reward'];
+            foreach ($milestones as $pts => $m) {
+                if ($oldPoPoints < $pts && $newPoPoints >= $pts) {
+                    $rewardNominal = $m['reward'];
+                    $palBonusAmount = $m['pal'];
 
+                    // 4a. Reward Personal PO to Member
+                    $user->increment('saldo', $rewardNominal);
+                    $user->increment('total_bonus', $rewardNominal);
+
+                    BonusLog::create([
+                        'transaction_code' => 'PO' . sprintf('%04d', BonusLog::count() + 1),
+                        'user_id' => $user->id,
+                        'category' => 'po',
+                        'source_user_id' => $user->id,
+                        'description' => "Reward Personal PO (Pencapaian {$pts} Poin)",
+                        'amount' => $rewardNominal,
+                        'qualified_amount' => $rewardNominal,
+                    ]);
+
+                    WalletTransaction::create([
+                        'user_id' => $user->id,
+                        'type' => 'in',
+                        'category' => 'reward_po',
+                        'amount' => $rewardNominal,
+                        'description' => "Reward Personal PO (Pencapaian {$pts} Poin)",
+                    ]);
+
+                    // 4b. PAL Bonus for Direct Upline
+                    if ($user->parent_id) {
+                        $sponsorUpline = User::find($user->parent_id);
+                        if ($sponsorUpline) {
                             $sponsorUpline->increment('saldo', $palBonusAmount);
                             $sponsorUpline->increment('total_bonus', $palBonusAmount);
 
