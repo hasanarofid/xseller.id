@@ -10,12 +10,12 @@ use Illuminate\Support\Facades\DB;
 
 class FixPersonalRewardsBonus extends Command
 {
-    protected $signature = 'fix:personal-rewards {username?} {--force : Jalankan tanpa konfirmasi (untuk web runner)}';
+    protected $signature = 'fix:personal-rewards {member_username?} {--force : Jalankan tanpa konfirmasi (untuk web runner)}';
     protected $description = 'Fix retroactive Personal RO (Konversi) and Personal PO (Reward Cash) for users';
 
     public function handle(): int
     {
-        $username = $this->argument('username');
+        $username = $this->argument('member_username');
 
         $query = User::query();
         if ($username) {
