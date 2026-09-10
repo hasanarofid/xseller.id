@@ -14,7 +14,7 @@ class FixIncentiveBonus extends Command
      *
      * @var string
      */
-    protected $signature = 'fix:incentive-bonus {username?} {--force : Jalankan tanpa konfirmasi (untuk web runner)}';
+    protected $signature = 'fix:incentive-bonus {member_username?} {--force : Jalankan tanpa konfirmasi (untuk web runner)}';
 
     /**
      * The console command description.
@@ -28,7 +28,7 @@ class FixIncentiveBonus extends Command
      */
     public function handle()
     {
-        $username = $this->argument('username');
+        $username = $this->argument('member_username');
 
         $query = User::query();
         if ($username) {
