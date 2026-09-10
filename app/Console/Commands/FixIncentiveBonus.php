@@ -14,7 +14,7 @@ class FixIncentiveBonus extends Command
      *
      * @var string
      */
-    protected $signature = 'fix:incentive-bonus {username?}';
+    protected $signature = 'fix:incentive-bonus {username?} {--force : Jalankan tanpa konfirmasi (untuk web runner)}';
 
     /**
      * The console command description.
