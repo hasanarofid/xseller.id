@@ -29,6 +29,10 @@ try {
             'command' => 'fix:ro-matching-bonus',
             'label'   => 'Fix Matching Bonus RO',
         ],
+        'fix-incentive-bonus' => [
+            'command' => 'fix:incentive-bonus',
+            'label'   => 'Fix Incentive Promotion Bonus',
+        ],
     ];
 
     $cmdKey = $_GET['cmd'] ?? null;
