@@ -144,10 +144,18 @@ class ActivityController extends Controller
                     ];
                 });
         } else {
-            $category = $tab === 'generasi' ? 'tier' : $tab;
+            $categories = [];
+            if ($tab === 'generasi') {
+                $categories = ['tier'];
+            } elseif ($tab === 'ro') {
+                $categories = ['ro', 'ro_matching'];
+            } else {
+                $categories = [$tab];
+            }
+            
             $logs = BonusLog::with('sourceUser')
                 ->where('user_id', $user->id)
-                ->where('category', $category)
+                ->whereIn('category', $categories)
                 ->latest()
                 ->get()
                 ->map(function ($log) {

@@ -33,6 +33,13 @@ class StepingHistoryController extends Controller
             });
 
         $totalReferrals = $referrals->count();
+        
+        // Count only Seller packages (Rp 125.000) for steping calculation
+        $sellerReferralsCount = collect($referrals)->filter(function ($ref) {
+            $pkg = strtolower($ref['package_name']);
+            return (str_contains($pkg, 'seller') && !str_contains($pkg, 'star')) || str_contains($pkg, '125') || str_contains($pkg, 'starter');
+        })->count();
+
         $baseMaxTier = $user->getBaseTier();
         $activeTier = $baseMaxTier;
 
@@ -52,7 +59,7 @@ class StepingHistoryController extends Controller
         $milestones = array_values(array_filter($allMilestones, fn($m) => $m['tier'] > $baseMaxTier));
 
         foreach ($milestones as &$m) {
-            if ($totalReferrals >= $m['required_referrals']) {
+            if ($sellerReferralsCount >= $m['required_referrals']) {
                 $m['unlocked'] = true;
                 if ($m['tier'] > $activeTier) {
                     $activeTier = $m['tier'];
@@ -130,7 +137,7 @@ class StepingHistoryController extends Controller
                 'total_referral_count' => $totalReferrals,
                 'next_tier' => $nextMilestone ? $nextMilestone['tier'] : 15,
                 'required_referrals' => $nextMilestone ? $nextMilestone['required_referrals'] : 32,
-                'remaining_referrals' => $nextMilestone ? max(0, $nextMilestone['required_referrals'] - $totalReferrals) : 0,
+                'remaining_referrals' => $nextMilestone ? max(0, $nextMilestone['required_referrals'] - $sellerReferralsCount) : 0,
                 'total_team_points' => (int) ($user->team_points ?? 0),
             ],
             'milestones' => $milestones,
