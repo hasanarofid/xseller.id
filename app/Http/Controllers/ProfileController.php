@@ -40,8 +40,15 @@ class ProfileController extends Controller
                 'logo_url' => !empty($settings['site_logo']) ? Storage::url($settings['site_logo']) : null,
                 'banks' => is_array($companyBanks) && count($companyBanks) > 0 ? $companyBanks : [
                     [
+                        'type' => 'bank',
                         'bank_name' => 'Bank BRI',
                         'account_number' => '806401000095564',
+                        'account_name' => 'PT.Xseller Punya Kita',
+                    ],
+                    [
+                        'type' => 'ewallet',
+                        'bank_name' => 'DANA (E-Wallet)',
+                        'account_number' => '081234567890',
                         'account_name' => 'PT.Xseller Punya Kita',
                     ]
                 ],
@@ -96,14 +103,14 @@ class ProfileController extends Controller
     }
 
     /**
-     * Add or delete company bank account.
+     * Add or delete company bank account & virtual wallet.
      */
     public function updateBanks(Request $request): RedirectResponse
     {
         $banks = $request->input('banks', []);
         Setting::setValue('company_banks', json_encode($banks), 'json');
 
-        return Redirect::route('profile.edit')->with('success', 'Daftar rekening bank perusahaan berhasil diperbarui.');
+        return Redirect::route('profile.edit')->with('success', 'Daftar rekening bank & virtual wallet perusahaan berhasil diperbarui.');
     }
 
     /**

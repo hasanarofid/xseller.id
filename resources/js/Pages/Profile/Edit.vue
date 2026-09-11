@@ -39,12 +39,39 @@ const form = useForm({
   site_logo: null,
 });
 
-// Bank Accounts list state
+// Bank & Virtual Wallet Accounts list state
 const banksList = ref(props.company_profile?.banks || []);
 
-// Bank modal/add form
+// Bank & Virtual Wallet add form state
 const showAddBank = ref(false);
+const accountType = ref('bank'); // 'bank' or 'ewallet'
+const selectedProvider = ref('Bank BRI');
+const customProvider = ref('');
+
+const bankProviders = [
+  'Bank BRI',
+  'Bank Mandiri',
+  'Bank Central Asia (BCA)',
+  'Bank Negara Indonesia (BNI)',
+  'Bank Syariah Indonesia (BSI)',
+  'CIMB Niaga',
+  'Bank Permata',
+  'Bank Danamon',
+  'Bank Lainnya'
+];
+
+const ewalletProviders = [
+  'DANA (E-Wallet)',
+  'OVO (E-Wallet)',
+  'GoPay (E-Wallet)',
+  'ShopeePay (E-Wallet)',
+  'LinkAja (E-Wallet)',
+  'QRIS / Virtual Account',
+  'Virtual Wallet Lainnya'
+];
+
 const newBank = useForm({
+  type: 'bank',
   bank_name: 'Bank BRI',
   account_number: '',
   account_name: '',
@@ -64,13 +91,22 @@ const submitProfile = () => {
 };
 
 const addBank = () => {
-  if (!newBank.account_number || !newBank.account_name) return;
+  let providerName = selectedProvider.value;
+  if (selectedProvider.value.includes('Lainnya') && customProvider.value.trim()) {
+    providerName = customProvider.value.trim();
+  }
+
+  if (!newBank.account_number || !newBank.account_name || !providerName) return;
+
   banksList.value.push({
-    bank_name: newBank.bank_name,
+    type: accountType.value,
+    bank_name: providerName,
     account_number: newBank.account_number,
     account_name: newBank.account_name,
   });
+
   newBank.reset();
+  customProvider.value = '';
   showAddBank.value = false;
   saveBanks();
 };
@@ -203,13 +239,13 @@ const saveBanks = () => {
             </div>
           </div>
 
-          <!-- SECTION 3: COMPANY BANK ACCOUNTS (Matching Green Box Mockup) -->
+          <!-- SECTION 3: COMPANY BANK ACCOUNTS & VIRTUAL WALLET (Matching Green Box Mockup) -->
           <div class="bg-emerald-50/40 border border-emerald-200/60 rounded-2xl p-5 space-y-4">
-            <div class="flex items-center justify-between">
+            <div class="flex items-center justify-between flex-wrap gap-2">
               <div class="flex items-center gap-2">
                 <CreditCard class="w-4 h-4 text-emerald-600" />
                 <h3 class="text-xs font-black text-emerald-900 uppercase tracking-tight">
-                  DAFTAR REKENING BANK PERUSAHAAN (ADMIN)
+                  DAFTAR REKENING BANK & VIRTUAL WALLET / E-WALLET PERUSAHAAN (ADMIN)
                 </h3>
               </div>
 
@@ -219,32 +255,121 @@ const saveBanks = () => {
                 class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold rounded-xl shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
               >
                 <Plus class="w-3.5 h-3.5" />
-                <span>Tambah Rekening</span>
+                <span>Tambah Rekening / Virtual Wallet</span>
               </button>
             </div>
 
-            <!-- Add Bank Form Dropdown -->
-            <div v-if="showAddBank" class="p-4 bg-white border border-emerald-200 rounded-xl space-y-3">
-              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <input v-model="newBank.bank_name" placeholder="Nama Bank (e.g. Bank Mandiri)" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs" />
-                <input v-model="newBank.account_number" placeholder="Nomor Rekening" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs" />
-                <input v-model="newBank.account_name" placeholder="Nama Pemilik" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs" />
+            <!-- Add Bank / Virtual Wallet Form Dropdown -->
+            <div v-if="showAddBank" class="p-4 bg-white border border-emerald-200 rounded-2xl space-y-4 shadow-sm">
+              <!-- Type Switcher -->
+              <div class="flex items-center gap-2 border-b border-slate-100 pb-3">
+                <span class="text-xs font-bold text-slate-500 mr-2">Pilih Jenis:</span>
+                <button
+                  type="button"
+                  @click="accountType = 'bank'; selectedProvider = bankProviders[0];"
+                  :class="[accountType === 'bank' ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200', 'px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer']"
+                >
+                  🏦 Rekening Bank
+                </button>
+                <button
+                  type="button"
+                  @click="accountType = 'ewallet'; selectedProvider = ewalletProviders[0];"
+                  :class="[accountType === 'ewallet' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200', 'px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer']"
+                >
+                  📲 Virtual Wallet / E-Wallet
+                </button>
               </div>
-              <button @click="addBank" type="button" class="px-4 py-1.5 bg-emerald-600 text-white text-xs font-bold rounded-lg cursor-pointer">Simpan Rekening</button>
+
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <!-- Provider Select -->
+                <div>
+                  <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+                    {{ accountType === 'bank' ? 'PILIH BANK' : 'PILIH PROVIDER E-WALLET' }}
+                  </label>
+                  <select
+                    v-model="selectedProvider"
+                    class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-emerald-500"
+                  >
+                    <option v-for="p in (accountType === 'bank' ? bankProviders : ewalletProviders)" :key="p" :value="p">
+                      {{ p }}
+                    </option>
+                  </select>
+                </div>
+
+                <!-- Custom Provider Name (if Lainnya) -->
+                <div v-if="selectedProvider.includes('Lainnya')">
+                  <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+                    NAMA {{ accountType === 'bank' ? 'BANK' : 'E-WALLET' }} KUSTOM
+                  </label>
+                  <input 
+                    v-model="customProvider" 
+                    placeholder="Masukkan nama bank/e-wallet" 
+                    class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-emerald-500" 
+                  />
+                </div>
+
+                <!-- Account Number / E-Wallet ID -->
+                <div>
+                  <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+                    {{ accountType === 'bank' ? 'NOMOR REKENING' : 'NO. HP / ID VIRTUAL WALLET' }}
+                  </label>
+                  <input 
+                    v-model="newBank.account_number" 
+                    :placeholder="accountType === 'bank' ? 'cth: 806401000095564' : 'cth: 081234567890'" 
+                    class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono focus:outline-none focus:border-emerald-500" 
+                  />
+                </div>
+
+                <!-- Owner Name (a.n) -->
+                <div>
+                  <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+                    NAMA PEMILIK / ATAS NAMA (A.N)
+                  </label>
+                  <input 
+                    v-model="newBank.account_name" 
+                    placeholder="cth: PT.Xseller Punya Kita" 
+                    class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-emerald-500" 
+                  />
+                </div>
+              </div>
+
+              <div class="flex justify-end gap-2 pt-1">
+                <button type="button" @click="showAddBank = false" class="px-3 py-1.5 bg-slate-100 text-slate-600 text-xs font-bold rounded-xl cursor-pointer">Batal</button>
+                <button @click="addBank" type="button" class="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-xs cursor-pointer">Simpan Rekening / E-Wallet</button>
+              </div>
             </div>
 
-            <!-- Bank Accounts List -->
-            <div v-if="banksList.length === 0" class="text-center py-4 text-xs text-slate-400 italic">
-              Tidak ada rekening bank yang tersimpan. Gunakan tombol + Tambah Rekening.
+            <!-- Bank & Virtual Wallet List -->
+            <div v-if="banksList.length === 0" class="text-center py-6 text-xs text-slate-400 italic">
+              Belum ada rekening bank atau virtual wallet yang tersimpan. Gunakan tombol + Tambah Rekening / Virtual Wallet.
             </div>
 
             <div v-else class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div v-for="(b, idx) in banksList" :key="idx" class="p-3 bg-white border border-emerald-200/80 rounded-xl flex items-center justify-between">
-                <div>
-                  <h4 class="text-xs font-extrabold text-slate-900">{{ b.bank_name }}</h4>
-                  <p class="text-[11px] text-slate-600 font-mono">{{ b.account_number }} a.n {{ b.account_name }}</p>
+              <div 
+                v-for="(b, idx) in banksList" 
+                :key="idx" 
+                class="p-3.5 bg-white border border-emerald-200/80 rounded-2xl flex items-center justify-between shadow-2xs"
+              >
+                <div class="space-y-1">
+                  <div class="flex items-center gap-2">
+                    <span 
+                      :class="[
+                        (b.type === 'ewallet' || b.bank_name.toLowerCase().includes('wallet') || b.bank_name.toLowerCase().includes('dana') || b.bank_name.toLowerCase().includes('ovo') || b.bank_name.toLowerCase().includes('gopay') || b.bank_name.toLowerCase().includes('shopee') || b.bank_name.toLowerCase().includes('qris'))
+                          ? 'bg-indigo-100 text-indigo-700 border-indigo-200'
+                          : 'bg-emerald-100 text-emerald-700 border-emerald-200',
+                        'px-2 py-0.5 text-[9px] font-extrabold rounded-md border uppercase tracking-wider'
+                      ]"
+                    >
+                      {{ (b.type === 'ewallet' || b.bank_name.toLowerCase().includes('wallet') || b.bank_name.toLowerCase().includes('dana') || b.bank_name.toLowerCase().includes('ovo') || b.bank_name.toLowerCase().includes('gopay') || b.bank_name.toLowerCase().includes('shopee') || b.bank_name.toLowerCase().includes('qris')) ? 'VIRTUAL WALLET' : 'BANK' }}
+                    </span>
+                    <h4 class="text-xs font-black text-slate-900">{{ b.bank_name }}</h4>
+                  </div>
+                  <p class="text-[11px] text-slate-700 font-mono">
+                    <strong class="text-slate-900">{{ b.account_number }}</strong> <span class="text-slate-500">a.n</span> {{ b.account_name }}
+                  </p>
                 </div>
-                <button type="button" @click="removeBank(idx)" class="p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer">
+
+                <button type="button" @click="removeBank(idx)" class="p-1.5 text-rose-500 hover:bg-rose-50 rounded-xl transition-colors cursor-pointer shrink-0">
                   <Trash2 class="w-4 h-4" />
                 </button>
               </div>

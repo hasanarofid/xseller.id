@@ -17,6 +17,12 @@ class ReportController extends Controller
      */
     public function index(Request $request)
     {
+        $currentUser = auth()->user();
+        $isAdmin = $currentUser->hasRole('admin') || $currentUser->username === 'admin' || $currentUser->email === 'admin@xseller.id';
+        if (!$isAdmin) {
+            return redirect()->route('admin.dashboard')->with('error', 'Akses ditolak. Halaman Laporan hanya dapat diakses oleh Administrator utama.');
+        }
+
         $type = $request->input('type', 'member');
         if (!in_array($type, ['member', 'bonus', 'pencairan', 'topup'])) {
             $type = 'member';

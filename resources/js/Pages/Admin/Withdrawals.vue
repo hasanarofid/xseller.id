@@ -216,10 +216,10 @@ const bankList = [
 
             <!-- Form -->
             <form @submit.prevent="submitWithdrawal" class="space-y-4">
-              <!-- Pilih Bank Tujuan -->
+              <!-- Pilih Bank / Virtual Wallet Tujuan -->
               <div>
                 <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
-                  PILIH BANK TUJUAN
+                  PILIH BANK TUJUAN / VIRTUAL WALLET (E-WALLET)
                 </label>
                 <select 
                   v-model="form.bank_name"
@@ -232,30 +232,30 @@ const bankList = [
                 </select>
               </div>
 
-              <!-- Nomor Rekening / No HP -->
+              <!-- Nomor Rekening / No HP / ID Virtual Wallet -->
               <div>
                 <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
-                  NOMOR REKENING / NO. HP
+                  NOMOR REKENING / NO. HP / ID VIRTUAL WALLET
                 </label>
                 <input 
                   v-model="form.bank_account_number"
                   type="text"
                   required
-                  placeholder="Masukkan nomor rekening tujuan"
+                  placeholder="Masukkan nomor rekening atau No. HP e-wallet"
                   class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 text-xs font-medium focus:outline-none focus:border-emerald-500"
                 />
               </div>
 
-              <!-- Nama Pemilik Rekening -->
+              <!-- Nama Pemilik Rekening / Atas Nama -->
               <div>
                 <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
-                  NAMA PEMILIK REKENING
+                  NAMA PEMILIK REKENING / ATAS NAMA (A.N)
                 </label>
                 <input 
                   v-model="form.bank_account_name"
                   type="text"
                   required
-                  placeholder="Nama lengkap pemilik rekening"
+                  placeholder="Nama lengkap pemilik rekening / akun e-wallet"
                   class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 text-xs font-medium focus:outline-none focus:border-emerald-500"
                 />
               </div>
