@@ -76,17 +76,17 @@ const navigation = computed(() => {
     { name: 'Purchase Order', href: route('admin.purchase-order.index'), icon: ShoppingBag, current: route().current('admin.purchase-order.index') },
     { name: 'Voucher Wallet', href: route('admin.voucher-wallet.index'), icon: KeyRound, current: route().current('admin.voucher-wallet.index') },
     ...(isAdmin.value ? [
+      { name: 'Data Mitra', href: route('admin.network-data.index'), icon: Users, current: route().current('admin.network-data.index') },
       { name: 'Keuangan', href: route('admin.finance.index'), icon: Wallet, current: route().current('admin.finance.index') },
       { name: 'Kelola Produk', href: route('admin.products.index'), icon: Package, current: route().current('admin.products.index') },
       { name: 'Reward Team Poin', href: route('admin.team-point-redemptions.index'), icon: Award, current: route().current('admin.team-point-redemptions.index') },
+      { name: 'Laporan', href: route('admin.reports.index'), icon: FileText, current: route().current('admin.reports.index') },
     ] : [
       { name: 'Riwayat Steping', href: route('admin.steping-history.index'), icon: Layers, current: route().current('admin.steping-history.index') },
     ]),
     { name: 'Penarikan Saldo', href: route('admin.withdrawals.index'), icon: ArrowUpRight, current: route().current('admin.withdrawals.index') },
     { name: 'Fitur TPR', href: route('admin.tpr.index'), icon: Crown, current: route().current('admin.tpr.index') },
-    { name: 'Data Mitra', href: route('admin.network-data.index'), icon: Users, current: route().current('admin.network-data.index') },
     { name: 'Aktivitas', href: route('admin.activities.index'), icon: Activity, current: route().current('admin.activities.index') },
-    { name: 'Laporan', href: route('admin.reports.index'), icon: FileText, current: route().current('admin.reports.index') },
   ];
 });
 
@@ -164,7 +164,7 @@ const logout = () => {
             </div>
             <div class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full border border-[#04bdb2]/40 text-[#009c94] bg-[#04bdb2]/10 text-[9px] font-extrabold uppercase tracking-wider">
               <Crown class="w-3 h-3 text-[#04bdb2]" />
-              <span>MEMBER</span>
+              <span>{{ isAdmin ? 'ADMIN' : 'MEMBER' }}</span>
             </div>
 
             <!-- Dompet Saya Card Widget -->
@@ -292,7 +292,7 @@ const logout = () => {
             <div class="hidden sm:flex items-center gap-2">
               <span class="text-[11px] text-slate-300">MASUK SEBAGAI:</span>
               <span class="font-bold text-white text-xs">{{ user.name }}</span>
-              <span class="px-2 py-0.5 text-[9px] font-bold bg-[#04bdb2]/20 text-[#a9fff7] border border-[#04bdb2]/40 rounded-md">Admin</span>
+              <span class="px-2 py-0.5 text-[9px] font-bold bg-[#04bdb2]/20 text-[#a9fff7] border border-[#04bdb2]/40 rounded-md">{{ isAdmin ? 'Admin' : 'Member' }}</span>
             </div>
 
             <!-- User Switch Button Dropdown Pill -->
