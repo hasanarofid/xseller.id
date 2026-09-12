@@ -37,10 +37,14 @@ class IncentiveService
 
         foreach ($milestones as $m) {
             if ($totalIncome >= $m['income']) {
-                // Check if user already got this exact incentive milestone
+                // Check if user already got this exact incentive milestone (check both qualified_amount and description)
                 $alreadyGot = BonusLog::where('user_id', $user->id)
                     ->where('category', 'incentive')
-                    ->where('qualified_amount', $m['income'])
+                    ->where(function ($q) use ($m) {
+                        $q->where('qualified_amount', $m['income'])
+                          ->orWhere('description', 'like', '%' . number_format($m['income'], 0, ',', '.') . '%')
+                          ->orWhere('description', 'like', '%' . $m['income'] . '%');
+                    })
                     ->exists();
 
                 if (!$alreadyGot) {

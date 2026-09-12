@@ -169,10 +169,14 @@ class ActivityController extends Controller
                         'source' => $source,
                         'description' => $log->description,
                         'amount' => '+Rp ' . number_format($log->amount, 0, ',', '.'),
-                        'qualified' => $log->qualified_amount ? 'Rp ' . number_format($log->qualified_amount, 0, ',', '.') : '-',
+                        'qualified' => $log->qualified_amount 
+                            ? 'Pencapaian Rp ' . number_format($log->qualified_amount, 0, ',', '.')
+                            : (preg_match('/pencapaian Income Rp ([0-9\.\,]+)/i', $log->description, $matches) 
+                                ? 'Pencapaian Rp ' . $matches[1] 
+                                : '-'),
                         'incentive' => 'Rp ' . number_format($log->amount, 0, ',', '.'),
                         'status' => 'Klaim',
-                        'date' => $log->created_at->format('d/m/Y'),
+                        'date' => $log->created_at ? $log->created_at->format('d/m/Y') : '-',
                     ];
                 });
         }
