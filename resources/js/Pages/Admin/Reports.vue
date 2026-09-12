@@ -8,7 +8,9 @@ import {
   Users, 
   Award, 
   Banknote, 
-  Wallet 
+  Wallet,
+  Check,
+  X
 } from '@lucide/vue';
 
 const props = defineProps({
@@ -30,6 +32,23 @@ const exportExcel = () => {
 
 const exportPdf = () => {
   window.open(route('admin.reports.export-pdf', { type: props.active_type }), '_blank');
+};
+
+const approvePencairan = (id) => {
+  if (confirm('Apakah Anda yakin ingin menyetujui permohonan penarikan saldo (WD) ini?')) {
+    router.post(route('admin.withdrawals.approve', id), {}, {
+      preserveScroll: true,
+    });
+  }
+};
+
+const rejectPencairan = (id) => {
+  const notes = prompt('Masukkan alasan penolakan penarikan saldo:');
+  if (notes !== null) {
+    router.post(route('admin.withdrawals.reject', id), { notes }, {
+      preserveScroll: true,
+    });
+  }
 };
 
 const formatRupiah = (val) => {
@@ -185,7 +204,8 @@ const reportTabs = [
                 <th class="py-3.5 px-4">REKENING TUJUAN</th>
                 <th class="py-3.5 px-4">NOMINAL WD</th>
                 <th class="py-3.5 px-4">STATUS</th>
-                <th class="py-3.5 px-4 text-right">TANGGAL</th>
+                <th class="py-3.5 px-4">TANGGAL</th>
+                <th class="py-3.5 px-4 text-center">AKSI / APPROVE</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-slate-100 font-medium">
@@ -201,8 +221,8 @@ const reportTabs = [
                 <td class="py-3.5 px-4">
                   <span 
                     :class="[
-                      row.status === 'APPROVED' ? 'bg-emerald-100 text-emerald-700 border-emerald-200' :
-                      row.status === 'REJECTED' ? 'bg-rose-100 text-rose-700 border-rose-200' :
+                      row.status === 'APPROVED' || row.status === 'approved' ? 'bg-emerald-100 text-emerald-700 border-emerald-200' :
+                      row.status === 'REJECTED' || row.status === 'rejected' ? 'bg-rose-100 text-rose-700 border-rose-200' :
                       'bg-amber-100 text-amber-700 border-amber-200',
                       'px-2.5 py-0.5 text-[9px] font-extrabold rounded-md border uppercase tracking-wider'
                     ]"
@@ -210,7 +230,26 @@ const reportTabs = [
                     {{ row.status }}
                   </span>
                 </td>
-                <td class="py-3.5 px-4 text-right text-slate-400 font-mono text-xs">{{ row.created_at }}</td>
+                <td class="py-3.5 px-4 text-slate-400 font-mono text-xs">{{ row.created_at }}</td>
+                <td class="py-3.5 px-4 text-center">
+                  <div v-if="row.status === 'PENDING' || row.status === 'pending'" class="flex items-center justify-center gap-1.5">
+                    <button 
+                      @click="approvePencairan(row.id)"
+                      class="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-[10px] rounded-lg shadow-xs transition-colors cursor-pointer inline-flex items-center gap-1"
+                    >
+                      <Check class="w-3 h-3 stroke-[3]" />
+                      <span>Approved</span>
+                    </button>
+                    <button 
+                      @click="rejectPencairan(row.id)"
+                      class="px-2 py-1 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-extrabold text-[10px] rounded-lg shadow-xs transition-colors cursor-pointer inline-flex items-center gap-1"
+                    >
+                      <X class="w-3 h-3 stroke-[3]" />
+                      <span>Tolak</span>
+                    </button>
+                  </div>
+                  <span v-else class="text-slate-400 text-[10px] font-medium italic">Selesai</span>
+                </td>
               </tr>
             </tbody>
           </table>

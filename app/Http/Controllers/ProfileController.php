@@ -16,16 +16,28 @@ use Inertia\Response;
 class ProfileController extends Controller
 {
     /**
-     * Display the Corporate & Administrator Profile settings page.
+     * Display the Corporate & Administrator / Member Profile settings page.
      */
     public function edit(Request $request): Response
     {
         $user = $request->user();
+        $isAdmin = $user->hasRole('admin') || $user->username === 'admin' || $user->email === 'admin@xseller.id';
         $settings = Setting::all()->pluck('value', 'key');
 
         $companyBanks = json_decode($settings['company_banks'] ?? '[]', true);
 
         return Inertia::render('Profile/Edit', [
+            'is_admin' => $isAdmin,
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'username' => $user->username ?? '',
+                'email' => $user->email ?? '',
+                'phone' => $user->phone ?? '',
+                'bank_name' => $user->bank_name ?? 'Bank BRI',
+                'bank_account_number' => $user->bank_account_number ?? '',
+                'bank_account_name' => $user->bank_account_name ?? '',
+            ],
             'admin_user' => [
                 'id' => $user->id,
                 'name' => $user->name,
@@ -58,48 +70,66 @@ class ProfileController extends Controller
     }
 
     /**
-     * Update Corporate Profile & Admin Credentials.
+     * Update Profile Credentials & Bank Accounts.
      */
     public function update(Request $request): RedirectResponse
     {
         $user = $request->user();
+        $isAdmin = $user->hasRole('admin') || $user->username === 'admin' || $user->email === 'admin@xseller.id';
 
-        $validated = $request->validate([
-            'company_name' => 'required|string|max:100',
-            'company_owner' => 'required|string|max:100',
-            'company_copyright' => 'required|string|max:255',
+        $rules = [
             'name' => 'required|string|max:100',
             'username' => 'required|string|max:50|unique:users,username,' . $user->id,
             'email' => 'required|email|max:100|unique:users,email,' . $user->id,
             'phone' => 'nullable|string|max:20',
             'password' => 'nullable|string|min:6',
-            'site_logo' => 'nullable|image|mimes:png,jpg,jpeg,svg,webp|max:2048',
-        ]);
+        ];
 
-        // Save company settings
-        Setting::setValue('company_name', $validated['company_name'], 'text');
-        Setting::setValue('company_owner', $validated['company_owner'], 'text');
-        Setting::setValue('company_copyright', $validated['company_copyright'], 'text');
-
-        // Logo Upload
-        if ($request->hasFile('site_logo')) {
-            $path = $request->file('site_logo')->store('settings', 'public');
-            Setting::setValue('site_logo', $path, 'image');
+        if ($isAdmin) {
+            $rules['company_name'] = 'required|string|max:100';
+            $rules['company_owner'] = 'required|string|max:100';
+            $rules['company_copyright'] = 'required|string|max:255';
+            $rules['site_logo'] = 'nullable|image|mimes:png,jpg,jpeg,svg,webp|max:2048';
+        } else {
+            $rules['bank_name'] = 'nullable|string|max:100';
+            $rules['bank_account_number'] = 'nullable|string|max:100';
+            $rules['bank_account_name'] = 'nullable|string|max:100';
         }
 
-        // Save admin user credentials
+        $validated = $request->validate($rules);
+
+        if ($isAdmin) {
+            Setting::setValue('company_name', $validated['company_name'] ?? 'PT.Xseller Punya Kita', 'text');
+            Setting::setValue('company_owner', $validated['company_owner'] ?? 'PT.Xseller Punya Kita', 'text');
+            Setting::setValue('company_copyright', $validated['company_copyright'] ?? 'PT.Xseller Punya Kita Corp. Hak Cipta Dilindungi Undang-Undang.', 'text');
+
+            if ($request->hasFile('site_logo')) {
+                $path = $request->file('site_logo')->store('settings', 'public');
+                Setting::setValue('site_logo', $path, 'image');
+            }
+        }
+
         $user->name = $validated['name'];
         $user->username = $validated['username'];
         $user->email = $validated['email'];
-        if ($request->filled('phone')) {
+        if (array_key_exists('phone', $validated)) {
             $user->phone = $validated['phone'];
         }
-        if ($request->filled('password')) {
+        if (array_key_exists('bank_name', $validated)) {
+            $user->bank_name = $validated['bank_name'];
+        }
+        if (array_key_exists('bank_account_number', $validated)) {
+            $user->bank_account_number = $validated['bank_account_number'];
+        }
+        if (array_key_exists('bank_account_name', $validated)) {
+            $user->bank_account_name = $validated['bank_account_name'];
+        }
+        if (!empty($validated['password'])) {
             $user->password = Hash::make($validated['password']);
         }
         $user->save();
 
-        return Redirect::route('profile.edit')->with('success', 'Profil Instansi & Identitas Perusahaan berhasil diperbarui.');
+        return Redirect::route('profile.edit')->with('success', 'Profil berhasil diperbarui.');
     }
 
     /**
