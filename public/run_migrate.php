@@ -43,6 +43,10 @@ try {
             'label'   => 'Update Katalog Produk RO & PO',
             'class'   => 'ProductSeeder',
         ],
+        'reset-data' => [
+            'command' => 'reset:system-data',
+            'label'   => 'Reset Total Data Member & Transaksi (Kecuali Admin & Produk)',
+        ],
     ];
 
     $cmdKey = $_GET['cmd'] ?? null;

@@ -43,8 +43,8 @@ class ProductController extends Controller
             'quantity' => 'required|integer|min:1',
             'points' => 'required|integer|min:0',
             'description' => 'nullable|string',
-            'is_active' => 'boolean',
-            'image_file' => 'nullable|image|max:2048',
+            'is_active' => 'nullable',
+            'image_file' => 'nullable|file|mimes:jpeg,jpg,png,webp,svg|max:5120',
             'image_url' => 'nullable|string',
         ]);
 
@@ -62,11 +62,11 @@ class ProductController extends Controller
             'quantity' => $validated['quantity'],
             'points' => $validated['points'],
             'description' => $validated['description'] ?? null,
-            'is_active' => $request->boolean('is_active', true),
+            'is_active' => filter_var($request->input('is_active', true), FILTER_VALIDATE_BOOLEAN),
             'image' => $imagePath,
         ]);
 
-        return redirect()->back()->with('success', 'Produk berhasil ditambahkan!');
+        return redirect()->back()->with('success', 'Produk baru berhasil ditambahkan!');
     }
 
     /**
@@ -81,8 +81,8 @@ class ProductController extends Controller
             'quantity' => 'required|integer|min:1',
             'points' => 'required|integer|min:0',
             'description' => 'nullable|string',
-            'is_active' => 'boolean',
-            'image_file' => 'nullable|image|max:2048',
+            'is_active' => 'nullable',
+            'image_file' => 'nullable|file|mimes:jpeg,jpg,png,webp,svg|max:5120',
             'image_url' => 'nullable|string',
         ]);
 
@@ -102,7 +102,7 @@ class ProductController extends Controller
             'quantity' => $validated['quantity'],
             'points' => $validated['points'],
             'description' => $validated['description'] ?? null,
-            'is_active' => $request->boolean('is_active', true),
+            'is_active' => filter_var($request->input('is_active', true), FILTER_VALIDATE_BOOLEAN),
             'image' => $imagePath,
         ]);
 

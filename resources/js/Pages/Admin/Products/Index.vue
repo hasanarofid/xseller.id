@@ -73,16 +73,18 @@ const handleImageUpload = (e) => {
 
 const submitForm = () => {
   if (isEditing.value) {
-    form.post(route('products.update', editingProductId.value), {
+    form.post(route('admin.products.update', editingProductId.value), {
       preserveScroll: true,
+      forceFormData: true,
       onSuccess: () => {
         modalOpen.value = false;
         form.reset();
       },
     });
   } else {
-    form.post(route('products.store'), {
+    form.post(route('admin.products.store'), {
       preserveScroll: true,
+      forceFormData: true,
       onSuccess: () => {
         modalOpen.value = false;
         form.reset();
@@ -93,7 +95,7 @@ const submitForm = () => {
 
 const deleteProduct = (item) => {
   if (confirm(`Apakah Anda yakin ingin menghapus produk "${item.name}"?`)) {
-    router.delete(route('products.destroy', item.id), {
+    router.delete(route('admin.products.destroy', item.id), {
       preserveScroll: true,
     });
   }
