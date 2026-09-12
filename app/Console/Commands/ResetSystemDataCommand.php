@@ -24,7 +24,7 @@ class ResetSystemDataCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'reset:system-data';
+    protected $signature = 'reset:system-data {--force}';
 
     /**
      * The console command description.

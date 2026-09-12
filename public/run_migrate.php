@@ -54,7 +54,11 @@ try {
     if ($cmdKey && isset($allowedCommands[$cmdKey])) {
         // Run specific artisan command
         $cmdConfig = $allowedCommands[$cmdKey];
-        $args = ['--force' => true];
+        $args = [];
+
+        if (in_array($cmdConfig['command'], ['db:seed', 'migrate', 'migrate:fresh'])) {
+            $args['--force'] = true;
+        }
 
         if (!empty($cmdConfig['class'])) {
             $args['--class'] = $cmdConfig['class'];
