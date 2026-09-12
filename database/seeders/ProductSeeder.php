@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Product;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Schema;
 
 class ProductSeeder extends Seeder
 {
@@ -98,8 +99,9 @@ class ProductSeeder extends Seeder
             ],
         ];
 
-        // Clean existing product records and reseed
-        Product::truncate();
+        Schema::disableForeignKeyConstraints();
+        Product::query()->delete();
+        Schema::enableForeignKeyConstraints();
 
         foreach ($roProducts as $item) {
             Product::create($item);
