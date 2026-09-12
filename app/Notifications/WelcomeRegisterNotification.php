@@ -43,7 +43,7 @@ class WelcomeRegisterNotification extends Notification
         $mail = (new MailMessage)
             ->subject('Selamat Datang di XSELLER.ID - Akun Anda Berhasil Terdaftar!')
             ->greeting('Halo ' . $this->user->name . ',')
-            ->line('Selamat datang di **XSELLER.ID** (E-Commerce Trade Promotion Program & Affiliasi MLM Binary).')
+            ->line('Selamat datang di **XSELLER.ID** (E-Commerce Trade Promotion Program).')
             ->line('Akun Anda telah berhasil terdaftar dan diaktifkan dengan rincian sebagai berikut:')
             ->line('• **Nama:** ' . $this->user->name)
             ->line('• **Username:** @' . ($this->user->username ?: strtolower(explode(' ', $this->user->name)[0])))
