@@ -272,130 +272,29 @@ const formatRupiah = (val) => {
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 pt-4">
-          <!-- Item 1: HERBAQUEENA -->
-          <div class="bg-slate-50/60 border border-slate-200/70 rounded-3xl p-5 text-center space-y-3 flex flex-col justify-between hover:shadow-md transition-all">
+          <div 
+            v-for="item in (products && products.length > 0 ? products : [])" 
+            :key="item.id || item.name" 
+            class="bg-slate-50/60 border border-slate-200/70 rounded-3xl p-5 text-center space-y-3 flex flex-col justify-between hover:shadow-md transition-all"
+          >
             <div class="space-y-3">
               <div class="w-full aspect-square rounded-2xl bg-white border border-slate-200/60 overflow-hidden flex items-center justify-center p-2 shadow-2xs">
-                <div class="w-full h-full bg-emerald-900/10 rounded-xl flex items-center justify-center font-black text-emerald-900 text-sm">
-                  🌿 HERBAQUEENA
+                <img v-if="item.image" :src="item.image" :alt="item.name" class="w-full h-full object-contain" />
+                <div v-else class="w-full h-full bg-emerald-900/10 rounded-xl flex items-center justify-center font-black text-emerald-900 text-sm">
+                  📦 {{ item.name }}
                 </div>
               </div>
               <div class="text-left space-y-0.5">
-                <h3 class="text-base font-black text-[#5c3a21] uppercase tracking-tight">HERBAQUEENA</h3>
-                <p class="text-sm font-extrabold text-slate-900">Rp 550.000</p>
-                <p class="text-xs text-slate-500 font-bold">Jumlah : 3</p>
+                <h3 class="text-base font-black text-[#5c3a21] uppercase tracking-tight">{{ item.name }}</h3>
+                <p class="text-sm font-extrabold text-slate-900">{{ formatRupiah(item.price) }}</p>
+                <p class="text-xs text-slate-500 font-bold">Jumlah : {{ item.quantity }}</p>
+                <p v-if="item.description" class="text-[10px] text-slate-400 font-medium line-clamp-2 mt-0.5">{{ item.description }}</p>
               </div>
             </div>
             <div class="pt-2 flex justify-start">
               <span class="px-3 py-1 bg-[#5c3a21] text-white text-xs font-black rounded-full flex items-center gap-1.5 shadow-2xs">
                 <span>Poin</span>
-                <span class="w-4 h-4 rounded-full bg-white text-[#5c3a21] text-[10px] font-black flex items-center justify-center">2</span>
-              </span>
-            </div>
-          </div>
-
-          <!-- Item 2: XSELLER BEE -->
-          <div class="bg-slate-50/60 border border-slate-200/70 rounded-3xl p-5 text-center space-y-3 flex flex-col justify-between hover:shadow-md transition-all">
-            <div class="space-y-3">
-              <div class="w-full aspect-square rounded-2xl bg-white border border-slate-200/60 overflow-hidden flex items-center justify-center p-2 shadow-2xs">
-                <div class="w-full h-full bg-amber-500/10 rounded-xl flex items-center justify-center font-black text-amber-800 text-sm">
-                  🍯 XSELLER BEE (MADU)
-                </div>
-              </div>
-              <div class="text-left space-y-0.5">
-                <h3 class="text-base font-black text-[#5c3a21] uppercase tracking-tight">XSELLER BEE</h3>
-                <p class="text-sm font-extrabold text-slate-900">Rp 550.000</p>
-                <p class="text-xs text-slate-500 font-bold">Jumlah : 12</p>
-              </div>
-            </div>
-            <div class="pt-2 flex justify-start">
-              <span class="px-3 py-1 bg-[#5c3a21] text-white text-xs font-black rounded-full flex items-center gap-1.5 shadow-2xs">
-                <span>Poin</span>
-                <span class="w-4 h-4 rounded-full bg-white text-[#5c3a21] text-[10px] font-black flex items-center justify-center">2</span>
-              </span>
-            </div>
-          </div>
-
-          <!-- Item 3: Logo X Placeholder -->
-          <div class="bg-slate-50/60 border border-slate-200/70 rounded-3xl p-5 text-center space-y-3 flex flex-col justify-between hover:shadow-md transition-all">
-            <div class="space-y-3">
-              <div class="w-full aspect-square rounded-2xl bg-white border border-slate-200/60 overflow-hidden flex items-center justify-center p-4 shadow-2xs">
-                <div class="w-full h-full bg-[#04bdb2]/10 rounded-xl flex items-center justify-center font-black text-[#009c94] text-2xl">
-                  X
-                </div>
-              </div>
-              <div class="text-left space-y-0.5">
-                <h3 class="text-base font-black text-slate-400 uppercase tracking-tight">COMING SOON</h3>
-                <p class="text-xs text-slate-400 font-bold">Produk PO Baru</p>
-              </div>
-            </div>
-            <div class="pt-2 flex justify-start">
-              <span class="px-3 py-1 bg-[#5c3a21] text-white text-xs font-black rounded-full flex items-center gap-1.5 shadow-2xs">
-                <span>Poin</span>
-                <span class="w-4 h-4 rounded-full bg-white text-[#5c3a21] text-[10px] font-black flex items-center justify-center">1</span>
-              </span>
-            </div>
-          </div>
-
-          <!-- Item 4: Logo X Placeholder -->
-          <div class="bg-slate-50/60 border border-slate-200/70 rounded-3xl p-5 text-center space-y-3 flex flex-col justify-between hover:shadow-md transition-all">
-            <div class="space-y-3">
-              <div class="w-full aspect-square rounded-2xl bg-white border border-slate-200/60 overflow-hidden flex items-center justify-center p-4 shadow-2xs">
-                <div class="w-full h-full bg-[#04bdb2]/10 rounded-xl flex items-center justify-center font-black text-[#009c94] text-2xl">
-                  X
-                </div>
-              </div>
-              <div class="text-left space-y-0.5">
-                <h3 class="text-base font-black text-slate-400 uppercase tracking-tight">COMING SOON</h3>
-                <p class="text-xs text-slate-400 font-bold">Produk PO Baru</p>
-              </div>
-            </div>
-            <div class="pt-2 flex justify-start">
-              <span class="px-3 py-1 bg-[#5c3a21] text-white text-xs font-black rounded-full flex items-center gap-1.5 shadow-2xs">
-                <span>Poin</span>
-                <span class="w-4 h-4 rounded-full bg-white text-[#5c3a21] text-[10px] font-black flex items-center justify-center">1</span>
-              </span>
-            </div>
-          </div>
-
-          <!-- Item 5: Logo X Placeholder -->
-          <div class="bg-slate-50/60 border border-slate-200/70 rounded-3xl p-5 text-center space-y-3 flex flex-col justify-between hover:shadow-md transition-all">
-            <div class="space-y-3">
-              <div class="w-full aspect-square rounded-2xl bg-white border border-slate-200/60 overflow-hidden flex items-center justify-center p-4 shadow-2xs">
-                <div class="w-full h-full bg-[#04bdb2]/10 rounded-xl flex items-center justify-center font-black text-[#009c94] text-2xl">
-                  X
-                </div>
-              </div>
-              <div class="text-left space-y-0.5">
-                <h3 class="text-base font-black text-slate-400 uppercase tracking-tight">COMING SOON</h3>
-                <p class="text-xs text-slate-400 font-bold">Produk PO Baru</p>
-              </div>
-            </div>
-            <div class="pt-2 flex justify-start">
-              <span class="px-3 py-1 bg-[#5c3a21] text-white text-xs font-black rounded-full flex items-center gap-1.5 shadow-2xs">
-                <span>Poin</span>
-                <span class="w-4 h-4 rounded-full bg-white text-[#5c3a21] text-[10px] font-black flex items-center justify-center">1</span>
-              </span>
-            </div>
-          </div>
-
-          <!-- Item 6: Logo X Placeholder -->
-          <div class="bg-slate-50/60 border border-slate-200/70 rounded-3xl p-5 text-center space-y-3 flex flex-col justify-between hover:shadow-md transition-all">
-            <div class="space-y-3">
-              <div class="w-full aspect-square rounded-2xl bg-white border border-slate-200/60 overflow-hidden flex items-center justify-center p-4 shadow-2xs">
-                <div class="w-full h-full bg-[#04bdb2]/10 rounded-xl flex items-center justify-center font-black text-[#009c94] text-2xl">
-                  X
-                </div>
-              </div>
-              <div class="text-left space-y-0.5">
-                <h3 class="text-base font-black text-slate-400 uppercase tracking-tight">COMING SOON</h3>
-                <p class="text-xs text-slate-400 font-bold">Produk PO Baru</p>
-              </div>
-            </div>
-            <div class="pt-2 flex justify-start">
-              <span class="px-3 py-1 bg-[#5c3a21] text-white text-xs font-black rounded-full flex items-center gap-1.5 shadow-2xs">
-                <span>Poin</span>
-                <span class="w-4 h-4 rounded-full bg-white text-[#5c3a21] text-[10px] font-black flex items-center justify-center">1</span>
+                <span class="w-4 h-4 rounded-full bg-white text-[#5c3a21] text-[10px] font-black flex items-center justify-center">{{ item.points || 2 }}</span>
               </span>
             </div>
           </div>

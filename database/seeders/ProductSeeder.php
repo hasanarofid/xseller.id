@@ -15,56 +15,52 @@ class ProductSeeder extends Seeder
         $roProducts = [
             [
                 'type' => 'ro',
-                'name' => 'HAZAPRO',
-                'price' => 125000,
-                'quantity' => 1,
-                'points' => 1,
-                'description' => 'Herbal 3in1 Hazapro kualitas terbaik.',
-                'is_active' => true,
-            ],
-            [
-                'type' => 'ro',
-                'name' => 'BANDAWASA',
-                'price' => 125000,
-                'quantity' => 1,
-                'points' => 1,
-                'description' => 'Kapsul Herbal Bandawasa persendian.',
-                'is_active' => true,
-            ],
-            [
-                'type' => 'ro',
-                'name' => 'OXIBUMIN',
-                'price' => 125000,
-                'quantity' => 1,
-                'points' => 1,
-                'description' => '90% Asli Ekstrak Ikan Gabus Oxibumin.',
-                'is_active' => true,
-            ],
-            [
-                'type' => 'ro',
-                'name' => 'Growfit',
+                'name' => 'GroVit',
                 'price' => 125000,
                 'quantity' => 2,
                 'points' => 1,
-                'description' => 'Susu kambing etawa nutrisi anak Growfit Kids.',
+                'image' => '/images/products/grovit.jpeg',
+                'description' => 'Nutrisi anak tinggi kalsium & DHA GroVit rasa jeruk (Dapat 2 botol per Paket RO).',
                 'is_active' => true,
             ],
             [
                 'type' => 'ro',
-                'name' => 'Growfit (Lambung Gembira)',
+                'name' => 'Lambung Gembira',
                 'price' => 125000,
                 'quantity' => 2,
                 'points' => 1,
-                'description' => 'Minuman herbal Lambung Gembira nutrisi sehat.',
+                'image' => '/images/products/lambung_gembira.jpeg',
+                'description' => 'Minuman serbuk sereal dengan pisang almond Nuhsa Lambung Gembira (Dapat 2 per Paket RO).',
                 'is_active' => true,
             ],
             [
                 'type' => 'ro',
-                'name' => 'Etawa Ajwa',
+                'name' => 'Oxibumin',
                 'price' => 125000,
-                'quantity' => 2,
+                'quantity' => 1,
                 'points' => 1,
-                'description' => 'Susu lambung ceria Etawa Ajwa kurma.',
+                'image' => '/images/products/oxibumin.jpeg',
+                'description' => '90% Asli Ekstrak Ikan Gabus Channa Striata Nuhsa Oxibumin (Dapat 1 botol per Paket RO).',
+                'is_active' => true,
+            ],
+            [
+                'type' => 'ro',
+                'name' => 'Kopi Cap Sanghai',
+                'price' => 125000,
+                'quantity' => 1,
+                'points' => 1,
+                'image' => '/images/products/sanghai.jpeg',
+                'description' => 'Minuman serbuk kopi gula krimer dengan ginseng Nuhsa Kopi Cap Sanghai (Dapat 1 box per Paket RO).',
+                'is_active' => true,
+            ],
+            [
+                'type' => 'ro',
+                'name' => '3IN1 HAZAPRO',
+                'price' => 125000,
+                'quantity' => 1,
+                'points' => 1,
+                'image' => '/images/products/hazapro.jpeg',
+                'description' => 'Herbal 3in1 Hazapro 60 Kapsul kualitas terbaik (Dapat 1 botol per Paket RO).',
                 'is_active' => true,
             ],
         ];
@@ -72,36 +68,45 @@ class ProductSeeder extends Seeder
         $poProducts = [
             [
                 'type' => 'po',
-                'name' => 'HERBAQUEENA',
+                'name' => 'HQ Herba Queena (Star Seller)',
                 'price' => 550000,
                 'quantity' => 3,
                 'points' => 2,
-                'description' => 'Produk herbal Herbaqueena premium.',
+                'image' => '/images/products/hq_herba_queena.jpeg',
+                'description' => 'Konsentrat Minuman Fermentasi HQ Herba Queena (Dapat 3 botol untuk Paket Star Seller Rp 550.000).',
                 'is_active' => true,
             ],
             [
                 'type' => 'po',
-                'name' => 'XSELLER BEE',
-                'price' => 550000,
+                'name' => 'HQ Herba Queena (Affiliate)',
+                'price' => 2100000,
                 'quantity' => 12,
+                'points' => 8,
+                'image' => '/images/products/hq_herba_queena.jpeg',
+                'description' => 'Konsentrat Minuman Fermentasi HQ Herba Queena (Dapat 12 botol untuk Paket Affiliate Rp 2.100.000).',
+                'is_active' => true,
+            ],
+            [
+                'type' => 'po',
+                'name' => 'Romero Coffee',
+                'price' => 550000,
+                'quantity' => 3,
                 'points' => 2,
-                'description' => 'Madu murni Xseller Bee kualitas super.',
+                'image' => '/images/products/romero_coffee.jpeg',
+                'description' => 'Minuman kopi dengan krimer Romero Coffee (Dapat 3 box untuk PO Rp 550.000).',
                 'is_active' => true,
             ],
         ];
 
+        // Clean existing product records and reseed
+        Product::truncate();
+
         foreach ($roProducts as $item) {
-            Product::updateOrCreate(
-                ['name' => $item['name'], 'type' => 'ro'],
-                $item
-            );
+            Product::create($item);
         }
 
         foreach ($poProducts as $item) {
-            Product::updateOrCreate(
-                ['name' => $item['name'], 'type' => 'po'],
-                $item
-            );
+            Product::create($item);
         }
     }
 }

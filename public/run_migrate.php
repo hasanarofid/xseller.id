@@ -37,6 +37,11 @@ try {
             'command' => 'fix:personal-rewards',
             'label'   => 'Fix Personal RO & PO Rewards',
         ],
+        'seed-products' => [
+            'command' => 'db:seed',
+            'label'   => 'Update Katalog Produk RO & PO',
+            'class'   => 'ProductSeeder',
+        ],
     ];
 
     $cmdKey = $_GET['cmd'] ?? null;
@@ -44,21 +49,25 @@ try {
     if ($cmdKey && isset($allowedCommands[$cmdKey])) {
         // Run specific artisan command
         $cmdConfig = $allowedCommands[$cmdKey];
-        $args = [];
+        $args = ['--force' => true];
+
+        if (!empty($cmdConfig['class'])) {
+            $args['--class'] = $cmdConfig['class'];
+        }
 
         // Pass username argument if provided
         if (!empty($_GET['username'])) {
             $args['member_username'] = trim($_GET['username']);
         }
 
-        $kernel->call($cmdConfig['command'], array_merge($args, ['--force' => true]));
+        $kernel->call($cmdConfig['command'], $args);
         $action = $cmdConfig['label'] . (!empty($args['member_username']) ? " (@{$args['member_username']})" : '');
 
         echo "<!DOCTYPE html><html><head><title>{$action} - XSELLER</title><style>body{font-family:sans-serif;padding:2rem;background:#f4f6f9;color:#333;}.card{background:#fff;padding:2rem;border-radius:12px;box-shadow:0 4px 6px rgba(0,0,0,0.1);max-width:800px;margin:auto;}h1{margin-top:0;}pre{background:#1e293b;color:#38bdf8;padding:1rem;border-radius:8px;overflow-x:auto;}</style></head><body>";
         echo "<div class='card'>";
         echo "<h1 style='color:#10b981;'>✓ SUCCESS: {$action}</h1>";
         echo "<pre>" . htmlspecialchars($kernel->output() ?: "Command selesai tanpa output.") . "</pre>";
-        echo "<p style='margin-top:20px;'><a href='/admin/repeat-order' style='display:inline-block;padding:10px 18px;background:#10b981;color:#fff;text-decoration:none;border-radius:8px;font-weight:bold;'>Buka Halaman Repeat Order</a></p>";
+        echo "<p style='margin-top:20px;'><a href='/admin/kelola-produk' style='display:inline-block;padding:10px 18px;background:#10b981;color:#fff;text-decoration:none;border-radius:8px;font-weight:bold;'>Buka Katalog Produk</a></p>";
         echo "</div></body></html>";
 
     } elseif ($isFresh) {
@@ -84,7 +93,14 @@ try {
         $kernel->call('migrate', [
             '--force' => true,
         ]);
-        $action = "Migrate (Update Only)";
+        
+        // Auto seed ProductSeeder to ensure product catalog is updated
+        @$kernel->call('db:seed', [
+            '--class' => 'ProductSeeder',
+            '--force' => true,
+        ]);
+
+        $action = "Migrate & Seed Catalog (Update Only)";
 
         // 3. Clear & rebuild application caches
         @$kernel->call('config:clear');
