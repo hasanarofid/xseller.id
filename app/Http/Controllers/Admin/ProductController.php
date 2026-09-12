@@ -36,6 +36,10 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
+        if ($request->has('image_file') && !($request->file('image_file') instanceof \Illuminate\Http\UploadedFile)) {
+            $request->request->remove('image_file');
+        }
+
         $validated = $request->validate([
             'type' => 'required|in:ro,po',
             'name' => 'required|string|max:255',
@@ -44,7 +48,7 @@ class ProductController extends Controller
             'points' => 'required|integer|min:0',
             'description' => 'nullable|string',
             'is_active' => 'nullable',
-            'image_file' => 'nullable|file|mimes:jpeg,jpg,png,webp,svg|max:5120',
+            'image_file' => 'nullable|file|mimes:jpeg,jpg,png,webp,svg,gif|max:5120',
             'image_url' => 'nullable|string',
         ]);
 
@@ -74,6 +78,10 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product)
     {
+        if ($request->has('image_file') && !($request->file('image_file') instanceof \Illuminate\Http\UploadedFile)) {
+            $request->request->remove('image_file');
+        }
+
         $validated = $request->validate([
             'type' => 'required|in:ro,po',
             'name' => 'required|string|max:255',
@@ -82,7 +90,7 @@ class ProductController extends Controller
             'points' => 'required|integer|min:0',
             'description' => 'nullable|string',
             'is_active' => 'nullable',
-            'image_file' => 'nullable|file|mimes:jpeg,jpg,png,webp,svg|max:5120',
+            'image_file' => 'nullable|file|mimes:jpeg,jpg,png,webp,svg,gif|max:5120',
             'image_url' => 'nullable|string',
         ]);
 

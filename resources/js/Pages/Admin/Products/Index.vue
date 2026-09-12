@@ -45,6 +45,7 @@ const openAddModal = () => {
   isEditing.value = false;
   editingProductId.value = null;
   form.reset();
+  form.clearErrors();
   form.type = activeFilter.value === 'po' ? 'po' : 'ro';
   modalOpen.value = true;
 };
@@ -52,6 +53,7 @@ const openAddModal = () => {
 const openEditModal = (item) => {
   isEditing.value = true;
   editingProductId.value = item.id;
+  form.clearErrors();
   form.type = item.type;
   form.name = item.name;
   form.price = item.price;
@@ -65,31 +67,31 @@ const openEditModal = (item) => {
 };
 
 const handleImageUpload = (e) => {
-  const file = e.target.files[0];
+  const file = e.target.files && e.target.files[0];
   if (file) {
     form.image_file = file;
+  } else {
+    form.image_file = null;
   }
 };
 
 const submitForm = () => {
+  const options = {
+    preserveScroll: true,
+    onSuccess: () => {
+      modalOpen.value = false;
+      form.reset();
+    },
+  };
+
+  if (form.image_file instanceof File) {
+    options.forceFormData = true;
+  }
+
   if (isEditing.value) {
-    form.post(route('admin.products.update', editingProductId.value), {
-      preserveScroll: true,
-      forceFormData: true,
-      onSuccess: () => {
-        modalOpen.value = false;
-        form.reset();
-      },
-    });
+    form.post(route('admin.products.update', editingProductId.value), options);
   } else {
-    form.post(route('admin.products.store'), {
-      preserveScroll: true,
-      forceFormData: true,
-      onSuccess: () => {
-        modalOpen.value = false;
-        form.reset();
-      },
-    });
+    form.post(route('admin.products.store'), options);
   }
 };
 
@@ -335,6 +337,7 @@ const filteredProducts = computed(() => {
               class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900"
               required
             />
+            <p v-if="form.errors.name" class="text-xs text-rose-600 font-bold mt-1">{{ form.errors.name }}</p>
           </div>
 
           <!-- Price, Quantity, Points Grid -->
@@ -349,6 +352,7 @@ const filteredProducts = computed(() => {
                 class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900"
                 required
               />
+              <p v-if="form.errors.price" class="text-xs text-rose-600 font-bold mt-1">{{ form.errors.price }}</p>
             </div>
             <div>
               <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
@@ -361,6 +365,7 @@ const filteredProducts = computed(() => {
                 class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900"
                 required
               />
+              <p v-if="form.errors.quantity" class="text-xs text-rose-600 font-bold mt-1">{{ form.errors.quantity }}</p>
             </div>
             <div>
               <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
@@ -373,6 +378,7 @@ const filteredProducts = computed(() => {
                 class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900"
                 required
               />
+              <p v-if="form.errors.points" class="text-xs text-rose-600 font-bold mt-1">{{ form.errors.points }}</p>
             </div>
           </div>
 
@@ -387,6 +393,7 @@ const filteredProducts = computed(() => {
               accept="image/*"
               class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-[#1653a1]/10 file:text-[#1653a1] cursor-pointer"
             />
+            <p v-if="form.errors.image_file" class="text-xs text-rose-600 font-bold mt-1">{{ form.errors.image_file }}</p>
           </div>
 
           <!-- Description -->
