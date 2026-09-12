@@ -52,7 +52,7 @@ const tabList = [
     <div class="space-y-6">
 
       <!-- 2. MAIN TABLE CONTAINER CARD (Matching Mockup) -->
-      <div class="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm space-y-5">
+      <div class="bg-white border border-slate-100 rounded-3xl p-4 md:p-6 shadow-sm space-y-5">
         
         <!-- Header Row with Filter Tabs -->
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-4">
@@ -69,7 +69,7 @@ const tabList = [
           </div>
 
           <!-- Filter Navigation Tabs (Matching Mockup Right Pill Filter) -->
-          <div class="p-1 bg-slate-100/80 rounded-2xl flex items-center gap-1 self-start md:self-auto overflow-x-auto max-w-full">
+          <div class="w-full md:w-auto p-1 bg-slate-100/80 rounded-2xl flex items-center gap-1 overflow-x-auto max-w-full scrollbar-none">
             <button 
               v-for="t in tabList" 
               :key="t.key"
@@ -78,7 +78,7 @@ const tabList = [
                 active_tab === t.key 
                   ? 'bg-white text-slate-900 font-extrabold shadow-sm' 
                   : 'text-slate-600 hover:text-slate-900 font-medium',
-                'px-4 py-1.5 text-xs rounded-xl transition-all cursor-pointer whitespace-nowrap'
+                'px-3.5 py-1.5 text-xs rounded-xl transition-all cursor-pointer whitespace-nowrap shrink-0'
               ]"
             >
               {{ t.label }}
@@ -87,7 +87,7 @@ const tabList = [
         </div>
 
         <!-- Info Box Banner (Matching Mockup Green Info Banner) -->
-        <div class="p-4 bg-emerald-50/70 border border-emerald-200/70 text-emerald-900 rounded-2xl text-xs font-medium leading-relaxed flex items-start gap-2.5">
+        <div class="p-3.5 md:p-4 bg-emerald-50/70 border border-emerald-200/70 text-emerald-900 rounded-2xl text-xs font-medium leading-relaxed flex items-start gap-2.5">
           <span class="text-emerald-600 font-bold shrink-0">ℹ️</span>
           <span>{{ tab_description }}</span>
         </div>
@@ -99,8 +99,66 @@ const tabList = [
           </h3>
         </div>
 
-        <!-- Table List -->
-        <div class="overflow-x-auto">
+        <!-- MOBILE CARD VIEW (for Android & Mobile screens: block md:hidden) -->
+        <div class="block md:hidden space-y-3">
+          <template v-if="logs.length > 0">
+            <div 
+              v-for="item in logs" 
+              :key="item.id" 
+              class="p-4 bg-slate-50/80 border border-slate-200/70 rounded-2xl space-y-2 shadow-xs"
+            >
+              <!-- Incentive Tab Mobile Card -->
+              <template v-if="active_tab === 'incentive'">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-black text-slate-900">{{ item.qualified || '-' }}</span>
+                  <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded-md text-[10px] font-bold">{{ item.status || 'Klaim' }}</span>
+                </div>
+                <div class="flex items-center justify-between pt-1 border-t border-slate-200/60">
+                  <span class="text-[11px] text-slate-400 font-mono">{{ item.date || item.created_at }}</span>
+                  <span class="text-sm font-black text-emerald-600">{{ item.incentive || item.amount }}</span>
+                </div>
+              </template>
+
+              <!-- PAL Tab Mobile Card -->
+              <template v-else-if="active_tab === 'pal'">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-bold text-emerald-600 font-mono">{{ item.source }}</span>
+                  <span class="text-[11px] text-slate-400 font-mono">{{ item.date || item.created_at }}</span>
+                </div>
+                <div class="text-xs text-slate-600 flex items-center justify-between">
+                  <span>Poin PO: <strong class="text-slate-900">{{ item.po_points }}</strong></span>
+                  <span>Nominal: <strong class="text-slate-900 font-mono">{{ item.nominal }}</strong></span>
+                </div>
+                <div class="flex items-center justify-between pt-1.5 border-t border-slate-200/60">
+                  <span class="text-[11px] font-bold text-slate-500">PAL Bonus</span>
+                  <span class="text-sm font-black text-emerald-600 font-mono">{{ item.amount }}</span>
+                </div>
+              </template>
+
+              <!-- Standard Tabs Mobile Card -->
+              <template v-else>
+                <div class="flex items-center justify-between">
+                  <span class="text-[11px] font-extrabold text-slate-400 font-mono">{{ item.transaction_code }}</span>
+                  <span class="text-[11px] text-slate-400 font-mono">{{ item.created_at }}</span>
+                </div>
+                <div class="text-xs font-bold text-slate-800">
+                  {{ item.description }}
+                </div>
+                <div class="flex items-center justify-between pt-1.5 border-t border-slate-200/60">
+                  <span class="text-[11px] font-bold text-emerald-600 font-mono">{{ item.source }}</span>
+                  <span class="text-sm font-black text-emerald-600 font-mono">{{ item.amount }}</span>
+                </div>
+              </template>
+            </div>
+          </template>
+
+          <div v-else class="py-8 text-center text-slate-400 text-xs italic bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+            Belum ada catatan mutasi bonus untuk kategori ini.
+          </div>
+        </div>
+
+        <!-- DESKTOP TABLE VIEW (hidden md:block) -->
+        <div class="hidden md:block overflow-x-auto">
           <table class="w-full text-left text-xs border-collapse">
             <thead>
               <!-- Special Headers for Incentive Tab -->

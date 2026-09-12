@@ -138,12 +138,12 @@ const logout = () => {
         :class="[
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
           isSidebarCollapsed ? 'lg:w-20' : 'lg:w-64',
-          'fixed top-0 bottom-0 left-0 z-40 bg-white border-r border-slate-200/80 transition-all duration-300 ease-in-out lg:fixed flex flex-col justify-between shadow-sm'
+          'fixed top-0 bottom-0 left-0 z-40 bg-white border-r border-slate-200/80 transition-all duration-300 ease-in-out flex flex-col justify-between shadow-sm h-full'
         ]"
       >
-        <div>
+        <div class="flex-1 flex flex-col min-h-0 overflow-hidden">
           <!-- Sidebar Brand Header Mobile -->
-          <div class="flex items-center h-16 px-5 border-b border-slate-100 lg:hidden justify-between">
+          <div class="flex items-center h-16 px-5 border-b border-slate-100 lg:hidden justify-between shrink-0">
             <div class="flex items-center gap-2.5">
               <ApplicationLogo class="h-7 w-auto" />
               <span class="font-extrabold text-[#1653a1] text-sm tracking-tight uppercase">XSELLER</span>
@@ -154,7 +154,7 @@ const logout = () => {
           </div>
 
           <!-- Sidebar User Profile Summary Card -->
-          <div v-if="!isSidebarCollapsed" class="p-4 flex flex-col items-center text-center space-y-2 border-b border-slate-100">
+          <div v-if="!isSidebarCollapsed" class="p-4 flex flex-col items-center text-center space-y-2 border-b border-slate-100 shrink-0">
             <div class="w-14 h-14 rounded-full bg-gradient-to-tr from-[#1653a1] to-[#04bdb2] text-white font-extrabold flex items-center justify-center text-xl shadow-md border-2 border-white">
               {{ user.name ? user.name.charAt(0).toUpperCase() : 'P' }}
             </div>
@@ -179,11 +179,12 @@ const logout = () => {
           </div>
 
           <!-- Navigation Menu -->
-          <nav class="px-3 py-3 space-y-1.5 overflow-y-auto max-h-[calc(100vh-280px)]">
+          <nav class="px-3 py-3 space-y-1.5 overflow-y-auto flex-1 min-h-0">
             <template v-for="item in navigation" :key="item.name">
               <a 
                 v-if="item.external"
                 :href="item.href"
+                @click="isSidebarOpen = false"
                 :class="[
                   item.special === 'blue' ? 'bg-[#f0f7fb] border border-[#1653a1]/30 text-[#1653a1] font-bold hover:bg-[#e2f1fc]' : 'text-slate-600 hover:bg-slate-100 font-medium',
                   isSidebarCollapsed ? 'lg:justify-center lg:px-0' : 'px-3.5',
@@ -205,6 +206,7 @@ const logout = () => {
               <Link 
                 v-else
                 :href="item.href"
+                @click="isSidebarOpen = false"
                 :class="[
                   item.current 
                     ? (item.special === 'amber' ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white font-black shadow-sm' : 'bg-gradient-to-r from-[#1653a1] to-[#04bdb2] text-white font-bold shadow-md shadow-[#1653a1]/20')
@@ -229,7 +231,7 @@ const logout = () => {
         </div>
 
         <!-- Sidebar Collapse Toggle -->
-        <div class="p-3 border-t border-slate-100 hidden lg:block text-right">
+        <div class="p-3 border-t border-slate-100 hidden lg:block text-right shrink-0">
           <button 
             @click="isSidebarCollapsed = !isSidebarCollapsed"
             class="p-1.5 bg-slate-100 hover:bg-[#f0f7fb] rounded-lg text-slate-500 hover:text-[#1653a1] transition-colors cursor-pointer"
