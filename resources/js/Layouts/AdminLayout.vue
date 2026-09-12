@@ -59,6 +59,19 @@ const isNotificationsOpen = ref(false);
 
 const toastStack = ref([]);
 
+watch(
+  () => page.props.flash,
+  (flash) => {
+    if (flash?.success) {
+      toastStack.value.push({ id: Date.now(), text: flash.success });
+    }
+    if (flash?.error) {
+      toastStack.value.push({ id: Date.now(), text: flash.error });
+    }
+  },
+  { immediate: true, deep: true }
+);
+
 const closeToast = (id) => {
   toastStack.value = toastStack.value.filter(t => t.id !== id);
 };

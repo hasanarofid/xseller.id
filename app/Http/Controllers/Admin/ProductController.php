@@ -55,8 +55,10 @@ class ProductController extends Controller
         $imagePath = $request->input('image_url');
 
         if ($request->hasFile('image_file')) {
-            $path = $request->file('image_file')->store('products', 'public');
-            $imagePath = Storage::url($path);
+            $file = $request->file('image_file');
+            $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('images/products'), $filename);
+            $imagePath = '/images/products/' . $filename;
         }
 
         Product::create([
@@ -97,8 +99,10 @@ class ProductController extends Controller
         $imagePath = $product->image;
 
         if ($request->hasFile('image_file')) {
-            $path = $request->file('image_file')->store('products', 'public');
-            $imagePath = Storage::url($path);
+            $file = $request->file('image_file');
+            $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('images/products'), $filename);
+            $imagePath = '/images/products/' . $filename;
         } elseif ($request->filled('image_url')) {
             $imagePath = $request->input('image_url');
         }
