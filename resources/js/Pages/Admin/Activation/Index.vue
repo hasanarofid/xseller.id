@@ -168,7 +168,7 @@ const submitForm = () => {
                   class="w-full bg-slate-50/70 border border-slate-200 rounded-xl pl-8 pr-4 py-2.5 text-xs font-semibold text-slate-800 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors"
                 />
               </div>
-              <p class="text-[10px] text-slate-400">Sponsor berhak mendapatkan bonus Direct Referral 20% sesuai Paket Join.</p>
+              <p class="text-[10px] text-slate-400">Sponsor berhak mendapatkan bonus Direct Referral sesuai Paket Join.</p>
               <p v-if="form.errors.sponsor_username" class="text-xs text-rose-500 font-medium">{{ form.errors.sponsor_username }}</p>
             </div>
 
