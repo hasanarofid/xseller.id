@@ -193,7 +193,7 @@ const formatRupiah = (val) => {
               <ul class="space-y-1.5 text-[11px] text-slate-600 pt-2 border-t border-slate-200/60">
                 <li class="flex items-center gap-1">
                   <span class="text-[#009c94] font-bold">•</span>
-                  <span>Sponsor: <strong class="text-slate-800">{{ formatRupiah(pkg.sponsor_bonus) }}</strong></span>
+                  <span>Direct Referral: <strong class="text-slate-800">{{ formatRupiah(pkg.sponsor_bonus) }}</strong></span>
                 </li>
                 <li class="flex items-center gap-1">
                   <span class="text-[#1653a1] font-bold">•</span>

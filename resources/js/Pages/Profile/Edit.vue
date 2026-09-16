@@ -40,6 +40,41 @@ const memberForm = useForm({
   password: '',
 });
 
+const availableMemberBanks = [
+  'Bank BRI',
+  'Bank Mandiri',
+  'Bank Central Asia (BCA)',
+  'Bank Negara Indonesia (BNI)',
+  'Bank Syariah Indonesia (BSI)',
+  'CIMB Niaga',
+  'Bank Permata',
+  'Bank Danamon',
+  'DANA',
+  'OVO',
+  'GoPay',
+  'ShopeePay',
+  'LinkAja',
+  'Lainnya (Ketik Manual)',
+];
+
+const initialBankName = props.user?.bank_name || 'Bank BRI';
+const isPredefinedBank = availableMemberBanks.includes(initialBankName);
+
+const selectedMemberBank = ref(isPredefinedBank ? initialBankName : (initialBankName ? 'Lainnya (Ketik Manual)' : 'Bank BRI'));
+const customMemberBank = ref(!isPredefinedBank && initialBankName ? initialBankName : '');
+
+const handleMemberBankSelectChange = () => {
+  if (selectedMemberBank.value === 'Lainnya (Ketik Manual)') {
+    memberForm.bank_name = customMemberBank.value;
+  } else {
+    memberForm.bank_name = selectedMemberBank.value;
+  }
+};
+
+const handleCustomMemberBankInput = () => {
+  memberForm.bank_name = customMemberBank.value;
+};
+
 const submitMemberProfile = () => {
   memberForm.post(route('profile.update'), {
     preserveScroll: true,
@@ -266,11 +301,22 @@ const saveBanks = () => {
                 <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
                   NAMA BANK / PROVIDER E-WALLET
                 </label>
-                <input 
-                  v-model="memberForm.bank_name"
-                  type="text"
-                  placeholder="cth: Bank Mandiri / DANA"
+                <select 
+                  v-model="selectedMemberBank"
+                  @change="handleMemberBankSelectChange"
                   class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 text-xs font-bold focus:outline-none focus:border-emerald-500"
+                >
+                  <option v-for="b in availableMemberBanks" :key="b" :value="b">
+                    {{ b }}
+                  </option>
+                </select>
+                <input 
+                  v-if="selectedMemberBank === 'Lainnya (Ketik Manual)'"
+                  v-model="customMemberBank"
+                  @input="handleCustomMemberBankInput"
+                  type="text"
+                  placeholder="Ketik nama bank / e-wallet..."
+                  class="w-full mt-2 px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 text-xs font-bold focus:outline-none focus:border-emerald-500"
                 />
               </div>
 

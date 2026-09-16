@@ -33,7 +33,7 @@ const formatRupiah = (val) => {
 };
 
 const tabList = [
-  { key: 'sponsor', label: 'Bonus Sponsor' },
+  { key: 'sponsor', label: 'Bonus Direct Referral' },
   { key: 'generasi', label: 'Bonus Generasi' },
   { key: 'ro', label: 'Bonus RO' },
   { key: 'po', label: 'Bonus PO' },

@@ -135,7 +135,7 @@ const getBadgeColor = (pkg) => {
               <div class="flex items-center gap-2">
                 <Users class="w-5 h-5 text-emerald-600" />
                 <h3 class="text-xs font-black text-slate-900 uppercase tracking-tight">
-                  DAFTAR MITRA SPONSOR LANGSUNG (GENERASI 1)
+                  DAFTAR DIRECT REFERRAL (GENERASI 1)
                 </h3>
               </div>
               <span class="px-2.5 py-1 text-[10px] font-extrabold bg-slate-100 text-slate-600 rounded-full">
