@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { Head, useForm, usePage } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import { 
@@ -16,7 +16,9 @@ import {
   ShieldCheck, 
   UserCheck,
   TrendingUp,
-  CreditCard
+  CreditCard,
+  Zap,
+  Sparkles
 } from '@lucide/vue';
 
 const props = defineProps({
@@ -34,9 +36,13 @@ const page = usePage();
 const flashSuccess = ref(page.props.flash?.success || null);
 const flashError = ref(page.props.flash?.error || null);
 
-// Form Claim Repeat Order using Voucher RO
+// Form Claim Repeat Order using Voucher RO or Voucher Cash RO
 const claimForm = useForm({
   voucher_code: props.available_ro_vouchers.length > 0 ? props.available_ro_vouchers[0].code : '',
+});
+
+const selectedClaimVoucher = computed(() => {
+  return props.available_ro_vouchers.find(v => v.code === claimForm.voucher_code) || props.available_ro_vouchers[0];
 });
 
 const submitClaimRo = () => {
@@ -51,9 +57,18 @@ const submitClaimRo = () => {
 // Form Buy / Produce Voucher RO
 const buyVoucherModalOpen = ref(false);
 const buyVoucherForm = useForm({
+  voucher_type: 'ro', // 'ro' or 'ro_cashback'
   quantity: 1,
   is_produce: false,
   target_username: '',
+});
+
+const buyUnitPrice = computed(() => {
+  return buyVoucherForm.voucher_type === 'ro_cashback' ? 4375000 : 125000;
+});
+
+const buyTotalCost = computed(() => {
+  return buyUnitPrice.value * (buyVoucherForm.quantity || 1);
 });
 
 const submitBuyVoucher = () => {
@@ -61,7 +76,7 @@ const submitBuyVoucher = () => {
     preserveScroll: true,
     onSuccess: () => {
       buyVoucherModalOpen.value = false;
-      buyVoucherForm.reset({ quantity: 1, is_produce: false, target_username: '' });
+      buyVoucherForm.reset({ voucher_type: 'ro', quantity: 1, is_produce: false, target_username: '' });
     },
   });
 };
@@ -72,7 +87,7 @@ const formatRupiah = (val) => {
 </script>
 
 <template>
-  <Head title="Repeat Order (RO) - XSELLER" />
+  <Head title="Repeat Order (RO) & Cashback RO - XSELLER" />
 
   <AdminLayout>
     <div class="space-y-6 max-w-7xl mx-auto">
@@ -86,24 +101,24 @@ const formatRupiah = (val) => {
         <div class="relative z-10 space-y-2">
           <div class="inline-flex items-center gap-2 px-3 py-1 bg-white/10 backdrop-blur border border-white/20 rounded-full text-xs text-[#a9fff7] font-extrabold uppercase tracking-wider">
             <RotateCcw class="w-3.5 h-3.5" />
-            <span>Program Repeat Order (RO)</span>
+            <span>Program Repeat Order (RO) & Cashback RO</span>
           </div>
-          <h1 class="text-2xl md:text-3xl font-black tracking-tight text-white">Repeat Order & Perolehan Poin RO</h1>
-          <p class="text-xs md:text-sm text-slate-200 max-w-2xl font-medium">
-            Lakukan Repeat Order senilai <span class="font-bold text-[#a9fff7]">Rp 125.000 (Voucher RO)</span>. Setiap transaksi Repeat Order memberikan <span class="font-bold text-white">1 Poin RO</span> untuk Anda dan <span class="font-bold text-[#a9fff7]">Bonus Tier 1 (Rp 20.000)</span> untuk Sponsor langsung Anda!
+          <h1 class="text-2xl md:text-3xl font-black tracking-tight text-white">Repeat Order (RO) & Cashback RO</h1>
+          <p class="text-xs md:text-sm text-slate-200 max-w-3xl font-medium leading-relaxed">
+            Tersedia 2 pilihan transaksi RO: <span class="font-bold text-[#a9fff7]">Voucher RO (Rp 125.000 / 1 Poin)</span> untuk transaksi satuan, atau mode cepat <span class="font-bold text-amber-300">Voucher Cash RO (Rp 4.375.000 / 35 Poin)</span> yang langsung memberikan <span class="text-white font-bold">Cashback Rp 500.000</span> ke User serta <span class="font-bold text-[#a9fff7]">Bonus Sponsor Rp 700.000 + Matching Rp 100.000</span> ke Sponsor!
           </p>
         </div>
       </div>
 
       <!-- Flash Messages -->
-      <div v-if="$page.props.flash?.success" class="p-4 bg-emerald-50 border border-emerald-300 text-emerald-800 rounded-2xl flex items-center justify-between text-xs font-bold shadow-sm">
+      <div v-if="$page.props.flash?.success" class="p-4 bg-emerald-50 border border-emerald-300 text-emerald-800 rounded-2xl flex items-center justify-between text-xs font-bold shadow-sm animate-fade-in">
         <div class="flex items-center gap-2">
           <CheckCircle2 class="w-4 h-4 text-emerald-600 shrink-0" />
           <span>{{ $page.props.flash?.success }}</span>
         </div>
       </div>
 
-      <div v-if="$page.props.flash?.error" class="p-4 bg-rose-50 border border-rose-300 text-rose-800 rounded-2xl flex items-center justify-between text-xs font-bold shadow-sm">
+      <div v-if="$page.props.flash?.error" class="p-4 bg-rose-50 border border-rose-300 text-rose-800 rounded-2xl flex items-center justify-between text-xs font-bold shadow-sm animate-fade-in">
         <div class="flex items-center gap-2">
           <XCircle class="w-4 h-4 text-rose-600 shrink-0" />
           <span>{{ $page.props.flash?.error }}</span>
@@ -135,7 +150,10 @@ const formatRupiah = (val) => {
               <span class="text-3xl font-black text-[#1653a1]">{{ ro_stats.available_ro_vouchers_count }}</span>
               <span class="text-xs font-bold text-slate-500">Voucher</span>
             </div>
-            <p class="text-[10px] text-slate-500">Voucher RO Aktif Rp 125.000</p>
+            <p class="text-[10px] text-slate-500">
+              <span class="font-bold text-[#1653a1]">{{ ro_stats.regular_ro_vouchers_count || 0 }} RO</span> &middot; 
+              <span class="font-bold text-amber-600">{{ ro_stats.cashback_ro_vouchers_count || 0 }} Cash RO</span>
+            </p>
           </div>
           <div class="w-11 h-11 rounded-2xl bg-[#1653a1]/10 border border-[#1653a1]/30 text-[#1653a1] flex items-center justify-center font-bold shadow-xs">
             <KeyRound class="w-5 h-5" />
@@ -149,7 +167,7 @@ const formatRupiah = (val) => {
             <div class="flex items-baseline gap-1">
               <span class="text-2xl font-black text-amber-600">{{ formatRupiah(ro_stats.total_ro_bonus) }}</span>
             </div>
-            <p class="text-[10px] text-slate-500">Rp 20.000 / Transaksi RO Bawahan</p>
+            <p class="text-[10px] text-slate-500">Rp 20.000 / RO & Rp 700.000 / Cash RO</p>
           </div>
           <div class="w-11 h-11 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-600 flex items-center justify-center font-bold shadow-xs">
             <TrendingUp class="w-5 h-5" />
@@ -163,7 +181,7 @@ const formatRupiah = (val) => {
             <div class="flex items-baseline gap-1">
               <span class="text-2xl font-black text-emerald-600">{{ formatRupiah(ro_stats.matching_ro_bonus || 0) }}</span>
             </div>
-            <p class="text-[10px] text-slate-500">Rp 100k saat Direct Ref 35 Poin RO</p>
+            <p class="text-[10px] text-slate-500">Rp 100k per kelipatan 35 Poin RO</p>
           </div>
           <div class="w-11 h-11 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 flex items-center justify-center font-bold shadow-xs">
             <ShieldCheck class="w-5 h-5" />
@@ -183,41 +201,67 @@ const formatRupiah = (val) => {
               <div class="w-12 h-12 rounded-2xl bg-[#04bdb2]/10 border border-[#04bdb2]/30 text-[#04bdb2] flex items-center justify-center font-bold mx-auto shadow-sm">
                 <RotateCcw class="w-6 h-6" />
               </div>
-              <h2 class="text-xl font-black tracking-tight text-slate-900 uppercase">REPEAT ORDER</h2>
+              <h2 class="text-xl font-black tracking-tight text-slate-900 uppercase">AKTIVASI REPEAT ORDER</h2>
               <p class="text-xs text-slate-500 font-medium">
-                Anda bisa melakukan RO sesuai dengan Voucher RO yang tersedia
+                Pilih Voucher RO atau Voucher Cash RO yang tersedia di gudang Anda
               </p>
             </div>
 
             <!-- Pill Box: Voucher RO tersedia -->
             <div class="border-2 border-slate-900 rounded-full py-3 px-6 flex items-center justify-between text-sm font-bold text-slate-900 bg-white shadow-xs">
-              <span>Voucher RO tersedia</span>
-              <span class="text-base font-black text-[#1653a1]">{{ ro_stats.available_ro_vouchers_count }}</span>
+              <span>Total Voucher RO Anda</span>
+              <span class="text-base font-black text-[#1653a1]">{{ ro_stats.available_ro_vouchers_count }} Pcs</span>
             </div>
 
-            <!-- Subtext: Total Value Calculation (Quantity * 125,000) -->
-            <p v-if="ro_stats.available_ro_vouchers_count > 0" class="text-xs font-semibold text-slate-600">
-              Anda memiliki Voucher RO = <span class="font-extrabold text-slate-900">{{ ro_stats.available_ro_vouchers_count }}</span> senilai <span class="font-bold text-[#1653a1]">{{ formatRupiah(ro_stats.available_ro_vouchers_count * 125000) }}</span>
-            </p>
+            <!-- Subtext: Total Value Calculation -->
+            <div v-if="ro_stats.available_ro_vouchers_count > 0" class="flex items-center justify-center gap-4 text-xs font-semibold">
+              <span class="px-3 py-1 bg-slate-100 rounded-full text-slate-700">
+                Voucher RO: <strong>{{ ro_stats.regular_ro_vouchers_count || 0 }}</strong>
+              </span>
+              <span class="px-3 py-1 bg-amber-50 text-amber-800 border border-amber-200 rounded-full font-bold">
+                Voucher Cash RO: <strong>{{ ro_stats.cashback_ro_vouchers_count || 0 }}</strong>
+              </span>
+            </div>
             <p v-else class="text-xs font-semibold text-slate-500">
-              Anda tidak memiliki Voucher RO
+              Anda belum memiliki stok Voucher RO / Cash RO di gudang.
             </p>
 
             <!-- If user has vouchers: Show Select & AKTIVASI RO Button -->
             <form v-if="available_ro_vouchers.length > 0" @submit.prevent="submitClaimRo" class="space-y-4 pt-2">
               <div class="text-left">
                 <label class="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-1">
-                  Pilih Kode Voucher RO:
+                  Pilih Kode Voucher untuk Diaktivasi:
                 </label>
                 <select 
                   v-model="claimForm.voucher_code"
-                  class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-800 focus:ring-2 focus:ring-[#04bdb2] transition-all"
+                  class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-800 focus:ring-2 focus:ring-[#04bdb2] transition-all"
                   required
                 >
                   <option v-for="v in available_ro_vouchers" :key="v.id" :value="v.code">
-                    {{ v.code }} - ({{ v.package_name || 'Voucher RO Rp 125.000' }})
+                    {{ v.code }} - {{ v.package_name }} (+{{ v.points }} Poin)
                   </option>
                 </select>
+              </div>
+
+              <!-- Selected Voucher Dynamic Highlight Box -->
+              <div v-if="selectedClaimVoucher" class="p-4 rounded-2xl text-left text-xs border space-y-1.5" :class="selectedClaimVoucher.voucher_type === 'ro_cashback' ? 'bg-amber-50/70 border-amber-300 text-amber-900' : 'bg-teal-50/70 border-teal-200 text-teal-950'">
+                <div class="flex items-center justify-between font-black">
+                  <span class="flex items-center gap-1.5">
+                    <Sparkles class="w-4 h-4" :class="selectedClaimVoucher.voucher_type === 'ro_cashback' ? 'text-amber-600' : 'text-[#04bdb2]'" />
+                    {{ selectedClaimVoucher.voucher_type === 'ro_cashback' ? 'MODE CEPAT: VOUCHER CASH RO' : 'MODE SATUAN: VOUCHER RO' }}
+                  </span>
+                  <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider" :class="selectedClaimVoucher.voucher_type === 'ro_cashback' ? 'bg-amber-200 text-amber-900' : 'bg-teal-200 text-teal-900'">
+                    +{{ selectedClaimVoucher.points }} Poin
+                  </span>
+                </div>
+                <p class="text-[11px] leading-relaxed">
+                  <template v-if="selectedClaimVoucher.voucher_type === 'ro_cashback'">
+                    Aktivasi ini langsung memberikan <strong>+35 Poin RO & Cashback Rp 500.000</strong> ke Anda. Sponsor langsung mendapatkan <strong>Bonus Sponsor Rp 700.000 + Matching Bonus Rp 100.000</strong>.
+                  </template>
+                  <template v-else>
+                    Aktivasi ini memberikan <strong>+1 Poin RO</strong> untuk Anda dan <strong>Bonus Sponsor Rp 20.000</strong> untuk Sponsor langsung Anda.
+                  </template>
+                </p>
               </div>
 
               <button 
@@ -225,7 +269,7 @@ const formatRupiah = (val) => {
                 :disabled="claimForm.processing"
                 class="w-full py-3.5 px-8 bg-[#04bdb2] hover:bg-[#009c94] text-white font-black text-xs uppercase tracking-widest rounded-full shadow-md shadow-[#04bdb2]/30 transition-all cursor-pointer"
               >
-                AKTIVASI RO
+                {{ claimForm.processing ? 'MEMPROSES...' : 'AKTIVASI RO SEKARANG' }}
               </button>
             </form>
 
@@ -235,18 +279,38 @@ const formatRupiah = (val) => {
                 @click="buyVoucherModalOpen = true"
                 class="w-full py-3.5 px-8 bg-[#04bdb2] hover:bg-[#009c94] text-white font-black text-xs uppercase tracking-widest rounded-full shadow-md shadow-[#04bdb2]/30 transition-all cursor-pointer"
               >
-                BELI
+                BELI VOUCHER RO SEKARANG
               </button>
             </div>
           </div>
 
           <!-- Benefit Summary List -->
-          <div class="p-4 bg-[#f0f7fb] border border-[#04bdb2]/30 rounded-2xl space-y-2 text-xs text-slate-700">
-            <span class="font-black text-[#1653a1] block uppercase text-[10px] tracking-wider">Rincian Manfaat Repeat Order:</span>
-            <ul class="space-y-1.5 list-disc list-inside text-[11px] font-medium text-slate-600">
-              <li><strong class="text-slate-900">+1 Poin RO</strong> ditambahkan ke akumulasi Poin RO Anda.</li>
-              <li><strong class="text-slate-900">Rp 20.000</strong> ditransfer sebagai Bonus Tier 1 ke Sponsor langsung Anda.</li>
-            </ul>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+            <!-- Summary RO Regular -->
+            <div class="p-4 bg-[#f0f7fb] border border-[#04bdb2]/30 rounded-2xl space-y-2 text-xs text-slate-700">
+              <span class="font-black text-[#1653a1] block uppercase text-[11px] tracking-wider flex items-center gap-1.5">
+                <RotateCcw class="w-3.5 h-3.5 text-[#04bdb2]" />
+                1. Voucher RO (Rp 125.000)
+              </span>
+              <ul class="space-y-1 list-disc list-inside text-[11px] font-medium text-slate-600">
+                <li><strong class="text-slate-900">+1 Poin RO</strong> untuk member.</li>
+                <li><strong class="text-slate-900">Rp 20.000</strong> Bonus Sponsor Tier 1.</li>
+                <li>Setiap 35 Poin RO: Reward Rp 500k + Matching Rp 100k.</li>
+              </ul>
+            </div>
+
+            <!-- Summary Cash RO -->
+            <div class="p-4 bg-amber-50/70 border border-amber-300/80 rounded-2xl space-y-2 text-xs text-amber-950">
+              <span class="font-black text-amber-800 block uppercase text-[11px] tracking-wider flex items-center gap-1.5">
+                <Zap class="w-3.5 h-3.5 text-amber-600" />
+                2. Voucher Cash RO (Rp 4.375.000)
+              </span>
+              <ul class="space-y-1 list-disc list-inside text-[11px] font-medium text-amber-900">
+                <li><strong class="text-slate-900">+35 Poin RO Langsung</strong>.</li>
+                <li><strong class="text-slate-900">Cashback Rp 500.000</strong> langsung ke User.</li>
+                <li><strong class="text-slate-900">Sponsor Rp 700.000 + Matching Rp 100.000</strong>.</li>
+              </ul>
+            </div>
           </div>
         </div>
 
@@ -258,33 +322,41 @@ const formatRupiah = (val) => {
                 <Gift class="w-5 h-5" />
               </div>
               <div>
-                <h3 class="text-sm font-black text-slate-900">Beli Voucher RO</h3>
-                <p class="text-[11px] text-slate-500 font-medium">Nominal Rp 125.000 / Voucher (1 s/d 35 pcs)</p>
+                <h3 class="text-sm font-black text-slate-900">Beli Voucher RO / Cash RO</h3>
+                <p class="text-[11px] text-slate-500 font-medium">Beli voucher menggunakan saldo wallet Anda</p>
               </div>
             </div>
 
-            <div class="p-4 bg-white border border-slate-200/80 rounded-2xl space-y-2 shadow-2xs">
+            <div class="p-4 bg-white border border-slate-200/80 rounded-2xl space-y-2.5 shadow-2xs">
               <div class="flex items-center justify-between text-xs">
                 <span class="text-slate-500 font-medium">Saldo Wallet Anda:</span>
                 <span class="font-black text-slate-900">{{ formatRupiah(user_saldo) }}</span>
               </div>
-              <div class="flex items-center justify-between text-xs">
-                <span class="text-slate-500 font-medium">Harga 1 Voucher RO:</span>
-                <span class="font-black text-[#1653a1]">Rp 125.000</span>
+              <div class="border-t border-slate-100 pt-2 space-y-1.5">
+                <div class="flex items-center justify-between text-xs">
+                  <span class="text-slate-600 font-medium">Voucher RO:</span>
+                  <span class="font-black text-[#1653a1]">Rp 125.000 / pcs</span>
+                </div>
+                <div class="flex items-center justify-between text-xs">
+                  <span class="text-slate-600 font-medium">Voucher Cash RO:</span>
+                  <span class="font-black text-amber-600">Rp 4.375.000 / pcs</span>
+                </div>
               </div>
             </div>
 
-            <p class="text-[11px] text-slate-500 font-medium leading-relaxed">
-              Voucher RO dapat dibeli sejumlah 1, 2, hingga maks 35 pcs sesuai kebutuhan Anda.
-            </p>
+            <div class="p-3 bg-[#f0f7fb] border border-[#1653a1]/20 rounded-2xl text-[11px] text-slate-600 space-y-1">
+              <span class="font-bold text-[#1653a1] block">Info Rekening Perusahaan:</span>
+              <p class="font-black text-slate-900">{{ company_bank?.bank_name || 'Bank BRI' }} - {{ company_bank?.account_number || '806401000095564' }}</p>
+              <p class="text-[10px] text-slate-500">a.n {{ company_bank?.account_name || 'PT.Xseller Punya Kita' }}</p>
+            </div>
           </div>
 
           <button 
             @click="buyVoucherModalOpen = true"
-            class="w-full py-3 px-4 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-2xl shadow-md transition-all cursor-pointer flex items-center justify-center gap-2"
+            class="w-full py-3.5 px-4 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-2xl shadow-md transition-all cursor-pointer flex items-center justify-center gap-2"
           >
             <Plus class="w-4 h-4 text-[#04bdb2]" />
-            <span>Beli Voucher RO (1-35 pcs)</span>
+            <span>Beli Voucher RO / Cash RO</span>
           </button>
         </div>
 
@@ -385,52 +457,103 @@ const formatRupiah = (val) => {
 
     </div>
 
-    <!-- Modal Buy Voucher RO -->
+    <!-- Modal Buy / Produce Voucher RO & Cash RO -->
     <div v-if="buyVoucherModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
       <div class="bg-white rounded-3xl max-w-md w-full p-6 space-y-5 shadow-2xl border border-slate-100 animate-fade-in">
         <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-          <h3 class="text-base font-black text-slate-900">Beli Voucher Repeat Order (RO)</h3>
+          <h3 class="text-base font-black text-slate-900">Beli Voucher Repeat Order</h3>
           <button @click="buyVoucherModalOpen = false" class="text-slate-400 hover:text-slate-700">
             <XCircle class="w-5 h-5" />
           </button>
         </div>
 
         <form @submit.prevent="submitBuyVoucher" class="space-y-4">
+          <!-- Voucher Type Radio Cards -->
+          <div class="space-y-2">
+            <label class="block text-xs font-extrabold text-slate-700 uppercase tracking-wider">
+              Pilih Jenis Voucher RO:
+            </label>
+            <div class="grid grid-cols-2 gap-3">
+              <label 
+                class="border-2 rounded-2xl p-3.5 flex flex-col justify-between cursor-pointer transition-all"
+                :class="buyVoucherForm.voucher_type === 'ro' ? 'border-[#04bdb2] bg-teal-50/40 text-slate-900' : 'border-slate-200 hover:border-slate-300 text-slate-600'"
+              >
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-black">Voucher RO</span>
+                  <input type="radio" v-model="buyVoucherForm.voucher_type" value="ro" class="text-[#04bdb2] focus:ring-[#04bdb2]" />
+                </div>
+                <div class="mt-2">
+                  <p class="text-sm font-black text-[#1653a1]">Rp 125.000</p>
+                  <p class="text-[10px] text-slate-500 font-medium">Satuan &middot; +1 Poin RO</p>
+                </div>
+              </label>
+
+              <label 
+                class="border-2 rounded-2xl p-3.5 flex flex-col justify-between cursor-pointer transition-all"
+                :class="buyVoucherForm.voucher_type === 'ro_cashback' ? 'border-amber-500 bg-amber-50/40 text-slate-900' : 'border-slate-200 hover:border-slate-300 text-slate-600'"
+              >
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-black">Voucher Cash RO</span>
+                  <input type="radio" v-model="buyVoucherForm.voucher_type" value="ro_cashback" class="text-amber-500 focus:ring-amber-500" />
+                </div>
+                <div class="mt-2">
+                  <p class="text-sm font-black text-amber-600">Rp 4.375.000</p>
+                  <p class="text-[10px] text-slate-500 font-medium">35 RO + Rp 500k Cashback</p>
+                </div>
+              </label>
+            </div>
+          </div>
+
           <!-- Quantity Selection -->
           <div>
             <label class="block text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-1.5">
-              Jumlah Voucher RO (1 s/d 35 Pcs):
+              Jumlah Voucher (1 s/d 35 Pcs):
             </label>
             <input 
               type="number" 
               v-model.number="buyVoucherForm.quantity" 
               min="1" 
               max="35" 
-              class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-bold text-slate-900 focus:ring-2 focus:ring-[#04bdb2]"
+              class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-bold text-slate-900 focus:ring-2 focus:ring-[#04bdb2]"
               required
             />
           </div>
 
-          <div class="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-2 text-xs">
-            <div class="flex items-center justify-between">
-              <span class="text-slate-500 font-medium">Harga Per Voucher:</span>
-              <span class="font-bold text-slate-800">Rp 125.000</span>
-            </div>
-            <div class="flex items-center justify-between font-bold">
-              <span class="text-slate-700">Total Pembayaran ({{ buyVoucherForm.quantity || 1 }} Pcs):</span>
-              <span class="font-black text-[#1653a1] text-sm">{{ formatRupiah((buyVoucherForm.quantity || 1) * 125000) }}</span>
-            </div>
-            <div class="flex items-center justify-between border-t border-slate-200 pt-2 text-slate-500">
-              <span>Saldo Wallet Anda:</span>
-              <span class="font-bold text-slate-900">{{ formatRupiah(user_saldo) }}</span>
+          <!-- Admin Produce Toggle -->
+          <div v-if="is_admin" class="p-3 bg-amber-50/60 border border-amber-200/80 rounded-2xl space-y-2 text-xs">
+            <label class="flex items-center gap-2 cursor-pointer font-bold text-amber-900">
+              <input type="checkbox" v-model="buyVoucherForm.is_produce" class="rounded text-amber-600 focus:ring-amber-500" />
+              <span>Mode Admin: Produksi Voucher Gratis</span>
+            </label>
+            <div v-if="buyVoucherForm.is_produce" class="pt-1">
+              <label class="block text-[10px] font-extrabold text-slate-500 uppercase tracking-wider mb-1">
+                Target Username Penerima (Opsional, kosongkan jika untuk Admin):
+              </label>
+              <input 
+                type="text" 
+                v-model="buyVoucherForm.target_username" 
+                placeholder="Masukkan username penerima..." 
+                class="w-full px-3 py-2 bg-white border border-amber-200 rounded-xl text-xs font-bold text-slate-900"
+              />
             </div>
           </div>
 
-          <!-- Company Bank Transfer Info -->
-          <div class="p-3 bg-[#f0f7fb] border border-[#1653a1]/30 rounded-2xl text-xs space-y-1">
-            <span class="font-extrabold text-[#1653a1] block text-[10px] uppercase tracking-wider">Rekening Transfer Bank Perusahaan:</span>
-            <p class="font-black text-slate-900">{{ company_bank?.bank_name || 'Bank BRI' }} - {{ company_bank?.account_number || '806401000095564' }}</p>
-            <p class="text-[11px] text-slate-600 font-medium">a.n {{ company_bank?.account_name || 'PT.Xseller Punya Kita' }}</p>
+          <!-- Payment Calculation Box -->
+          <div v-if="!buyVoucherForm.is_produce" class="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-2 text-xs">
+            <div class="flex items-center justify-between">
+              <span class="text-slate-500 font-medium">Harga Per Voucher:</span>
+              <span class="font-bold text-slate-800">{{ formatRupiah(buyUnitPrice) }}</span>
+            </div>
+            <div class="flex items-center justify-between font-bold">
+              <span class="text-slate-700">Total Pembayaran ({{ buyVoucherForm.quantity || 1 }} Pcs):</span>
+              <span class="font-black text-[#1653a1] text-sm">{{ formatRupiah(buyTotalCost) }}</span>
+            </div>
+            <div class="flex items-center justify-between border-t border-slate-200 pt-2 text-slate-500">
+              <span>Saldo Wallet Anda:</span>
+              <span class="font-bold" :class="(user_saldo < buyTotalCost) ? 'text-rose-600' : 'text-slate-900'">
+                {{ formatRupiah(user_saldo) }}
+              </span>
+            </div>
           </div>
 
           <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
@@ -443,10 +566,10 @@ const formatRupiah = (val) => {
             </button>
             <button 
               type="submit" 
-              :disabled="buyVoucherForm.processing"
-              class="px-5 py-2.5 bg-[#1653a1] hover:bg-[#103f80] text-white font-black text-xs rounded-xl shadow-md transition-all cursor-pointer"
+              :disabled="buyVoucherForm.processing || (!buyVoucherForm.is_produce && user_saldo < buyTotalCost)"
+              class="px-5 py-2.5 bg-[#1653a1] hover:bg-[#103f80] disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-black text-xs rounded-xl shadow-md transition-all cursor-pointer"
             >
-              Konfirmasi Beli ({{ formatRupiah((buyVoucherForm.quantity || 1) * 125000) }})
+              {{ buyVoucherForm.processing ? 'Memproses...' : (buyVoucherForm.is_produce ? 'Produksi Gratis' : `Konfirmasi Beli (${formatRupiah(buyTotalCost)})`) }}
             </button>
           </div>
         </form>

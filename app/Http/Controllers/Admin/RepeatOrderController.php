@@ -22,31 +22,41 @@ class RepeatOrderController extends Controller
     {
         $user = auth()->user();
 
-        // Get user's available active RO vouchers
+        // Get user's available active RO vouchers (Regular RO & Cashback RO)
         $availableRoVouchers = Voucher::where('user_id', $user->id)
             ->where('status', 'active')
             ->where(function ($q) {
-                $q->where('voucher_type', 'ro')
+                $q->whereIn('voucher_type', ['ro', 'ro_cashback', 'ro_cash'])
                   ->orWhere('package_name', 'LIKE', '%Repeat Order%')
+                  ->orWhere('package_name', 'LIKE', '%Cashback RO%')
+                  ->orWhere('package_name', 'LIKE', '%Cash RO%')
                   ->orWhere('package_name', 'LIKE', '%RO%')
-                  ->orWhere('package_name', 'LIKE', '%125%');
+                  ->orWhere('package_name', 'LIKE', '%125%')
+                  ->orWhere('package_name', 'LIKE', '%4.375%');
             })
-            ->get(['id', 'code', 'package_name'])
+            ->get(['id', 'code', 'package_name', 'voucher_type'])
             ->map(function ($v) {
-                $pkgName = $v->package_name ?: 'Seller (Rp 125.000)';
-                $pkgName = str_replace(
-                    ['Starter (Rp 125.000)', 'Starter', 'Basic (Rp 550.000)', 'Basic'],
-                    ['Seller (Rp 125.000)', 'Seller', 'Star Seller (Rp 550.000)', 'Star Seller'],
-                    $pkgName
-                );
+                $isCashback = in_array($v->voucher_type, ['ro_cashback', 'ro_cash'])
+                    || str_contains(strtolower($v->package_name ?? ''), 'cash')
+                    || str_contains($v->package_name ?? '', '4.375');
+
+                $pkgName = $isCashback
+                    ? 'Voucher Cash RO (Rp 4.375.000)'
+                    : 'Voucher RO (Rp 125.000)';
+
                 return [
                     'id' => $v->id,
                     'code' => $v->code,
                     'package_name' => $pkgName,
+                    'voucher_type' => $isCashback ? 'ro_cashback' : 'ro',
+                    'type_label' => $isCashback ? 'Voucher Cash RO (35 Poin)' : 'Voucher RO (1 Poin)',
+                    'points' => $isCashback ? 35 : 1,
                 ];
             });
 
         // Count active RO vouchers
+        $regularRoCount = $availableRoVouchers->where('voucher_type', 'ro')->count();
+        $cashbackRoCount = $availableRoVouchers->where('voucher_type', 'ro_cashback')->count();
         $activeRoVoucherCount = $availableRoVouchers->count();
 
         // Get user's RO history
@@ -65,7 +75,9 @@ class RepeatOrderController extends Controller
                     'ro_points' => $ro->ro_points,
                     'sponsor_bonus' => (float) $ro->sponsor_bonus,
                     'is_user' => $isUser,
-                    'type_label' => $isUser ? 'Repeat Order Klaim' : 'Bonus Sponsor RO',
+                    'type_label' => $isUser 
+                        ? ($ro->ro_points >= 35 ? 'Klaim Cash RO (35 Poin)' : 'Repeat Order Klaim (1 Poin)') 
+                        : ($ro->ro_points >= 35 ? 'Bonus Sponsor Cash RO' : 'Bonus Sponsor RO'),
                     'created_at' => $ro->created_at->format('d/m/Y H:i'),
                 ];
             });
@@ -102,6 +114,8 @@ class RepeatOrderController extends Controller
             'ro_stats' => [
                 'total_ro_points' => $totalRoPoints,
                 'available_ro_vouchers_count' => $activeRoVoucherCount,
+                'regular_ro_vouchers_count' => $regularRoCount,
+                'cashback_ro_vouchers_count' => $cashbackRoCount,
                 'total_ro_bonus' => $totalRoBonus,
                 'matching_ro_bonus' => $matchingRoBonus,
             ],
@@ -116,7 +130,7 @@ class RepeatOrderController extends Controller
     }
 
     /**
-     * Process Repeat Order claim using Voucher RO.
+     * Process Repeat Order claim using Voucher RO or Voucher Cash RO.
      */
     public function store(Request $request)
     {
@@ -147,7 +161,11 @@ class RepeatOrderController extends Controller
             return back()->with('error', 'Voucher RO tidak ditemukan, sudah digunakan, atau bukan milik Anda!');
         }
 
-        DB::transaction(function () use ($user, $voucher) {
+        $isCashback = in_array($voucher->voucher_type, ['ro_cashback', 'ro_cash'])
+            || str_contains(strtolower($voucher->package_name ?? ''), 'cash')
+            || str_contains($voucher->package_name ?? '', '4.375');
+
+        DB::transaction(function () use ($user, $voucher, $isCashback) {
             // 1. Mark voucher as used
             $voucher->update([
                 'status' => 'used',
@@ -155,104 +173,188 @@ class RepeatOrderController extends Controller
                 'used_at' => now(),
             ]);
 
-            // 2. Increment user RO Poin
-            $user->increment('ro_points', 1);
-            $user->refresh(); // reload fresh ro_points after increment
-            $newRoPoints = (int) $user->ro_points;
-
-            // 3. Distribute Tier 1 Bonus (Rp 20.000) to Direct Sponsor
             $sponsor = $user->parent;
-            $sponsorBonus = 20000;
 
-            if ($sponsor) {
-                $sponsor->increment('saldo', $sponsorBonus);
-                $sponsor->increment('total_bonus', $sponsorBonus);
-
-                BonusLog::create([
-                    'transaction_code' => 'RO' . sprintf('%04d', BonusLog::count() + 1),
-                    'user_id' => $sponsor->id,
-                    'category' => 'ro',
-                    'source_user_id' => $user->id,
-                    'description' => "Bonus Repeat Order dari @{$user->username} (Tier 1)",
-                    'amount' => $sponsorBonus,
-                ]);
-
-                WalletTransaction::create([
-                    'user_id' => $sponsor->id,
-                    'type' => 'in',
-                    'category' => 'bonus_sponsor',
-                    'amount' => $sponsorBonus,
-                    'description' => "Bonus Repeat Order dari @{$user->username} (Tier 1)",
-                ]);
-            }
-
-            // 4. Create RepeatOrder record
-            RepeatOrder::create([
-                'user_id' => $user->id,
-                'voucher_id' => $voucher->id,
-                'voucher_code' => $voucher->code,
-                'sponsor_id' => $sponsor ? $sponsor->id : null,
-                'sponsor_bonus' => $sponsorBonus,
-                'ro_points' => 1,
-            ]);
-
-            if ($newRoPoints > 0 && ($newRoPoints % 35 === 0)) {
-                // Konversi 35 Poin RO ke member
-                $rewardRo = 500000;
-                
-                $user->increment('saldo', $rewardRo);
-                $user->increment('total_bonus', $rewardRo);
+            if ($isCashback) {
+                // MODE CEPAT: VOUCHER CASHBACK RO (Rp 4.375.000)
+                // User langsung dapat 35 Poin RO + Cashback Rp 500.000
+                $user->increment('ro_points', 35);
+                $rewardCashback = 500000;
+                $user->increment('saldo', $rewardCashback);
+                $user->increment('total_bonus', $rewardCashback);
 
                 BonusLog::create([
-                    'transaction_code' => 'RO' . sprintf('%04d', BonusLog::count() + 1),
+                    'transaction_code' => 'ROC' . sprintf('%04d', BonusLog::count() + 1),
                     'user_id' => $user->id,
                     'category' => 'ro',
                     'source_user_id' => $user->id,
-                    'description' => "Reward Konversi {$newRoPoints} Poin RO",
-                    'amount' => $rewardRo,
+                    'description' => "Reward Cashback Voucher Cash RO (35 Poin RO)",
+                    'amount' => $rewardCashback,
                 ]);
 
                 WalletTransaction::create([
                     'user_id' => $user->id,
                     'type' => 'in',
                     'category' => 'reward_ro',
-                    'amount' => $rewardRo,
-                    'description' => "Reward Konversi {$newRoPoints} Poin RO",
+                    'amount' => $rewardCashback,
+                    'description' => "Reward Cashback Voucher Cash RO (35 Poin RO)",
                 ]);
 
-                // Matching Bonus RO: Rp 100.000 ke sponsor saat member capai kelipatan 35 Poin RO
-                // (20% × Rp 500.000 konversi reward per 35 poin)
+                // Sponsor langsung dapat Sponsor RO Rp 700.000 (20.000 x 35) + Matching RO Rp 100.000
+                $sponsorBonus = 700000;
+                $matchingBonus = 100000;
+
                 if ($sponsor) {
-                    $matchingBonus = 100000;
-    
+                    // Bonus Sponsor RO Rp 700.000
+                    $sponsor->increment('saldo', $sponsorBonus);
+                    $sponsor->increment('total_bonus', $sponsorBonus);
+
+                    BonusLog::create([
+                        'transaction_code' => 'RO' . sprintf('%04d', BonusLog::count() + 1),
+                        'user_id' => $sponsor->id,
+                        'category' => 'ro',
+                        'source_user_id' => $user->id,
+                        'description' => "Bonus Repeat Order (Voucher Cash RO 35 Pkt) dari @{$user->username}",
+                        'amount' => $sponsorBonus,
+                    ]);
+
+                    WalletTransaction::create([
+                        'user_id' => $sponsor->id,
+                        'type' => 'in',
+                        'category' => 'bonus_sponsor',
+                        'amount' => $sponsorBonus,
+                        'description' => "Bonus Repeat Order (Voucher Cash RO 35 Pkt) dari @{$user->username}",
+                    ]);
+
+                    // Matching Bonus RO Rp 100.000
                     $sponsor->increment('saldo', $matchingBonus);
                     $sponsor->increment('total_bonus', $matchingBonus);
-    
+
                     BonusLog::create([
                         'transaction_code' => 'ROMB' . sprintf('%04d', BonusLog::count() + 1),
                         'user_id' => $sponsor->id,
                         'category' => 'ro_matching',
                         'source_user_id' => $user->id,
-                        'description' => "Matching Bonus RO dari @{$user->username} (Capai {$newRoPoints} Poin RO = 20% × Rp 500.000)",
+                        'description' => "Matching Bonus RO dari @{$user->username} (Voucher Cash RO 35 Poin)",
                         'amount' => $matchingBonus,
                     ]);
-    
+
                     WalletTransaction::create([
                         'user_id' => $sponsor->id,
                         'type' => 'in',
                         'category' => 'ro_matching',
                         'amount' => $matchingBonus,
-                        'description' => "Matching Bonus RO dari @{$user->username} (Capai {$newRoPoints} Poin RO)",
+                        'description' => "Matching Bonus RO dari @{$user->username} (Voucher Cash RO)",
                     ]);
+                }
+
+                RepeatOrder::create([
+                    'user_id' => $user->id,
+                    'voucher_id' => $voucher->id,
+                    'voucher_code' => $voucher->code,
+                    'sponsor_id' => $sponsor ? $sponsor->id : null,
+                    'sponsor_bonus' => $sponsorBonus,
+                    'ro_points' => 35,
+                ]);
+            } else {
+                // MODE SATU PER SATU: VOUCHER RO REGULAR (Rp 125.000)
+                $user->increment('ro_points', 1);
+                $user->refresh();
+                $newRoPoints = (int) $user->ro_points;
+
+                $sponsorBonus = 20000;
+                if ($sponsor) {
+                    $sponsor->increment('saldo', $sponsorBonus);
+                    $sponsor->increment('total_bonus', $sponsorBonus);
+
+                    BonusLog::create([
+                        'transaction_code' => 'RO' . sprintf('%04d', BonusLog::count() + 1),
+                        'user_id' => $sponsor->id,
+                        'category' => 'ro',
+                        'source_user_id' => $user->id,
+                        'description' => "Bonus Repeat Order dari @{$user->username} (Tier 1)",
+                        'amount' => $sponsorBonus,
+                    ]);
+
+                    WalletTransaction::create([
+                        'user_id' => $sponsor->id,
+                        'type' => 'in',
+                        'category' => 'bonus_sponsor',
+                        'amount' => $sponsorBonus,
+                        'description' => "Bonus Repeat Order dari @{$user->username} (Tier 1)",
+                    ]);
+                }
+
+                RepeatOrder::create([
+                    'user_id' => $user->id,
+                    'voucher_id' => $voucher->id,
+                    'voucher_code' => $voucher->code,
+                    'sponsor_id' => $sponsor ? $sponsor->id : null,
+                    'sponsor_bonus' => $sponsorBonus,
+                    'ro_points' => 1,
+                ]);
+
+                if ($newRoPoints > 0 && ($newRoPoints % 35 === 0)) {
+                    // Konversi 35 Poin RO ke member
+                    $rewardRo = 500000;
+                    
+                    $user->increment('saldo', $rewardRo);
+                    $user->increment('total_bonus', $rewardRo);
+
+                    BonusLog::create([
+                        'transaction_code' => 'RO' . sprintf('%04d', BonusLog::count() + 1),
+                        'user_id' => $user->id,
+                        'category' => 'ro',
+                        'source_user_id' => $user->id,
+                        'description' => "Reward Konversi {$newRoPoints} Poin RO",
+                        'amount' => $rewardRo,
+                    ]);
+
+                    WalletTransaction::create([
+                        'user_id' => $user->id,
+                        'type' => 'in',
+                        'category' => 'reward_ro',
+                        'amount' => $rewardRo,
+                        'description' => "Reward Konversi {$newRoPoints} Poin RO",
+                    ]);
+
+                    // Matching Bonus RO: Rp 100.000 ke sponsor saat member capai kelipatan 35 Poin RO
+                    if ($sponsor) {
+                        $matchingBonus = 100000;
+        
+                        $sponsor->increment('saldo', $matchingBonus);
+                        $sponsor->increment('total_bonus', $matchingBonus);
+        
+                        BonusLog::create([
+                            'transaction_code' => 'ROMB' . sprintf('%04d', BonusLog::count() + 1),
+                            'user_id' => $sponsor->id,
+                            'category' => 'ro_matching',
+                            'source_user_id' => $user->id,
+                            'description' => "Matching Bonus RO dari @{$user->username} (Capai {$newRoPoints} Poin RO = 20% × Rp 500.000)",
+                            'amount' => $matchingBonus,
+                        ]);
+        
+                        WalletTransaction::create([
+                            'user_id' => $sponsor->id,
+                            'type' => 'in',
+                            'category' => 'ro_matching',
+                            'amount' => $matchingBonus,
+                            'description' => "Matching Bonus RO dari @{$user->username} (Capai {$newRoPoints} Poin RO)",
+                        ]);
+                    }
                 }
             }
         });
+
+        if ($isCashback) {
+            return back()->with('success', 'Berhasil aktivasi Voucher Cash RO! Anda mendapatkan 35 Poin RO dan Cashback Rp 500.000. Sponsor langsung menerima Bonus Sponsor Rp 700.000 & Matching Bonus Rp 100.000.');
+        }
 
         return back()->with('success', 'Berhasil melakukan Repeat Order! Anda mendapatkan 1 Poin RO dan Sponsor Anda menerima Bonus Tier 1 (Rp 20.000).');
     }
 
     /**
-     * Purchase or produce Voucher RO (Rp 125.000 / pcs, quantity 1 to 35).
+     * Purchase or produce Voucher RO (Rp 125.000) or Voucher Cash RO (Rp 4.375.000).
      */
     public function buyVoucher(Request $request)
     {
@@ -268,11 +370,25 @@ class RepeatOrderController extends Controller
         }
 
         $request->validate([
+            'voucher_type' => 'nullable|string|in:ro,ro_cashback',
             'quantity' => 'nullable|integer|min:1|max:35',
         ]);
 
+        $voucherType = $request->input('voucher_type', 'ro');
         $qty = max(1, min(35, (int) $request->input('quantity', 1)));
-        $unitPrice = 125000;
+
+        if ($voucherType === 'ro_cashback') {
+            $unitPrice = 4375000;
+            $pkgName = 'Cashback RO (Rp 4.375.000)';
+            $type = 'ro_cashback';
+            $prefix = 'ROC';
+        } else {
+            $unitPrice = 125000;
+            $pkgName = 'Repeat Order (Rp 125.000)';
+            $type = 'ro';
+            $prefix = 'RO';
+        }
+
         $totalPrice = $unitPrice * $qty;
         $user = auth()->user();
 
@@ -286,28 +402,28 @@ class RepeatOrderController extends Controller
                 }
             }
 
-            DB::transaction(function () use ($targetUser, $qty) {
+            DB::transaction(function () use ($targetUser, $qty, $pkgName, $type, $prefix) {
                 for ($i = 0; $i < $qty; $i++) {
-                    $code = 'RO-' . rand(1000, 9999) . '-' . strtoupper(Str::random(3));
+                    $code = $prefix . '-' . rand(1000, 9999) . '-' . strtoupper(Str::random(3));
                     Voucher::create([
                         'code' => $code,
                         'user_id' => $targetUser->id,
-                        'package_name' => 'Repeat Order (Rp 125.000)',
-                        'voucher_type' => 'ro',
+                        'package_name' => $pkgName,
+                        'voucher_type' => $type,
                         'status' => 'active',
                     ]);
                 }
             });
 
-            return back()->with('success', "Berhasil memproduksi {$qty} Voucher RO untuk @" . $targetUser->username . "!");
+            return back()->with('success', "Berhasil memproduksi {$qty} Voucher {$pkgName} untuk @" . $targetUser->username . "!");
         }
 
         // Member purchase using wallet balance
         if (($user->saldo ?? 0) < $totalPrice) {
-            return back()->with('error', "Saldo wallet Anda tidak mencukupi untuk membeli {$qty} Voucher RO (Total: Rp " . number_format($totalPrice, 0, ',', '.') . ")!");
+            return back()->with('error', "Saldo wallet Anda tidak mencukupi untuk membeli {$qty} {$pkgName} (Total: Rp " . number_format($totalPrice, 0, ',', '.') . ")!");
         }
 
-        DB::transaction(function () use ($user, $totalPrice, $qty) {
+        DB::transaction(function () use ($user, $totalPrice, $qty, $pkgName, $type, $prefix) {
             $user->decrement('saldo', $totalPrice);
 
             WalletTransaction::create([
@@ -315,21 +431,21 @@ class RepeatOrderController extends Controller
                 'type' => 'out',
                 'category' => 'purchase_voucher',
                 'amount' => $totalPrice,
-                'description' => "Pembelian {$qty} Voucher Repeat Order (Rp 125.000 / pcs)",
+                'description' => "Pembelian {$qty} Voucher {$pkgName}",
             ]);
 
             for ($i = 0; $i < $qty; $i++) {
-                $code = 'RO-' . rand(1000, 9999) . '-' . strtoupper(Str::random(3));
+                $code = $prefix . '-' . rand(1000, 9999) . '-' . strtoupper(Str::random(3));
                 Voucher::create([
                     'code' => $code,
                     'user_id' => $user->id,
-                    'package_name' => 'Repeat Order (Rp 125.000)',
-                    'voucher_type' => 'ro',
+                    'package_name' => $pkgName,
+                    'voucher_type' => $type,
                     'status' => 'active',
                 ]);
             }
         });
 
-        return back()->with('success', "Berhasil membeli {$qty} Voucher RO!");
+        return back()->with('success', "Berhasil membeli {$qty} Voucher {$pkgName}!");
     }
 }

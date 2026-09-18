@@ -99,16 +99,12 @@ class ProductSeeder extends Seeder
             ],
         ];
 
-        Schema::disableForeignKeyConstraints();
-        Product::query()->delete();
-        Schema::enableForeignKeyConstraints();
-
         foreach ($roProducts as $item) {
-            Product::create($item);
+            Product::updateOrCreate(['name' => $item['name']], $item);
         }
 
         foreach ($poProducts as $item) {
-            Product::create($item);
+            Product::updateOrCreate(['name' => $item['name']], $item);
         }
     }
 }

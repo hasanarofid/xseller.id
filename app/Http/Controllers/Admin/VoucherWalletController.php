@@ -113,8 +113,9 @@ class VoucherWalletController extends Controller
             ['key' => 'business', 'group' => 'Voucher Activation', 'name' => 'Voucher Activation Business (Rp 4.300.000)', 'price' => 4300000, 'type' => 'activation'],
             ['key' => 'partner', 'group' => 'Voucher Activation', 'name' => 'Voucher Activation Partner (Rp 10.500.000)', 'price' => 10500000, 'type' => 'activation'],
 
-            // RO Voucher
+            // RO Vouchers
             ['key' => 'ro', 'group' => 'Voucher RO', 'name' => 'Voucher RO (Rp 125.000)', 'price' => 125000, 'type' => 'ro'],
+            ['key' => 'ro_cashback', 'group' => 'Voucher RO', 'name' => 'Voucher Cash RO (Rp 4.375.000)', 'price' => 4375000, 'type' => 'ro_cashback'],
 
             // PO Vouchers
             ['key' => 'po_star_seller', 'group' => 'Voucher PO', 'name' => 'Voucher PO Star Seller (Rp 550.000)', 'price' => 550000, 'type' => 'po_star_seller'],
@@ -161,6 +162,8 @@ class VoucherWalletController extends Controller
             'partner' => ['name' => 'Partner (Rp 10.500.000)', 'price' => 10500000, 'type' => 'activation', 'prefix' => 'PIN'],
             'ultimate' => ['name' => 'Partner (Rp 10.500.000)', 'price' => 10500000, 'type' => 'activation', 'prefix' => 'PIN'],
             'ro' => ['name' => 'Repeat Order (Rp 125.000)', 'price' => 125000, 'type' => 'ro', 'prefix' => 'RO'],
+            'ro_cashback' => ['name' => 'Cashback RO (Rp 4.375.000)', 'price' => 4375000, 'type' => 'ro_cashback', 'prefix' => 'ROC'],
+            'cash_ro' => ['name' => 'Cashback RO (Rp 4.375.000)', 'price' => 4375000, 'type' => 'ro_cashback', 'prefix' => 'ROC'],
             'po_star_seller' => ['name' => 'PO Star Seller (Rp 550.000)', 'price' => 550000, 'type' => 'po_star_seller', 'prefix' => 'PO'],
             'po_affiliate' => ['name' => 'PO Affiliate (Rp 2.100.000)', 'price' => 2100000, 'type' => 'po_affiliate', 'prefix' => 'PO'],
         ];
@@ -237,6 +240,8 @@ class VoucherWalletController extends Controller
             'partner' => ['name' => 'Partner (Rp 10.500.000)', 'type' => 'activation', 'prefix' => 'PIN'],
             'ultimate' => ['name' => 'Partner (Rp 10.500.000)', 'type' => 'activation', 'prefix' => 'PIN'],
             'ro' => ['name' => 'Repeat Order (Rp 125.000)', 'type' => 'ro', 'prefix' => 'RO'],
+            'ro_cashback' => ['name' => 'Cashback RO (Rp 4.375.000)', 'type' => 'ro_cashback', 'prefix' => 'ROC'],
+            'cash_ro' => ['name' => 'Cashback RO (Rp 4.375.000)', 'type' => 'ro_cashback', 'prefix' => 'ROC'],
             'po_star_seller' => ['name' => 'PO Star Seller (Rp 550.000)', 'type' => 'po_star_seller', 'prefix' => 'PO'],
             'po_affiliate' => ['name' => 'PO Affiliate (Rp 2.100.000)', 'type' => 'po_affiliate', 'prefix' => 'PO'],
         ];
