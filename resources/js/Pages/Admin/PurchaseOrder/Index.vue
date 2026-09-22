@@ -214,8 +214,8 @@ const formatRupiah = (val) => {
           <div class="p-4 bg-[#f0f7fb] border border-[#04bdb2]/30 rounded-2xl space-y-2 text-xs text-slate-700">
             <span class="font-black text-[#1653a1] block uppercase text-[10px] tracking-wider">Ketentuan Paket Purchase Order:</span>
             <ul class="space-y-1.5 list-disc list-inside text-[11px] font-medium text-slate-600">
-              <li><strong class="text-slate-900">PO Star Seller (Rp 550.000):</strong> +2 Personal Poin PO + Alokasi Tier 15 Generasi (Rp 10.000/gen).</li>
-              <li><strong class="text-slate-900">PO Affiliate (Rp 2.100.000):</strong> +8 Personal Poin PO + Alokasi Tier 15 Generasi (Rp 50.000/gen).</li>
+              <li><strong class="text-slate-900">PO Star Seller (Rp 550.000):</strong> +1 Personal Poin PO + Alokasi Tier 15 Generasi (Rp 10.000/gen).</li>
+              <li><strong class="text-slate-900">PO Affiliate (Rp 2.100.000):</strong> +4 Personal Poin PO + Alokasi Tier 15 Generasi (Rp 40.000/gen).</li>
             </ul>
           </div>
         </div>

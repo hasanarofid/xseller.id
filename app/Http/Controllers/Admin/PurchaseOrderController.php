@@ -140,12 +140,12 @@ class PurchaseOrderController extends Controller
         if ($isAffiliate) {
             $packageName = 'PO Paket Affiliate (Rp 2.100.000)';
             $amount = 2100000;
-            $poPoints = 8;
-            $tierAmount = 50000;
+            $poPoints = 4;  // disesuaikan dari 8 (penyesuaian overpaid)
+            $tierAmount = 40000; // disesuaikan dari 50000 (penyesuaian overpaid)
         } else {
             $packageName = 'PO Paket Star Seller (Rp 550.000)';
             $amount = 550000;
-            $poPoints = 2;
+            $poPoints = 1;  // disesuaikan dari 2 (penyesuaian overpaid)
             $tierAmount = 10000;
         }
 
