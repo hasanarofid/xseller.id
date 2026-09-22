@@ -1,1 +1,0 @@
-import{O as e,y as t}from"./app-Db48ZfU9.js";import{t as n}from"./_plugin-vue_export-helper-BDNMzG2s.js";var r={},i={src:`/logo-x-seller.avif`,alt:`XSELLER Logo`,class:`h-9 w-auto object-contain`};function a(n,r){return e(),t(`img`,i)}var o=n(r,[[`render`,a]]);export{o as t};
