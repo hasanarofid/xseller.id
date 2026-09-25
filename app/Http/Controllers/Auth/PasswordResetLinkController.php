@@ -33,15 +33,21 @@ class PasswordResetLinkController extends Controller
             'email' => 'required|email',
         ]);
 
-        // We will send the password reset link to this user. Once we have attempted
-        // to send the link, we will examine the response then see the message we
-        // need to show to the user. Finally, we'll send out a proper response.
-        $status = Password::sendResetLink(
-            $request->only('email')
-        );
+        try {
+            // We will send the password reset link to this user.
+            $status = Password::sendResetLink(
+                $request->only('email')
+            );
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Gagal mengirim email reset password: ' . $e->getMessage());
+
+            throw ValidationException::withMessages([
+                'email' => ['Gagal mengirim email reset password. Pastikan konfigurasi SMTP/email valid atau hubungi admin.'],
+            ]);
+        }
 
         if ($status == Password::RESET_LINK_SENT) {
-            return back()->with('status', __($status));
+            return back()->with('status', 'Link reset password telah berhasil dikirim ke email Anda. Silakan cek kotak masuk atau folder spam.');
         }
 
         throw ValidationException::withMessages([

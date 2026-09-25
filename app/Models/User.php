@@ -130,10 +130,6 @@ class User extends Authenticatable
      */
     public function sendPasswordResetNotification($token)
     {
-        try {
-            $this->notify(new \App\Notifications\CustomResetPasswordNotification($token));
-        } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::error('Gagal mengirim email reset password: ' . $e->getMessage());
-        }
+        $this->notify(new \App\Notifications\CustomResetPasswordNotification($token));
     }
 }

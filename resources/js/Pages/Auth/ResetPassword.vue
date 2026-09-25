@@ -1,21 +1,23 @@
 <script setup>
+import { ref } from 'vue';
 import GuestLayout from '@/Layouts/GuestLayout.vue';
 import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
-import { Head, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Mail, Lock, Eye, EyeOff, KeyRound, ArrowRight, ArrowLeft } from '@lucide/vue';
 
 const props = defineProps({
     email: {
         type: String,
-        required: true,
+        default: '',
     },
     token: {
         type: String,
         required: true,
     },
 });
+
+const showPassword = ref(false);
+const showPasswordConfirm = ref(false);
 
 const form = useForm({
     token: props.token,
@@ -33,69 +35,110 @@ const submit = () => {
 
 <template>
     <GuestLayout>
-        <Head title="Reset Password" />
+        <Head title="Reset Password | Xseller" />
 
-        <form @submit.prevent="submit">
-            <div>
-                <InputLabel for="email" value="Email" />
+        <div class="panel-heading">
+            <span class="eyebrow">RESET PASSWORD</span>
+            <h2>Buat Password Baru</h2>
+            <p>Masukkan email dan password baru Anda untuk melanjutkan.</p>
+        </div>
 
-                <TextInput
-                    id="email"
-                    type="email"
-                    class="mt-1 block w-full"
-                    v-model="form.email"
-                    required
-                    autofocus
-                    autocomplete="username"
-                />
-
-                <InputError class="mt-2" :message="form.errors.email" />
+        <form @submit.prevent="submit" class="space-y-4">
+            <!-- Email Field -->
+            <div class="form-group">
+                <label for="email" class="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wider">Email</label>
+                <div class="auth-input-wrap">
+                    <span class="auth-input-icon">
+                        <Mail class="w-4.5 h-4.5" />
+                    </span>
+                    <input
+                        id="email"
+                        type="email"
+                        v-model="form.email"
+                        required
+                        autofocus
+                        autocomplete="email"
+                        placeholder="nama@email.com"
+                        class="w-full"
+                    />
+                </div>
+                <InputError class="mt-1.5" :message="form.errors.email" />
             </div>
 
-            <div class="mt-4">
-                <InputLabel for="password" value="Password" />
-
-                <TextInput
-                    id="password"
-                    type="password"
-                    class="mt-1 block w-full"
-                    v-model="form.password"
-                    required
-                    autocomplete="new-password"
-                />
-
-                <InputError class="mt-2" :message="form.errors.password" />
+            <!-- New Password Field -->
+            <div class="form-group">
+                <label for="password" class="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wider">Password Baru</label>
+                <div class="auth-input-wrap">
+                    <span class="auth-input-icon">
+                        <Lock class="w-4.5 h-4.5" />
+                    </span>
+                    <input
+                        id="password"
+                        :type="showPassword ? 'text' : 'password'"
+                        v-model="form.password"
+                        required
+                        autocomplete="new-password"
+                        placeholder="Masukkan password baru"
+                        class="w-full"
+                    />
+                    <button
+                        type="button"
+                        @click="showPassword = !showPassword"
+                        class="auth-password-toggle flex items-center justify-center"
+                        title="Tampilkan password"
+                    >
+                        <Eye v-if="!showPassword" class="w-4.5 h-4.5" />
+                        <EyeOff v-else class="w-4.5 h-4.5" />
+                    </button>
+                </div>
+                <InputError class="mt-1.5" :message="form.errors.password" />
             </div>
 
-            <div class="mt-4">
-                <InputLabel
-                    for="password_confirmation"
-                    value="Confirm Password"
-                />
-
-                <TextInput
-                    id="password_confirmation"
-                    type="password"
-                    class="mt-1 block w-full"
-                    v-model="form.password_confirmation"
-                    required
-                    autocomplete="new-password"
-                />
-
-                <InputError
-                    class="mt-2"
-                    :message="form.errors.password_confirmation"
-                />
+            <!-- Confirm Password Field -->
+            <div class="form-group">
+                <label for="password_confirmation" class="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wider">Konfirmasi Password</label>
+                <div class="auth-input-wrap">
+                    <span class="auth-input-icon">
+                        <KeyRound class="w-4.5 h-4.5" />
+                    </span>
+                    <input
+                        id="password_confirmation"
+                        :type="showPasswordConfirm ? 'text' : 'password'"
+                        v-model="form.password_confirmation"
+                        required
+                        autocomplete="new-password"
+                        placeholder="Ulangi password baru"
+                        class="w-full"
+                    />
+                    <button
+                        type="button"
+                        @click="showPasswordConfirm = !showPasswordConfirm"
+                        class="auth-password-toggle flex items-center justify-center"
+                        title="Tampilkan password"
+                    >
+                        <Eye v-if="!showPasswordConfirm" class="w-4.5 h-4.5" />
+                        <EyeOff v-else class="w-4.5 h-4.5" />
+                    </button>
+                </div>
+                <InputError class="mt-1.5" :message="form.errors.password_confirmation" />
             </div>
 
-            <div class="mt-4 flex items-center justify-end">
-                <PrimaryButton
-                    :class="{ 'opacity-25': form.processing }"
-                    :disabled="form.processing"
-                >
-                    Reset Password
-                </PrimaryButton>
-            </div>
+            <!-- Submit Button -->
+            <button
+                type="submit"
+                :disabled="form.processing"
+                class="auth-primary-btn w-full mt-4 flex items-center justify-center gap-2 text-xs font-extrabold uppercase tracking-wider text-white disabled:opacity-50"
+            >
+                <span>Simpan Password Baru</span>
+                <ArrowRight class="w-4 h-4" />
+            </button>
         </form>
+
+        <div class="mt-6 text-center">
+            <Link :href="route('login')" class="inline-flex items-center gap-2 text-xs font-bold text-[#009c94] hover:text-[#1653a1] transition-colors">
+                <ArrowLeft class="w-4 h-4" />
+                <span>Kembali ke halaman login</span>
+            </Link>
+        </div>
     </GuestLayout>
 </template>
